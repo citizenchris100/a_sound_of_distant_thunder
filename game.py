@@ -73,12 +73,17 @@ def game_over(character):
 
 def battlestate(character):
     enemy = enemy_select(BasicGoblin, MediumGoblin, HardGoblin)
-    print("A ", enemy.name, " appears.")
-    print("you have 3 options.")
+    vowel = 'aeiou'
+    if enemy.name[0].lower() in vowel:
+        start = "An "
+    else:
+        start = "A "
+    print(start, enemy.name, " appears.", sep='')
+    print("You have 3 options.")
     while enemy.hp > 0:
         option = input("1. Attack \n2. Magic\n3. Flee\n> ")
         if option == "1":
-            print("You swing your sword attacking the", enemy.name, ".")
+            print("You swing your sword attacking the ", enemy.name, ".", sep='')
             hit_chance = random.randint(0, 10)
             hit_back = random.randint(0, 10)
             if hit_chance > 3:
@@ -91,16 +96,14 @@ def battlestate(character):
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
                         loot_drop = loot()
-                        print("It appears to have dropped a ", loot_drop, ".")
+                        print("It appears to have dropped a ", loot_drop, ".", sep='')
                         break
                     else:
                         break
             else:
-                print("You did not hit the ", enemy.name, ".")
                 enemy_hit_back(character, enemy, False, 3)
-
         elif option == "2":
-            print("You cast a spell attacking the", enemy.name, ".")
+            print("You cast a spell attacking the ", enemy.name, ".", sep='')
             hit_chance = random.randint(0, 10)
             hit_back = random.randint(0, 10)
             if hit_chance > 4:
@@ -114,7 +117,7 @@ def battlestate(character):
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
                         loot_drop = loot()
-                        print("It appears to have dropped a ", loot_drop, ".")
+                        print("It appears to have dropped a ", loot_drop, ".", sep='')
                         break
                     else:
                         break
@@ -123,12 +126,13 @@ def battlestate(character):
         elif option == "3":
             escape_chance = random.randint(0, 10)
             if escape_chance > 7:
-                print("You escape battle with the ", enemy.name, ".")
+                print("You escape battle with the ", enemy.name, ".", sep='')
                 break
             else:
                 character.hp = character.hp - enemy.str
                 print("You were unable to escape battle. \nHowever the", enemy.name, "was able to strike.\n"
-                                                                                     "Your health is now", character.hp, ".")
+                                                                                     "Your health is now", character.hp,
+                      ".")
                 game_over(character)
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
@@ -137,16 +141,16 @@ def battlestate(character):
 def enemy_hit_back(character, enemy, hit, chance):
     hit_back = random.randint(0, 10)
     if hit:
-        print("You hit the", enemy.name, "their health is now", enemy.hp, ".")
+        print("You hit the ", enemy.name, "their health is now ", enemy.hp, ".", sep='')
     else:
-        print("You did not hit the", enemy.name, "their health is now", enemy.hp, ".")
+        print("You did not hit the ", enemy.name, ".", sep='')
     if hit_back > chance:
         character.hp = character.hp - enemy.str
         if hit:
             print("The Enemy was able to strike back.")
         else:
             print("However they were able to strike you.")
-        print("Your health is now ", character.hp, ".")
+        print("Your health is now ", character.hp, ".", sep='')
         game_over(myPlayer)
 
 
