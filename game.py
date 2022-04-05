@@ -17,7 +17,7 @@ time_remaining = 10080
 class Player:
     def __init__(self):
         self.name = 'Alex'
-        self.hp = 10
+        self.hp = 50
         self.dp = 7
         self.mp = 10
         self.str = 17
@@ -67,7 +67,7 @@ def loot():
 def game_over(character, score):
     if character.hp < 1:
         print("You have been defeated.")
-        print("You score is ", score, sep='')
+        print("You Final score is ", score, sep='')
         exit()
 
 
@@ -121,7 +121,7 @@ def battlestate(character, enemy, score):
                 if enemy.hp > 0:
                     enemy_hit_back(character, enemy, True, 4, score)
                 else:
-                    enemy_reset(enemy, score)
+                    score = enemy_reset(enemy, score)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
                         loot_drop = loot()
@@ -139,7 +139,7 @@ def battlestate(character, enemy, score):
                 if enemy.hp > 0:
                     enemy_hit_back(character, enemy, True, 6, score)
                 else:
-                    enemy_reset(enemy, score)
+                    score = enemy_reset(enemy, score)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
                         loot_drop = loot()
@@ -164,11 +164,16 @@ def battlestate(character, enemy, score):
                     game_over(character, score)
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
+    print("Your current Score is ", score, sep='')
+    return score
 
 # ____ title screen ____
 def title_screen_selections(score):
     option = input("> ")
     if option.lower() == ("play"):
+        score = battlestate(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
+        score = battlestate(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
+        score = battlestate(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
         battlestate(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
     elif option.lower() == ("help"):
         help_menu()
