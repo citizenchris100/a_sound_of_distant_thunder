@@ -65,11 +65,6 @@ def loot():
     return loot[chance]
 
 
-def game_over(character):
-    if character.hp < 1:
-        print("You have been defeated.")
-        exit()
-
 def enemy_hit_back(character, enemy, hit, chance):
     hit_back = random.randint(0, 10)
     if hit:
@@ -83,8 +78,11 @@ def enemy_hit_back(character, enemy, hit, chance):
         else:
             print("However they were able to strike you.")
             character.hp = character.hp - enemy.str
-        print("Your health is now ", character.hp, ".", sep='')
-        game_over(character)
+        if character.hp > 0:
+            print("Your health is now ", character.hp, ".", sep='')
+        else:
+            print("You have been defeated.")
+            exit()
 
 
 def enemy_reset(enemy):
@@ -94,7 +92,7 @@ def enemy_reset(enemy):
         enemy.hp = 50
     elif enemy.name == "Alpha Goblin":
         enemy.hp = 100
-    print("You defeated the ", enemy.name, ".")
+    print("You defeated the ", enemy.name, ".", sep='')
 
 
 def battlestate(character):
