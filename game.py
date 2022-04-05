@@ -17,7 +17,7 @@ time_remaining = 10080
 class Player:
     def __init__(self):
         self.name = 'Alex'
-        self.hp = 100
+        self.hp = 10
         self.dp = 7
         self.mp = 10
         self.str = 17
@@ -64,8 +64,14 @@ def loot():
     chance = random.randint(0, 2)
     return loot[chance]
 
+def game_over(character, score):
+    if character.hp < 1:
+        print("You have been defeated.")
+        print("You score is ", score, sep='')
+        exit()
 
-def enemy_hit_back(character, enemy, hit, chance):
+
+def enemy_hit_back(character, enemy, hit, chance, score):
     hit_back = random.randint(0, 10)
     if hit:
         print("You hit the ", enemy.name, " their health is now ", enemy.hp, ".", sep='')
@@ -81,22 +87,23 @@ def enemy_hit_back(character, enemy, hit, chance):
         if character.hp > 0:
             print("Your health is now ", character.hp, ".", sep='')
         else:
-            print("You have been defeated.")
-            exit()
+            game_over(character, score)
 
 
-def enemy_reset(enemy):
+def enemy_reset(enemy, score):
     if enemy.name == "Beta Goblin":
         enemy.hp = 25
+        return score + 10
     elif enemy.name == "Large Beta Goblin":
         enemy.hp = 50
+        return score + 30
     elif enemy.name == "Alpha Goblin":
         enemy.hp = 100
+        return score + 55
     print("You defeated the ", enemy.name, ".", sep='')
 
 
-def battlestate(character):
-    enemy = enemy_select(BasicGoblin, MediumGoblin, HardGoblin)
+def battlestate(character, enemy, score):
     vowel = 'aeiou'
     if enemy.name[0].lower() in vowel:
         start = "An "
@@ -112,9 +119,9 @@ def battlestate(character):
             if hit_chance > 3:
                 enemy.hp = enemy.hp - character.str
                 if enemy.hp > 0:
-                    enemy_hit_back(character, enemy, True, 4)
+                    enemy_hit_back(character, enemy, True, 4, score)
                 else:
-                    enemy_reset(enemy)
+                    enemy_reset(enemy, score)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
                         loot_drop = loot()
@@ -123,16 +130,16 @@ def battlestate(character):
                     else:
                         break
             else:
-                enemy_hit_back(character, enemy, False, 3)
+                enemy_hit_back(character, enemy, False, 3, score)
         elif option == "2":
             print("You cast a spell attacking the ", enemy.name, ".", sep='')
             hit_chance = random.randint(0, 10)
             if hit_chance > 4:
                 enemy.hp = enemy.hp - character.mp
                 if enemy.hp > 0:
-                    enemy_hit_back(character, enemy, True, 4)
+                    enemy_hit_back(character, enemy, True, 6, score)
                 else:
-                    enemy_reset(enemy)
+                    enemy_reset(enemy, score)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
                         loot_drop = loot()
@@ -141,7 +148,7 @@ def battlestate(character):
                     else:
                         break
             else:
-                enemy_hit_back(character, enemy, False, 3)
+                enemy_hit_back(character, enemy, False, 3, score)
         elif option == "3":
             escape_chance = random.randint(0, 10)
             if escape_chance > 7:
@@ -149,20 +156,20 @@ def battlestate(character):
                 break
             else:
                 character.hp = character.hp - enemy.str
-                print("You were unable to escape battle. \nHowever the", enemy.name, "was able to strike.\n"
-                                                                                     "Your health is now", character.hp,
-                      ".")
-                game_over(character)
+                print("You were unable to escape battle. \nHowever the ", enemy.name,
+                      " was able to strike you.", sep='')
+                if character.hp > 0:
+                    print("Your health is now ", character.hp, ".", sep='')
+                else:
+                    game_over(character, score)
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
 
 # ____ title screen ____
-def title_screen_selections():
+def title_screen_selections(score):
     option = input("> ")
     if option.lower() == ("play"):
-        battlestate(myPlayer)
-        battlestate(myPlayer)
-        battlestate(myPlayer)
+        battlestate(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
     elif option.lower() == ("help"):
         help_menu()
         title_screen_selections()
@@ -174,7 +181,7 @@ def title_screen_selections():
               "\n You can type 'Help' at any time for assistance.")
         title_screen_selections()
 
-def title_screen():
+def title_screen(score):
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
     print('- A Sound of Distant Thunder -')
@@ -186,7 +193,7 @@ def title_screen():
     print('-           help             -')
     print('-           quit             -')
     print('------------------------------')
-    title_screen_selections()
+    title_screen_selections(score)
 
 def help_menu():
     print('------------------------------')
@@ -240,4 +247,5 @@ NAVIGATE = 'go to'
 LOOK = 'look at'
 TAKE = "take"
 
-title_screen()
+my_score = 0
+title_screen(my_score)
