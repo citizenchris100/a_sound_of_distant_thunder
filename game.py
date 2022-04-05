@@ -70,6 +70,32 @@ def game_over(character):
         print("You have been defeated.")
         exit()
 
+def enemy_hit_back(character, enemy, hit, chance):
+    hit_back = random.randint(0, 10)
+    if hit:
+        print("You hit the ", enemy.name, " their health is now ", enemy.hp, ".", sep='')
+    else:
+        print("You did not hit the ", enemy.name, ".", sep='')
+    if hit_back > chance:
+        if hit:
+            print("The Enemy was able to strike back.")
+            character.hp = math.floor(character.hp - (enemy.str / character.dp))
+        else:
+            print("However they were able to strike you.")
+            character.hp = character.hp - enemy.str
+        print("Your health is now ", character.hp, ".", sep='')
+        game_over(character)
+
+
+def enemy_reset(enemy):
+    if enemy.name == "Beta Goblin":
+        enemy.hp = 25
+    elif enemy.name == "Large Beta Goblin":
+        enemy.hp = 50
+    elif enemy.name == "Alpha Goblin":
+        enemy.hp = 100
+    print("You defeated the ", enemy.name, ".")
+
 
 def battlestate(character):
     enemy = enemy_select(BasicGoblin, MediumGoblin, HardGoblin)
@@ -85,12 +111,10 @@ def battlestate(character):
         if option == "1":
             print("You swing your sword attacking the ", enemy.name, ".", sep='')
             hit_chance = random.randint(0, 10)
-            hit_back = random.randint(0, 10)
             if hit_chance > 3:
                 enemy.hp = enemy.hp - character.str
                 if enemy.hp > 0:
-                    if hit_back > 4:
-                        enemy_hit_back(character, enemy, True, 4)
+                    enemy_hit_back(character, enemy, True, 4)
                 else:
                     enemy_reset(enemy)
                     loot_chance = random.randint(0, 10)
@@ -105,13 +129,10 @@ def battlestate(character):
         elif option == "2":
             print("You cast a spell attacking the ", enemy.name, ".", sep='')
             hit_chance = random.randint(0, 10)
-            hit_back = random.randint(0, 10)
             if hit_chance > 4:
                 enemy.hp = enemy.hp - character.mp
                 if enemy.hp > 0:
-                    if hit_back > 4:
-                        enemy_hit_back(character, enemy, True, 4)
-                        game_over(myPlayer)
+                    enemy_hit_back(character, enemy, True, 4)
                 else:
                     enemy_reset(enemy)
                     loot_chance = random.randint(0, 10)
@@ -137,33 +158,6 @@ def battlestate(character):
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
 
-
-def enemy_hit_back(character, enemy, hit, chance):
-    hit_back = random.randint(0, 10)
-    if hit:
-        print("You hit the ", enemy.name, "their health is now ", enemy.hp, ".", sep='')
-    else:
-        print("You did not hit the ", enemy.name, ".", sep='')
-    if hit_back > chance:
-        character.hp = character.hp - enemy.str
-        if hit:
-            print("The Enemy was able to strike back.")
-        else:
-            print("However they were able to strike you.")
-        print("Your health is now ", character.hp, ".", sep='')
-        game_over(myPlayer)
-
-
-def enemy_reset(enemy):
-    if enemy.name == "Beta Goblin":
-        enemy.hp = 25
-    elif enemy.name == "Large Beta Goblin":
-        enemy.hp = 50
-    elif enemy.name == "Alpha Goblin":
-        enemy.hp = 100
-    print("You defeated the ", enemy.name, ".")
-
-
 # ____ title screen ____
 def title_screen_selections():
     option = input("> ")
@@ -182,7 +176,6 @@ def title_screen_selections():
               "\n You can type 'Help' at any time for assistance.")
         title_screen_selections()
 
-
 def title_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
@@ -196,7 +189,6 @@ def title_screen():
     print('-           quit             -')
     print('------------------------------')
     title_screen_selections()
-
 
 def help_menu():
     print('------------------------------')
@@ -241,7 +233,6 @@ def help_menu():
     print('-   :Attempt to retreat      -')
     print('-    from battle / attack    -')
     print('------------------------------')
-
 
 # _____ game functionality _____
 # def start_game():
