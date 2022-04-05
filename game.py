@@ -132,7 +132,7 @@ def battlestate():
                 myPlayer.hp = myPlayer.hp - enemy.str
                 print("You were unable to escape battle. \nHowever the", enemy.name, "was able to strike.\n"
                                                                                      "Your health is now ", myPlayer.hp)
-        else:
+        #else:
 
 
 
