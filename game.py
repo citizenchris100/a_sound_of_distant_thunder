@@ -12,6 +12,7 @@ import math
 screen_width = 100
 time_remaining = 10080
 
+
 # ____ player setup ____
 class Player:
     def __init__(self):
@@ -43,6 +44,7 @@ class MediumGoblin(object):
     mp = 7
     str = 14
 
+
 class HardGoblin(object):
     name = "Alpha Goblin"
     hp = 100
@@ -62,24 +64,28 @@ def loot():
     chance = random.randint(0, 2)
     return loot[chance]
 
-def battlestate():
+
+def game_over(character):
+    if character.hp < 1:
+        print("You have been defeated.")
+        exit()
+
+
+def battlestate(character):
     enemy = enemy_select(BasicGoblin, MediumGoblin, HardGoblin)
-    print("A ", enemy.name, " appears")
-    print("you have 3 options")
+    print("A ", enemy.name, " appears.")
+    print("you have 3 options.")
     while enemy.hp > 0:
         option = input("1. Attack \n2. Magic\n3. Flee\n> ")
         if option == "1":
-            print("You swing your sword attacking the", enemy.name)
+            print("You swing your sword attacking the", enemy.name, ".")
             hit_chance = random.randint(0, 10)
             hit_back = random.randint(0, 10)
             if hit_chance > 3:
-                enemy.hp = enemy.hp - myPlayer.str
-                print("You hit the ", enemy.name, "their health is now ", enemy.hp)
+                enemy.hp = enemy.hp - character.str
                 if enemy.hp > 0:
                     if hit_back > 4:
-                        updated_player_hp = myPlayer.hp - (enemy.str / myPlayer.dp)
-                        myPlayer.hp = math.floor(updated_player_hp)
-                        print("The ", enemy.name, " struck back.\nYour health is now", myPlayer.hp)
+                        enemy_hit_back(character, enemy, True, 4)
                 else:
                     enemy_reset(enemy)
                     loot_chance = random.randint(0, 10)
@@ -90,24 +96,19 @@ def battlestate():
                     else:
                         break
             else:
-                print("You did not hit the ", enemy.name)
-                hit_back = random.randint(0, 10)
-                if hit_back > 3:
-                    myPlayer.hp = myPlayer.hp - enemy.str
-                    print("However the ", enemy.name, "was able to strike you.\nYour health is now ", myPlayer.hp, ".")
+                print("You did not hit the ", enemy.name, ".")
+                enemy_hit_back(character, enemy, False, 3)
 
         elif option == "2":
-            print("You cast a spell attacking the", enemy.name)
+            print("You cast a spell attacking the", enemy.name, ".")
             hit_chance = random.randint(0, 10)
             hit_back = random.randint(0, 10)
             if hit_chance > 4:
-                enemy.hp = enemy.hp - myPlayer.mp
-                print("You hit the ", enemy.name, "their health is now ", enemy.hp)
+                enemy.hp = enemy.hp - character.mp
                 if enemy.hp > 0:
                     if hit_back > 4:
-                        updated_player_hp = myPlayer.hp - (enemy.str / myPlayer.dp)
-                        myPlayer.hp = math.floor(updated_player_hp)
-                        print("The ", enemy.name, " struck back.\nYour health is now", myPlayer.hp)
+                        enemy_hit_back(character, enemy, True, 4)
+                        game_over(myPlayer)
                 else:
                     enemy_reset(enemy)
                     loot_chance = random.randint(0, 10)
@@ -118,22 +119,35 @@ def battlestate():
                     else:
                         break
             else:
-                print("You did not hit the ", enemy.name)
-                hit_back = random.randint(0, 10)
-                if hit_back > 3:
-                    myPlayer.hp = myPlayer.hp - enemy.str
-                    print("However the ", enemy.name, "was able to strike you.\nYour health is now ", myPlayer.hp, ".")
+                enemy_hit_back(character, enemy, False, 3)
         elif option == "3":
-            escap_chance = random.randint(0, 10)
-            if escap_chance > 7:
-                print("You escape battle with the ", enemy.name)
+            escape_chance = random.randint(0, 10)
+            if escape_chance > 7:
+                print("You escape battle with the ", enemy.name, ".")
                 break
             else:
-                myPlayer.hp = myPlayer.hp - enemy.str
+                character.hp = character.hp - enemy.str
                 print("You were unable to escape battle. \nHowever the", enemy.name, "was able to strike.\n"
-                                                                                     "Your health is now ", myPlayer.hp)
-        #else:
+                                                                                     "Your health is now", character.hp, ".")
+                game_over(character)
+        else:
+            print("Option not allowed please choose either 1, 2 or 3.")
 
+
+def enemy_hit_back(character, enemy, hit, chance):
+    hit_back = random.randint(0, 10)
+    if hit:
+        print("You hit the", enemy.name, "their health is now", enemy.hp, ".")
+    else:
+        print("You did not hit the", enemy.name, "their health is now", enemy.hp, ".")
+    if hit_back > chance:
+        character.hp = character.hp - enemy.str
+        if hit:
+            print("The Enemy was able to strike back.")
+        else:
+            print("However they were able to strike you.")
+        print("Your health is now ", character.hp, ".")
+        game_over(myPlayer)
 
 
 def enemy_reset(enemy):
@@ -150,9 +164,9 @@ def enemy_reset(enemy):
 def title_screen_selections():
     option = input("> ")
     if option.lower() == ("play"):
-        battlestate()
-        battlestate()
-        battlestate()
+        battlestate(myPlayer)
+        battlestate(myPlayer)
+        battlestate(myPlayer)
     elif option.lower() == ("help"):
         help_menu()
         title_screen_selections()
@@ -234,4 +248,3 @@ LOOK = 'look at'
 TAKE = "take"
 
 title_screen()
-
