@@ -13,7 +13,7 @@ screen_width = 100
 time_remaining = 10080
 
 
-# ____ player setup ____
+# ____ player setup ___
 class Player:
     def __init__(self):
         self.name = 'Alex'
