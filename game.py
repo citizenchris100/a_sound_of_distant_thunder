@@ -114,7 +114,7 @@ def enemy_reset(enemy, score):
     print("You defeated the ", enemy.name, ".", sep='')
 
 
-def battlestate(character, enemy, score):
+def battle_state(character, enemy, score):
     vowel = 'aeiou'
     if enemy.name[0].lower() in vowel:
         start = "An "
