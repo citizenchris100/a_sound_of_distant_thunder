@@ -70,16 +70,17 @@ def game_over(character, score):
         print("You have been defeated.")
         print("You Final score is ", score, sep='')
         name = input("Enter your Name : ")
-        display_score(name, score)
+        write_score(score, name)
+        display_score()
 
 
-def display_score(name, score):
-    write_score(score, name)
+def display_score():
     file = open("score.txt", "r")
     for line in file:
         xline = line.split(",")
         print(xline[0], xline[1])
-        exit()
+
+    exit()
 
 
 def write_score(score, name):
@@ -88,7 +89,7 @@ def write_score(score, name):
     file.write(",")
     file.write(str(score))
     file.write(",")
-    file.write("\n ")
+    file.write("\n")
     file.close()
 
 
@@ -201,14 +202,14 @@ def title_screen_selections(score):
         battle_state(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
     elif option.lower() == ("help"):
         help_menu()
-        title_screen_selections()
+        title_screen_selections(score)
     elif option.lower() == ("quit"):
         sys.exit()
     else:
         print("Type 'Play' to play the game. "
               "\n 'Quit' to exit"
               "\n You can type 'Help' at any time for assistance.")
-        title_screen_selections()
+        title_screen_selections(score)
 
 def title_screen(score):
     os.system('cls' if os.name == 'nt' else 'clear')
