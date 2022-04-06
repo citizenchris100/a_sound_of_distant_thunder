@@ -17,7 +17,7 @@ time_remaining = 10080
 class Player:
     def __init__(self):
         self.name = 'Alex'
-        self.hp = 50
+        self.hp = 1
         self.dp = 7
         self.mp = 10
         self.str = 17
@@ -69,7 +69,7 @@ def game_over(character, score):
     if character.hp < 1:
         print("You have been defeated.")
         print("You Final score is ", score, sep='')
-        name = input("Enter your Name")
+        name = input("Enter your Name : ")
         display_score(name, score)
 
 
@@ -78,7 +78,8 @@ def display_score(name, score):
     file = open("score.txt", "r")
     for line in file:
         xline = line.split(",")
-        print(xline[0], ":", xline[1])
+        print(xline[0], xline[1])
+        exit()
 
 
 def write_score(score, name):
@@ -113,14 +114,16 @@ def enemy_hit_back(character, enemy, hit, chance, score):
 def enemy_reset(enemy, score):
     if enemy.name == "Beta Goblin":
         enemy.hp = 25
+        print("You defeated the ", enemy.name, ".", sep='')
         return score + 10
     elif enemy.name == "Large Beta Goblin":
         enemy.hp = 50
+        print("You defeated the ", enemy.name, ".", sep='')
         return score + 30
     elif enemy.name == "Alpha Goblin":
         enemy.hp = 100
+        print("You defeated the ", enemy.name, ".", sep='')
         return score + 55
-    print("You defeated the ", enemy.name, ".", sep='')
 
 
 def battle_state(character, enemy, score):
@@ -187,14 +190,15 @@ def battle_state(character, enemy, score):
     print("Your current Score is ", score, sep='')
     return score
 
+
 # ____ title screen ____
 def title_screen_selections(score):
     option = input("> ")
     if option.lower() == ("play"):
-        score = battlestate(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
-        score = battlestate(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
-        score = battlestate(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
-        battlestate(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
+        score = battle_state(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
+        score = battle_state(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
+        score = battle_state(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
+        battle_state(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
     elif option.lower() == ("help"):
         help_menu()
         title_screen_selections()
