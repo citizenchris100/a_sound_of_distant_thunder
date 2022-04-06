@@ -69,11 +69,20 @@ def game_over(character, score):
     if character.hp < 1:
         print("You have been defeated.")
         print("You Final score is ", score, sep='')
-        return input("Enter your Name")
+        name = input("Enter your Name")
+        display_score(name, score)
+
+
+def display_score(name, score):
+    write_score(score, name)
+    file = open("score.txt", "r")
+    for line in file:
+        xline = line.split(",")
+        print(xline[0], ":", xline[1])
 
 
 def write_score(score, name):
-    file = open("score.txt", "a ")
+    file = open("score.txt", "a")
     file.write(str(name))
     file.write(",")
     file.write(str(score))
