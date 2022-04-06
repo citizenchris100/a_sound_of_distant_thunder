@@ -64,11 +64,22 @@ def loot():
     chance = random.randint(0, 2)
     return loot[chance]
 
+
 def game_over(character, score):
     if character.hp < 1:
         print("You have been defeated.")
         print("You Final score is ", score, sep='')
-        exit()
+        return input("Enter your Name")
+
+
+def write_score(score, name):
+    file = open("score.txt", "a ")
+    file.write(str(name))
+    file.write(",")
+    file.write(str(score))
+    file.write(",")
+    file.write("\n ")
+    file.close()
 
 
 def enemy_hit_back(character, enemy, hit, chance, score):
