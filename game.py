@@ -18,10 +18,11 @@ time_remaining = 10080
 class Player:
     def __init__(self):
         self.name = 'Alex'
-        self.hp = 1
+        self.hp = 100
         self.dp = 7
         self.mp = 10
         self.str = 17
+        self.inventory = []
         self.status_effects = []
         self.location = 'Boat'
 
@@ -71,16 +72,17 @@ def game_over(character, score):
         print("You have been defeated.")
         print("You Final score is ", score, sep='')
         name = input("Enter your Name : ")
-        display_score(name, score)
+        write_score(score, name)
+        display_score()
 
 
-def display_score(name, score):
-    write_score(score, name)
+def display_score():
     file = open("score.txt", "r")
     for line in file:
         xline = line.split(",")
         print(xline[0], xline[1])
-        exit()
+
+    exit()
 
 
 def write_score(score, name):
@@ -89,7 +91,7 @@ def write_score(score, name):
     file.write(",")
     file.write(str(score))
     file.write(",")
-    file.write("\n ")
+    file.write("\n")
     file.close()
 
 
@@ -147,9 +149,8 @@ def battle_state(character, enemy, score):
                 else:
                     score = enemy_reset(enemy, score)
                     loot_chance = random.randint(0, 10)
-                    if loot_chance > 4:
-                        loot_drop = loot()
-                        print("It appears to have dropped a ", loot_drop, ".", sep='')
+                    if loot_chance > 1:
+                        loot_add(character)
                         break
                     else:
                         break
@@ -166,8 +167,7 @@ def battle_state(character, enemy, score):
                     score = enemy_reset(enemy, score)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
-                        loot_drop = loot()
-                        print("It appears to have dropped a ", loot_drop, ".", sep='')
+                        loot_add(character)
                         break
                     else:
                         break
@@ -192,6 +192,16 @@ def battle_state(character, enemy, score):
     return score
 
 
+def loot_add(character):
+    loot_drop = loot()
+    print("It appears to have dropped a ", loot_drop, ".", sep='')
+    print("Would you like to add ", loot_drop, " to your Inventory?", sep='')
+    option = input("Yes \nNo\n> ")
+    if option.lower() == "yes":
+        character.inventory.append(loot_drop)
+        print(loot_drop, " was added to your inventory.", sep='')
+
+
 # ____ title screen ____
 def title_screen_selections(score):
     option = input("> ")
@@ -202,14 +212,14 @@ def title_screen_selections(score):
         battle_state(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
     elif option.lower() == ("help"):
         help_menu()
-        title_screen_selections()
+        title_screen_selections(score)
     elif option.lower() == ("quit"):
         sys.exit()
     else:
         print("Type 'Play' to play the game. "
               "\n 'Quit' to exit"
               "\n You can type 'Help' at any time for assistance.")
-        title_screen_selections()
+        title_screen_selections(score)
 
 def title_screen(score):
     os.system('cls' if os.name == 'nt' else 'clear')
