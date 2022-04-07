@@ -17,10 +17,11 @@ time_remaining = 10080
 class Player:
     def __init__(self):
         self.name = 'Alex'
-        self.hp = 1
+        self.hp = 100
         self.dp = 7
         self.mp = 10
         self.str = 17
+        self.inventory = []
         self.status_effects = []
         self.location = 'Boat'
 
@@ -147,9 +148,8 @@ def battle_state(character, enemy, score):
                 else:
                     score = enemy_reset(enemy, score)
                     loot_chance = random.randint(0, 10)
-                    if loot_chance > 4:
-                        loot_drop = loot()
-                        print("It appears to have dropped a ", loot_drop, ".", sep='')
+                    if loot_chance > 1:
+                        loot_add(character)
                         break
                     else:
                         break
@@ -166,8 +166,7 @@ def battle_state(character, enemy, score):
                     score = enemy_reset(enemy, score)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
-                        loot_drop = loot()
-                        print("It appears to have dropped a ", loot_drop, ".", sep='')
+                        loot_add(character)
                         break
                     else:
                         break
@@ -190,6 +189,16 @@ def battle_state(character, enemy, score):
             print("Option not allowed please choose either 1, 2 or 3.")
     print("Your current Score is ", score, sep='')
     return score
+
+
+def loot_add(character):
+    loot_drop = loot()
+    print("It appears to have dropped a ", loot_drop, ".", sep='')
+    print("Would you like to add ", loot_drop, " to your Inventory?", sep='')
+    option = input("Yes \nNo\n> ")
+    if option.lower() == "yes":
+        character.inventory.append(loot_drop)
+        print(loot_drop, " was added to your inventory.", sep='')
 
 
 # ____ title screen ____
