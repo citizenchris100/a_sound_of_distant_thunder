@@ -8,6 +8,7 @@ import sys
 import os
 import random
 import math
+import hero
 
 screen_width = 100
 time_remaining = 10080
