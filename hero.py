@@ -1,5 +1,6 @@
 import random
 import time
+import os
 from pprint import pprint
 
 
@@ -93,6 +94,44 @@ class Hero:
 
     def set_luck_attribute(self, luck):
         self.luck_attribute = luck
+
+def create_class():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('------------------------------')
+    print('-  Choose a Character Class  -')
+    print('------------------------------')
+    print('------------------------------')
+    print('-           Merc             -')
+    print('-           Soldier          -')
+    print('-           Ranger           -')
+    print('-           Spy              -')
+    print('------------------------------')
+    print('------------------------------')
+    print('-           help             -')
+    print('-           quit             -')
+    print('------------------------------')
+    a = input("> ")
+
+
+def help_menu():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('------------------------------')
+    print('-About the Character Classes -')
+    print('------------------------------')
+    print('------------------------------')
+    print('-Merc: balanced more towards -')
+    print('-the use of Guns.            -')
+    print('------------------------------')
+    print('-Soldier: less focussed and  -')
+    print('-more well rounded           -')
+    print('------------------------------')
+    print('-Ranger: balanced towards    -')
+    print('-the use of Melee weapons.   -')
+    print('------------------------------')
+    print('-Spy: relies more upon wit   -')
+    print('-and charm                   -')
+    print('------------------------------')
+    print('------------------------------')
 
 
 
