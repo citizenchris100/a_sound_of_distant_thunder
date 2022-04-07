@@ -32,8 +32,8 @@ class Hero:
     def get_status(self):
         return self.status_effects
 
-    def set_status(self, updated_status):
-        self.status_effects = updated_status
+    def set_status(self, effect):
+        self.status_effects.append(effect)
 
     def get_inventory(self):
         return self.inventory
@@ -111,6 +111,42 @@ def create_class():
     print('-           quit             -')
     print('------------------------------')
     a = input("> ")
+    while a.lower() != "merc" and a.lower() != "soldier" and a.lower() != "ranger" and a.lower() \
+            != "spy" and a.lower() != "help" and a.lower() != "quit":
+        print("Type the name of the Character Class you would like to play."
+              "\n 'Quit' to exit"
+              "\n You can type 'Help' to get details on the Character Classes.")
+        create_class()
+    if a.lower() == "merc":
+        health = 85
+        defence = 85
+        strength = 50
+        gun = 100
+        luck = 40
+        charm = 30
+    elif a.lower() == "soldier":
+        health = 85
+        defence = 85
+        strength = 75
+        gun = 75
+        luck = 50
+        charm = 50
+    elif a.lower() == "ranger":
+        health = 85
+        defence = 85
+        strength = 100
+        gun = 30
+        luck = 30
+        charm = 50
+    elif a.lower() == "spy":
+        health = 85
+        defence = 85
+        strength = 30
+        gun = 75
+        luck = 75
+        charm = 75
+    elif a.lower() == "help":
+        help_menu()
 
 
 def help_menu():

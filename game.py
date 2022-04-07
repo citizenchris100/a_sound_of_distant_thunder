@@ -253,7 +253,7 @@ def help_menu():
     print('-    conversation with       -')
     print('-    an NPC                  -')
     print('------------------------------')
-    print('- "Attach <someone/thing>    -')
+    print('- "Attack <someone/thing>    -')
     print('-  with <something>"         -')
     print('-   :Attach a person         -')
     print('-    or thing                -')
