@@ -1,19 +1,19 @@
-import random
+import sys
 import time
 import os
 from pprint import pprint
 
 
 class Hero:
-    def __init__(self, hp, dp, strength, gun_skill, luck, charm):
+    def __init__(self, dp, strength, gun_skill, luck, charm):
         self.name = 'Alex'
         self.exp = 0
+        self.hp = 100
         self.status_effects = []
-        self.inventory = []
+        self.inventory = ["med_pack", "med_pack"]
         self.equipped_gun = ""
         self.equipped_melee = ""
         self.equipped_armour = ""
-        self.health_points = hp
         self.defence_points = dp
         self.strength_attribute = strength
         self.gun_skill_attribute = gun_skill
@@ -60,10 +60,10 @@ class Hero:
         self.equipped_armour = armour
 
     def get_health_points(self):
-        return self.health_points
+        return self.hp
 
     def set_health_points(self, updated_health):
-        self.health_points = updated_health
+        self.hp = updated_health
 
     def get_defence_points(self):
         return self.defence_points
@@ -92,10 +92,11 @@ class Hero:
     def get_charm_attribute(self):
         return self.charm_attribute
 
-    def set_luck_attribute(self, luck):
-        self.luck_attribute = luck
+    def set_charm_attribute(self, charm):
+        self.charm_attribute = charm
 
-def create_class():
+
+def create_class_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
     print('-  Choose a Character Class  -')
@@ -110,47 +111,52 @@ def create_class():
     print('-           help             -')
     print('-           quit             -')
     print('------------------------------')
+    return create_class_selections()
+
+
+def create_class_selections():
     a = input("> ")
-    while a.lower() != "merc" and a.lower() != "soldier" and a.lower() != "ranger" and a.lower() \
-            != "spy" and a.lower() != "help" and a.lower() != "quit":
+    if a.lower() == "merc":
+        hero_defence = 6
+        hero_strength = 7
+        hero_gun = 25
+        hero_luck = 4
+        hero_charm = 3
+        return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
+    elif a.lower() == "soldier":
+        hero_defence = 8
+        hero_strength = 15
+        hero_gun = 15
+        hero_luck = 5
+        hero_charm = 5
+        return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
+    elif a.lower() == "ranger":
+        hero_defence = 7
+        hero_strength = 25
+        hero_gun = 7
+        hero_luck = 3
+        hero_charm = 5
+        return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
+    elif a.lower() == "spy":
+        hero_defence = 6
+        hero_strength = 7
+        hero_gun = 7
+        hero_luck = 7
+        hero_charm = 7
+        return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
+    elif a.lower() == "help":
+        help_menu()
+        create_class_selections()
+    elif a.lower() == "quit":
+        sys.exit()
+    else:
         print("Type the name of the Character Class you would like to play."
               "\n 'Quit' to exit"
               "\n You can type 'Help' to get details on the Character Classes.")
-        create_class()
-    if a.lower() == "merc":
-        health = 85
-        defence = 85
-        strength = 50
-        gun = 100
-        luck = 40
-        charm = 30
-    elif a.lower() == "soldier":
-        health = 85
-        defence = 85
-        strength = 75
-        gun = 75
-        luck = 50
-        charm = 50
-    elif a.lower() == "ranger":
-        health = 85
-        defence = 85
-        strength = 100
-        gun = 30
-        luck = 30
-        charm = 50
-    elif a.lower() == "spy":
-        health = 85
-        defence = 85
-        strength = 30
-        gun = 75
-        luck = 75
-        charm = 75
-    elif a.lower() == "help":
-        help_menu()
+        create_class_selections()
 
 
 def help_menu():
-    os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
     print('-About the Character Classes -')
     print('------------------------------')
@@ -170,8 +176,6 @@ def help_menu():
     print('------------------------------')
 
 
-
-
-
-
-
+classData = create_class_screen()
+character = Hero(classData[0], classData[1], classData[2], classData[3], classData[4])
+pprint(vars(character))
