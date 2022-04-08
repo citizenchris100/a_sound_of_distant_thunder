@@ -1,3 +1,6 @@
+import random
+
+
 class Enemy:
     def __init__(self, en_name, health, defence, strength, gun_skill, luck):
         self.name = en_name
@@ -85,3 +88,46 @@ class Enemy:
             self.happy = self.happy - value
 
 
+class Boss:
+    def __init__(self, en_name, health, defence, strength, gun_skill, luck, move):
+        super().__init__(en_name, health, defence, strength, gun_skill, luck)
+
+        self.super_move = move
+
+    def get_super_move(self):
+        return self.super_move
+
+    def set_super_move(self, new_move):
+        self.super_move = new_move
+
+
+class Goblin:
+    def __init__(self, en_name, health, defence, strength, luck):
+        super().__init__(en_name, health, defence, strength, luck)
+
+
+def basic_goblin():
+    goblin_name = "Goblin"
+    goblin_hp = random.randint(15,30)
+    goblin_dp = random.randint(1,3)
+    goblin_strength = random.randint(5, 10)
+    goblin_luck = random.randint(0, 3)
+    return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
+
+
+def beta_goblin():
+    goblin_name = "Beta Goblin"
+    goblin_hp = random.randint(35,65)
+    goblin_dp = random.randint(4, 6)
+    goblin_strength = random.randint(10, 17)
+    goblin_luck = random.randint(1, 5)
+    return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
+
+
+def alpha_goblin():
+    goblin_name = "Alpha Goblin"
+    goblin_hp = random.randint(75, 100)
+    goblin_dp = random.randint(6, 8)
+    goblin_strength = random.randint(17, 25)
+    goblin_luck = random.randint(4, 7)
+    return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
