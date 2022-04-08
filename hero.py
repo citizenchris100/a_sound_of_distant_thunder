@@ -35,11 +35,17 @@ class Hero:
     def set_status(self, effect):
         self.status_effects.append(effect)
 
+    def del_status(self, item):
+        self.status_effects.remove(item)
+
     def get_inventory(self):
         return self.inventory
 
     def add_inventory(self, item):
         self.inventory.append(item)
+
+    def del_inventory(self, item):
+        self.inventory.remove(item)
 
     def get_equipped_gun(self):
         return self.equipped_gun
