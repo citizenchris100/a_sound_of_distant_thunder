@@ -108,8 +108,8 @@ class Goblin:
 
 def basic_goblin():
     goblin_name = "Goblin"
-    goblin_hp = random.randint(15,30)
-    goblin_dp = random.randint(1,3)
+    goblin_hp = random.randint(15, 30)
+    goblin_dp = random.randint(1, 3)
     goblin_strength = random.randint(5, 10)
     goblin_luck = random.randint(0, 3)
     return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
@@ -117,7 +117,7 @@ def basic_goblin():
 
 def beta_goblin():
     goblin_name = "Beta Goblin"
-    goblin_hp = random.randint(35,65)
+    goblin_hp = random.randint(35, 65)
     goblin_dp = random.randint(4, 6)
     goblin_strength = random.randint(10, 17)
     goblin_luck = random.randint(1, 5)

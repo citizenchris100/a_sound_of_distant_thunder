@@ -28,6 +28,7 @@ class Player:
 
 
 myPlayer = Player()
+#myPlayer = hero.character
 
 
 # _____enemies _____
@@ -104,7 +105,7 @@ def enemy_hit_back(character, enemy, hit, chance, score):
     if hit_back > chance:
         if hit:
             print("The Enemy was able to strike back.")
-            character.hp = math.floor(character.hp - (enemy.str / character.dp))
+            character.hp = math.floor(character.hp - (enemy.str / character.defence_points))
         else:
             print("However they were able to strike you.")
             character.hp = character.hp - enemy.str
@@ -143,7 +144,7 @@ def battle_state(character, enemy, score):
             print("You swing your sword attacking the ", enemy.name, ".", sep='')
             hit_chance = random.randint(0, 10)
             if hit_chance > 3:
-                enemy.hp = enemy.hp - character.str
+                enemy.hp = enemy.hp - character.strength_attribute
                 if enemy.hp > 0:
                     enemy_hit_back(character, enemy, True, 4, score)
                 else:
@@ -160,7 +161,7 @@ def battle_state(character, enemy, score):
             print("You cast a spell attacking the ", enemy.name, ".", sep='')
             hit_chance = random.randint(0, 10)
             if hit_chance > 4:
-                enemy.hp = enemy.hp - character.mp
+                enemy.hp = enemy.hp - character.gun_skill_attribute
                 if enemy.hp > 0:
                     enemy_hit_back(character, enemy, True, 6, score)
                 else:
@@ -206,10 +207,9 @@ def loot_add(character):
 def title_screen_selections(score):
     option = input("> ")
     if option.lower() == ("play"):
-        score = battle_state(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
-        score = battle_state(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
-        score = battle_state(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
-        battle_state(myPlayer, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
+        class_data = hero.create_class_screen()
+        character = hero.Hero(class_data[0], class_data[1], class_data[2], class_data[3], class_data[4])
+        battle_state(character, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
     elif option.lower() == ("help"):
         help_menu()
         title_screen_selections(score)
@@ -279,13 +279,6 @@ def help_menu():
     print('-    from battle / attack    -')
     print('------------------------------')
 
-# _____ game functionality _____
-# def start_game():
-
-# _____ map _____
-NAVIGATE = 'go to'
-LOOK = 'look at'
-TAKE = "take"
 
 my_score = 0
 title_screen(my_score)

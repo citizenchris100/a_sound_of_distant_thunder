@@ -182,6 +182,6 @@ def help_menu():
     print('------------------------------')
 
 
-classData = create_class_screen()
-character = Hero(classData[0], classData[1], classData[2], classData[3], classData[4])
-pprint(vars(character))
+#classData = create_class_screen()
+#character = Hero(classData[0], classData[1], classData[2], classData[3], classData[4])
+#pprint(vars(character))
