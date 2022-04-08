@@ -14,23 +14,6 @@ screen_width = 100
 time_remaining = 10080
 
 
-# ____ player setup ___
-class Player:
-    def __init__(self):
-        self.name = 'Alex'
-        self.hp = 100
-        self.dp = 7
-        self.mp = 10
-        self.str = 17
-        self.inventory = []
-        self.status_effects = []
-        self.location = 'Boat'
-
-
-myPlayer = Player()
-#myPlayer = hero.character
-
-
 # _____enemies _____
 class BasicGoblin(object):
     name = "Beta Goblin"
