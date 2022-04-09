@@ -1,4 +1,5 @@
 import random
+import names
 
 
 class Enemy:
@@ -131,3 +132,30 @@ def alpha_goblin():
     goblin_strength = random.randint(17, 25)
     goblin_luck = random.randint(4, 7)
     return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
+
+
+def npc():
+    gender = bool(random.getrandbits(1))
+    if gender:
+        npc_name = names.get_full_name(gender='male')
+        npc_health = random.randint(60, 100)
+        npc_defence = random.randint(5, 8)
+        npc_strength = random.randint(5, 25)
+        if npc_strength > 16:
+            npc_gun_skill = random.randint(0, 7)
+        else:
+            npc_gun_skill = random.randint(4, 18)
+        npc_luck = random.randint(1, 10)
+        return [npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck]
+    else:
+        npc_name = names.get_full_name(gender='female')
+        npc_health = random.randint(60, 100)
+        npc_defence = random.randint(3, 6)
+        npc_strength = random.randint(2, 17)
+        if npc_strength > 13:
+            npc_gun_skill = random.randint(0, 7)
+        else:
+            npc_gun_skill = random.randint(4, 18)
+        npc_luck = random.randint(1, 10)
+        return [npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck]
+

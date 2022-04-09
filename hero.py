@@ -124,7 +124,7 @@ def create_class_selections():
     a = input("> ")
     if a.lower() == "merc":
         hero_defence = 6
-        hero_strength = 7
+        hero_strength = 5
         hero_gun = 25
         hero_luck = 4
         hero_charm = 3
@@ -180,8 +180,3 @@ def help_menu():
     print('-and charm                   -')
     print('------------------------------')
     print('------------------------------')
-
-
-#classData = create_class_screen()
-#character = Hero(classData[0], classData[1], classData[2], classData[3], classData[4])
-#pprint(vars(character))
