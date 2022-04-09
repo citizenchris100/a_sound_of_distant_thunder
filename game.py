@@ -9,40 +9,31 @@ import os
 import random
 import math
 import hero
+import enemy
 
 screen_width = 100
 time_remaining = 10080
 
 
-# _____enemies _____
-class BasicGoblin(object):
-    name = "Beta Goblin"
-    hp = 25
-    dp = 3
-    mp = 4
-    str = 13
+basic_goblin_data = enemy.basic_goblin()
+BasicGoblin = enemy.Enemy(basic_goblin_data[0], basic_goblin_data[1], basic_goblin_data[2], basic_goblin_data[3],
+                          basic_goblin_data[4])
 
 
-class MediumGoblin(object):
-    name = "Large Beta Goblin"
-    hp = 50
-    dp = 6
-    mp = 7
-    str = 14
+basic_goblin_data = enemy.beta_goblin()
+BetaGoblin = enemy.Enemy(basic_goblin_data[0], basic_goblin_data[1], basic_goblin_data[2], basic_goblin_data[3],
+                         basic_goblin_data[4])
 
 
-class HardGoblin(object):
-    name = "Alpha Goblin"
-    hp = 100
-    dp = 7
-    mp = 10
-    str = 17
+basic_goblin_data = enemy.alpha_goblin()
+AlphaGoblin = enemy.Enemy(basic_goblin_data[0], basic_goblin_data[1], basic_goblin_data[2], basic_goblin_data[3],
+                          basic_goblin_data[4])
 
 
-def enemy_select(basic_goblin, mediumgoblin, hardgoblin):
-    enemylist = [basic_goblin, mediumgoblin, hardgoblin]
+def enemy_select(basic_goblin, medium_goblin, hard_goblin):
+    enemy_list = [basic_goblin, medium_goblin, hard_goblin]
     chance = random.randint(0, 2)
-    return enemylist[chance]
+    return enemy_list[chance]
 
 
 def loot():
@@ -88,10 +79,10 @@ def enemy_hit_back(character, enemy, hit, chance, score):
     if hit_back > chance:
         if hit:
             print("The Enemy was able to strike back.")
-            character.hp = math.floor(character.hp - (enemy.str / character.defence_points))
+            character.hp = math.floor(character.hp - (enemy.strength_attribute / character.defence_points))
         else:
             print("However they were able to strike you.")
-            character.hp = character.hp - enemy.str
+            character.hp = character.hp - enemy.strength_attribute
         if character.hp > 0:
             print("Your health is now ", character.hp, ".", sep='')
         else:
@@ -163,7 +154,7 @@ def battle_state(character, enemy, score):
                 print("You escape battle with the ", enemy.name, ".", sep='')
                 break
             else:
-                character.hp = character.hp - enemy.str
+                character.hp = character.hp - enemy.strength_attribute
                 print("You were unable to escape battle. \nHowever the ", enemy.name,
                       " was able to strike you.", sep='')
                 if character.hp > 0:
@@ -192,7 +183,7 @@ def title_screen_selections(score):
     if option.lower() == ("play"):
         class_data = hero.create_class_screen()
         character = hero.Hero(class_data[0], class_data[1], class_data[2], class_data[3], class_data[4])
-        battle_state(character, enemy_select(BasicGoblin, MediumGoblin, HardGoblin), score)
+        battle_state(character, enemy_select(BasicGoblin, BetaGoblin, AlphaGoblin), score)
     elif option.lower() == ("help"):
         help_menu()
         title_screen_selections(score)

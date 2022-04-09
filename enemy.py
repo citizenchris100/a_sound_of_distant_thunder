@@ -3,18 +3,12 @@ import names
 
 
 class Enemy:
-    def __init__(self, en_name, health, defence, strength, gun_skill, luck):
+    def __init__(self, en_name, health, defence, strength, luck):
         self.name = en_name
         self.hp = health
         self.dp = defence
-        self.inventory = []
         self.strength_attribute = strength
-        self.gun_skill_attribute = gun_skill
-        self.equipped_gun = ""
-        self.equipped_melee = ""
-        self.equipped_armour = ""
         self.luck_attribute = luck
-        self.happy = 0
 
     def get_name(self):
         return self.name
@@ -34,6 +28,30 @@ class Enemy:
     def set_defence(self, new_dp):
         self.dp = new_dp
 
+    def get_strength(self):
+        return self.strength_attribute
+
+    def set_strength(self, update_strength):
+        self.strength_attribute = update_strength
+
+    def get_luck(self):
+        return self.luck_attribute
+
+    def set_luck(self, update_luck):
+        self.luck_attribute = update_luck
+
+
+class Human(Enemy):
+    def __init__(self, en_name, health, defence, strength, luck, gun_skill):
+        super().__init__(en_name, health, defence, strength, luck)
+
+        self.inventory = []
+        self.gun_skill_attribute = gun_skill
+        self.equipped_gun = []
+        self.equipped_melee = []
+        self.equipped_armour = []
+        self.happy = 0
+
     def get_inventory(self):
         return self.inventory
 
@@ -42,12 +60,6 @@ class Enemy:
 
     def del_inventory(self, item):
         self.inventory.remove(item)
-
-    def get_strength(self):
-        return self.strength_attribute
-
-    def set_strength(self, update_strength):
-        self.strength_attribute = update_strength
 
     def get_gun_skill(self):
         return self.gun_skill_attribute
@@ -73,12 +85,6 @@ class Enemy:
     def set_equipped_armour(self, new_armour):
         self.equipped_armour = new_armour
 
-    def get_luck(self):
-        return self.luck_attribute
-
-    def set_luck(self, update_luck):
-        self.luck_attribute = update_luck
-
     def get_happy(self):
         return self.happy
 
@@ -89,9 +95,9 @@ class Enemy:
             self.happy = self.happy - value
 
 
-class Boss:
-    def __init__(self, en_name, health, defence, strength, gun_skill, luck, move):
-        super().__init__(en_name, health, defence, strength, gun_skill, luck)
+class BossHuman(Human):
+    def __init__(self, en_name, health, defence, strength, luck, gun_skill, move):
+        super().__init__(en_name, health, defence, strength, luck, gun_skill)
 
         self.super_move = move
 
@@ -102,9 +108,17 @@ class Boss:
         self.super_move = new_move
 
 
-class Goblin:
-    def __init__(self, en_name, health, defence, strength, luck):
+class BossEnemy(Enemy):
+    def __init__(self, en_name, health, defence, strength, luck, move):
         super().__init__(en_name, health, defence, strength, luck)
+
+        self.super_move = move
+
+    def get_super_move(self):
+        return self.super_move
+
+    def set_super_move(self, new_move):
+        self.super_move = new_move
 
 
 def basic_goblin():
