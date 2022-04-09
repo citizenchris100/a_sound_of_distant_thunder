@@ -11,9 +11,8 @@ import math
 import hero
 import enemy
 
-screen_width = 100
-time_remaining = 10080
-
+class_data = hero.create_class_screen()
+character = hero.Hero(class_data[0], class_data[1], class_data[2], class_data[3], class_data[4])
 
 basic_goblin_data = enemy.basic_goblin()
 BasicGoblin = enemy.Enemy(basic_goblin_data[0], basic_goblin_data[1], basic_goblin_data[2], basic_goblin_data[3],
@@ -36,19 +35,13 @@ def enemy_select(basic_goblin, medium_goblin, hard_goblin):
     return enemy_list[chance]
 
 
+enemy = enemy_select(BasicGoblin, BetaGoblin, AlphaGoblin)
+
+
 def loot():
-    loot = ["potion", "sword", "shield"]
+    this_loot = ["potion", "sword", "shield"]
     chance = random.randint(0, 2)
-    return loot[chance]
-
-
-def game_over(character, score):
-    if character.hp < 1:
-        print("You have been defeated.")
-        print("You Final score is ", score, sep='')
-        name = input("Enter your Name : ")
-        write_score(score, name)
-        display_score()
+    return this_loot[chance]
 
 
 def display_score():
@@ -56,7 +49,6 @@ def display_score():
     for line in file:
         xline = line.split(",")
         print(xline[0], xline[1])
-
     exit()
 
 
@@ -70,7 +62,17 @@ def write_score(score, name):
     file.close()
 
 
-def enemy_hit_back(character, enemy_var, hit, chance, score):
+def game_over(character_var):
+    score = character_var.exp
+    if character_var.hp < 1:
+        print("You have been defeated.")
+        print("You Final score is ", score, sep='')
+        name = input("Enter your Name : ")
+        write_score(score, name)
+        display_score()
+
+
+def enemy_hit_back(character_var, enemy_var, hit, chance):
     hit_back = random.randint(0, 10)
     if hit:
         print("You hit the ", enemy_var.name, " their health is now ", enemy_var.hp, ".", sep='')
@@ -79,32 +81,35 @@ def enemy_hit_back(character, enemy_var, hit, chance, score):
     if hit_back > chance:
         if hit:
             print("The Enemy was able to strike back.")
-            character.hp = math.floor(character.hp - (enemy_var.strength_attribute / character.defence_points))
+            character_var.hp = math.floor(character_var.hp - (enemy_var.strength_attribute / character_var.defence_points))
         else:
             print("However they were able to strike you.")
-            character.hp = character.hp - enemy_var.strength_attribute
-        if character.hp > 0:
-            print("Your health is now ", character.hp, ".", sep='')
+            character_var.hp = character_var.hp - enemy_var.strength_attribute
+        if character_var.hp > 0:
+            print("Your health is now ", character_var.hp, ".", sep='')
         else:
-            game_over(character, score)
+            game_over(character_var)
 
 
-def enemy_reset(enemy_var, score):
-    if enemy_var.name == "Beta Goblin":
-        enemy_var.hp = 25
+def enemy_defeat(character_var, enemy_var):
+    if enemy_var.name == "Goblin":
+        exp = 10
         print("You defeated the ", enemy_var.name, ".", sep='')
-        return score + 10
-    elif enemy_var.name == "Large Beta Goblin":
-        enemy_var.hp = 50
+        character_var.exp = character_var.exp + exp
+        print("You gained ", exp, " experience points.", sep='')
+    elif enemy_var.name == "Beta Goblin":
+        exp = 30
         print("You defeated the ", enemy_var.name, ".", sep='')
-        return score + 30
+        character_var.exp = character_var.exp + exp
+        print("You gained ", exp, " experience points.", sep='')
     elif enemy_var.name == "Alpha Goblin":
-        enemy_var.hp = 100
+        exp = 55
         print("You defeated the ", enemy_var.name, ".", sep='')
-        return score + 55
+        character_var.exp = character_var.exp + exp
+        print("You gained ", exp, " experience points.", sep='')
 
 
-def battle_state(character, enemy_var, score):
+def battle_state(character_var, enemy_var):
     vowel = 'aeiou'
     if enemy_var.name[0].lower() in vowel:
         start = "An "
@@ -118,11 +123,11 @@ def battle_state(character, enemy_var, score):
             print("You swing your sword attacking the ", enemy_var.name, ".", sep='')
             hit_chance = random.randint(0, 10)
             if hit_chance > 3:
-                enemy_var.hp = enemy_var.hp - character.strength_attribute
+                enemy_var.hp = enemy_var.hp - character_var.strength_attribute
                 if enemy_var.hp > 0:
-                    enemy_hit_back(character, enemy_var, True, 4, score)
+                    enemy_hit_back(character_var, enemy_var, True, 4)
                 else:
-                    score = enemy_reset(enemy_var, score)
+                    enemy_defeat(character_var, enemy_var)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 1:
                         loot_add(character)
@@ -130,16 +135,16 @@ def battle_state(character, enemy_var, score):
                     else:
                         break
             else:
-                enemy_hit_back(character, enemy_var, False, 3, score)
+                enemy_hit_back(character_var, enemy_var, False, 3)
         elif option == "2":
             print("You cast a spell attacking the ", enemy_var.name, ".", sep='')
             hit_chance = random.randint(0, 10)
             if hit_chance > 4:
-                enemy_var.hp = enemy_var.hp - character.gun_skill_attribute
+                enemy_var.hp = enemy_var.hp - character_var.gun_skill_attribute
                 if enemy_var.hp > 0:
-                    enemy_hit_back(character, enemy_var, True, 6, score)
+                    enemy_hit_back(character_var, enemy_var, True, 6)
                 else:
-                    score = enemy_reset(enemy_var, score)
+                    enemy_defeat(character_var, enemy_var)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
                         loot_add(character)
@@ -147,55 +152,52 @@ def battle_state(character, enemy_var, score):
                     else:
                         break
             else:
-                enemy_hit_back(character, enemy_var, False, 3, score)
+                enemy_hit_back(character_var, enemy_var, False, 3)
         elif option == "3":
             escape_chance = random.randint(0, 10)
             if escape_chance > 7:
                 print("You escape battle with the ", enemy_var.name, ".", sep='')
                 break
             else:
-                character.hp = character.hp - enemy_var.strength_attribute
+                character_var.hp = character_var.hp - enemy_var.strength_attribute
                 print("You were unable to escape battle. \nHowever the ", enemy_var.name,
                       " was able to strike you.", sep='')
-                if character.hp > 0:
-                    print("Your health is now ", character.hp, ".", sep='')
+                if character_var.hp > 0:
+                    print("Your health is now ", character_var.hp, ".", sep='')
                 else:
-                    game_over(character, score)
+                    game_over(character_var)
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
-    print("Your current Score is ", score, sep='')
-    return score
+    print("Your current Score is ", character_var.exp, sep='')
 
 
-def loot_add(character):
+def loot_add(character_var):
     loot_drop = loot()
     print("It appears to have dropped a ", loot_drop, ".", sep='')
     print("Would you like to add ", loot_drop, " to your Inventory?", sep='')
     option = input("Yes \nNo\n> ")
     if option.lower() == "yes":
-        character.inventory.append(loot_drop)
+        character_var.inventory.append(loot_drop)
         print(loot_drop, " was added to your inventory.", sep='')
 
 
-def title_screen_selections(score):
+def title_screen_selections(character_var, enemy_var):
     option = input("> ")
     if option.lower() == ("play"):
-        class_data = hero.create_class_screen()
-        character = hero.Hero(class_data[0], class_data[1], class_data[2], class_data[3], class_data[4])
-        battle_state(character, enemy_select(BasicGoblin, BetaGoblin, AlphaGoblin), score)
+        battle_state(character_var, enemy_var)
     elif option.lower() == ("help"):
         help_menu()
-        title_screen_selections(score)
+        title_screen_selections(character_var, enemy_var)
     elif option.lower() == ("quit"):
         sys.exit()
     else:
         print("Type 'Play' to play the game. "
               "\n 'Quit' to exit"
               "\n You can type 'Help' at any time for assistance.")
-        title_screen_selections(score)
+        title_screen_selections(character_var, enemy_var)
 
 
-def title_screen(score):
+def title_screen(character_var, enemy_var):
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
     print('- A Sound of Distant Thunder -')
@@ -207,7 +209,7 @@ def title_screen(score):
     print('-           help             -')
     print('-           quit             -')
     print('------------------------------')
-    title_screen_selections(score)
+    title_screen_selections(character_var, enemy_var)
 
 
 def help_menu():
@@ -255,5 +257,4 @@ def help_menu():
     print('------------------------------')
 
 
-my_score = 0
-title_screen(my_score)
+title_screen(character, enemy)
