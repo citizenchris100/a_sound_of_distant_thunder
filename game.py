@@ -81,10 +81,23 @@ def enemy_hit_back(character_var, enemy_var, hit, chance):
     if hit_back > chance:
         if hit:
             print("The Enemy was able to strike back.")
-            character_var.hp = math.floor(character_var.hp - (enemy_var.strength_attribute / character_var.defence_points))
+            character_var.hp = math.floor(character_var.hp - (enemy_var.strength_attribute /
+                                                              character_var.defence_points))
         else:
             print("However they were able to strike you.")
             character_var.hp = character_var.hp - enemy_var.strength_attribute
+        if character_var.hp > 0:
+            print("Your health is now ", character_var.hp, ".", sep='')
+        else:
+            game_over(character_var)
+
+
+def enemy_attack(character_var, enemy_var, chance):
+    hit = random.randint(0, 10)
+    if hit > chance:
+        print(enemy_var.name, " has attacked you")
+        character_var.hp = math.floor(character_var.hp - (enemy_var.strength_attribute /
+                                                          character_var.defence_points))
         if character_var.hp > 0:
             print("Your health is now ", character_var.hp, ".", sep='')
         else:
@@ -109,20 +122,15 @@ def enemy_defeat(character_var, enemy_var):
         print("You gained ", exp, " experience points.", sep='')
 
 
-def battle_state(character_var, enemy_var):
-    vowel = 'aeiou'
-    if enemy_var.name[0].lower() in vowel:
-        start = "An "
-    else:
-        start = "A "
-    print(start, enemy_var.name, " appears.", sep='')
-    print("You have 3 options.")
+def battle_state(character_var, enemy_var, surprise, chance):
+    if surprise:
+        enemy_attack(character_var, enemy_var, chance)
     while enemy_var.hp > 0:
-        option = input("1. Attack \n2. Magic\n3. Flee\n> ")
+        option = input("1. Melee Attack \n2. Gun Attack\n3. Flee\n> ")
         if option == "1":
             print("You swing your sword attacking the ", enemy_var.name, ".", sep='')
-            hit_chance = random.randint(0, 10)
-            if hit_chance > 3:
+            hit_chance = random.randint(0, 10) + character_var.luck_attribute
+            if hit_chance > 4:
                 enemy_var.hp = enemy_var.hp - character_var.strength_attribute
                 if enemy_var.hp > 0:
                     enemy_hit_back(character_var, enemy_var, True, 4)
@@ -184,7 +192,7 @@ def loot_add(character_var):
 def title_screen_selections(character_var, enemy_var):
     option = input("> ")
     if option.lower() == ("play"):
-        battle_state(character_var, enemy_var)
+        battle_state(character_var, enemy_var, False, 0  )
     elif option.lower() == ("help"):
         help_menu()
         title_screen_selections(character_var, enemy_var)
