@@ -70,59 +70,59 @@ def write_score(score, name):
     file.close()
 
 
-def enemy_hit_back(character, enemy, hit, chance, score):
+def enemy_hit_back(character, enemy_var, hit, chance, score):
     hit_back = random.randint(0, 10)
     if hit:
-        print("You hit the ", enemy.name, " their health is now ", enemy.hp, ".", sep='')
+        print("You hit the ", enemy_var.name, " their health is now ", enemy_var.hp, ".", sep='')
     else:
-        print("You did not hit the ", enemy.name, ".", sep='')
+        print("You did not hit the ", enemy_var.name, ".", sep='')
     if hit_back > chance:
         if hit:
             print("The Enemy was able to strike back.")
-            character.hp = math.floor(character.hp - (enemy.strength_attribute / character.defence_points))
+            character.hp = math.floor(character.hp - (enemy_var.strength_attribute / character.defence_points))
         else:
             print("However they were able to strike you.")
-            character.hp = character.hp - enemy.strength_attribute
+            character.hp = character.hp - enemy_var.strength_attribute
         if character.hp > 0:
             print("Your health is now ", character.hp, ".", sep='')
         else:
             game_over(character, score)
 
 
-def enemy_reset(enemy, score):
-    if enemy.name == "Beta Goblin":
-        enemy.hp = 25
-        print("You defeated the ", enemy.name, ".", sep='')
+def enemy_reset(enemy_var, score):
+    if enemy_var.name == "Beta Goblin":
+        enemy_var.hp = 25
+        print("You defeated the ", enemy_var.name, ".", sep='')
         return score + 10
-    elif enemy.name == "Large Beta Goblin":
-        enemy.hp = 50
-        print("You defeated the ", enemy.name, ".", sep='')
+    elif enemy_var.name == "Large Beta Goblin":
+        enemy_var.hp = 50
+        print("You defeated the ", enemy_var.name, ".", sep='')
         return score + 30
-    elif enemy.name == "Alpha Goblin":
-        enemy.hp = 100
-        print("You defeated the ", enemy.name, ".", sep='')
+    elif enemy_var.name == "Alpha Goblin":
+        enemy_var.hp = 100
+        print("You defeated the ", enemy_var.name, ".", sep='')
         return score + 55
 
 
-def battle_state(character, enemy, score):
+def battle_state(character, enemy_var, score):
     vowel = 'aeiou'
-    if enemy.name[0].lower() in vowel:
+    if enemy_var.name[0].lower() in vowel:
         start = "An "
     else:
         start = "A "
-    print(start, enemy.name, " appears.", sep='')
+    print(start, enemy_var.name, " appears.", sep='')
     print("You have 3 options.")
-    while enemy.hp > 0:
+    while enemy_var.hp > 0:
         option = input("1. Attack \n2. Magic\n3. Flee\n> ")
         if option == "1":
-            print("You swing your sword attacking the ", enemy.name, ".", sep='')
+            print("You swing your sword attacking the ", enemy_var.name, ".", sep='')
             hit_chance = random.randint(0, 10)
             if hit_chance > 3:
-                enemy.hp = enemy.hp - character.strength_attribute
-                if enemy.hp > 0:
-                    enemy_hit_back(character, enemy, True, 4, score)
+                enemy_var.hp = enemy_var.hp - character.strength_attribute
+                if enemy_var.hp > 0:
+                    enemy_hit_back(character, enemy_var, True, 4, score)
                 else:
-                    score = enemy_reset(enemy, score)
+                    score = enemy_reset(enemy_var, score)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 1:
                         loot_add(character)
@@ -130,16 +130,16 @@ def battle_state(character, enemy, score):
                     else:
                         break
             else:
-                enemy_hit_back(character, enemy, False, 3, score)
+                enemy_hit_back(character, enemy_var, False, 3, score)
         elif option == "2":
-            print("You cast a spell attacking the ", enemy.name, ".", sep='')
+            print("You cast a spell attacking the ", enemy_var.name, ".", sep='')
             hit_chance = random.randint(0, 10)
             if hit_chance > 4:
-                enemy.hp = enemy.hp - character.gun_skill_attribute
-                if enemy.hp > 0:
-                    enemy_hit_back(character, enemy, True, 6, score)
+                enemy_var.hp = enemy_var.hp - character.gun_skill_attribute
+                if enemy_var.hp > 0:
+                    enemy_hit_back(character, enemy_var, True, 6, score)
                 else:
-                    score = enemy_reset(enemy, score)
+                    score = enemy_reset(enemy_var, score)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
                         loot_add(character)
@@ -147,15 +147,15 @@ def battle_state(character, enemy, score):
                     else:
                         break
             else:
-                enemy_hit_back(character, enemy, False, 3, score)
+                enemy_hit_back(character, enemy_var, False, 3, score)
         elif option == "3":
             escape_chance = random.randint(0, 10)
             if escape_chance > 7:
-                print("You escape battle with the ", enemy.name, ".", sep='')
+                print("You escape battle with the ", enemy_var.name, ".", sep='')
                 break
             else:
-                character.hp = character.hp - enemy.strength_attribute
-                print("You were unable to escape battle. \nHowever the ", enemy.name,
+                character.hp = character.hp - enemy_var.strength_attribute
+                print("You were unable to escape battle. \nHowever the ", enemy_var.name,
                       " was able to strike you.", sep='')
                 if character.hp > 0:
                     print("Your health is now ", character.hp, ".", sep='')
@@ -177,7 +177,6 @@ def loot_add(character):
         print(loot_drop, " was added to your inventory.", sep='')
 
 
-# ____ title screen ____
 def title_screen_selections(score):
     option = input("> ")
     if option.lower() == ("play"):
@@ -195,6 +194,7 @@ def title_screen_selections(score):
               "\n You can type 'Help' at any time for assistance.")
         title_screen_selections(score)
 
+
 def title_screen(score):
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
@@ -208,6 +208,7 @@ def title_screen(score):
     print('-           quit             -')
     print('------------------------------')
     title_screen_selections(score)
+
 
 def help_menu():
     print('------------------------------')
