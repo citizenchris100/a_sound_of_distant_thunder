@@ -11,8 +11,6 @@ import math
 import hero
 import enemy
 
-class_data = hero.create_class_screen()
-character = hero.Hero(class_data[0], class_data[1], class_data[2], class_data[3], class_data[4])
 
 basic_goblin_data = enemy.basic_goblin()
 BasicGoblin = enemy.Enemy(basic_goblin_data[0], basic_goblin_data[1], basic_goblin_data[2], basic_goblin_data[3],
@@ -39,9 +37,10 @@ enemy = enemy_select(BasicGoblin, BetaGoblin, AlphaGoblin)
 
 
 def loot():
-    this_loot = ["potion", "sword", "shield"]
-    chance = random.randint(0, 2)
-    return this_loot[chance]
+    table_num = random.randint(0, 3)
+    loot_table_list = ["defence_points", "gun_skill_attribute", "items", "strength_attribute"]
+    itemType = loot_table_list[table_num]
+    file = open(itemType)
 
 
 def display_score():
@@ -94,10 +93,15 @@ def enemy_hit_back(character_var, enemy_var, hit, chance):
 
 def enemy_attack(character_var, enemy_var, chance):
     hit = random.randint(0, 10)
+    defend = random.randint(0,10)
     if hit > chance:
-        print(enemy_var.name, " has attacked you")
-        character_var.hp = math.floor(character_var.hp - (enemy_var.strength_attribute /
-                                                          character_var.defence_points))
+        if defend < character_var.luck_attribute:
+            print(enemy_var.name, " has attacked you. However deflect some of the attack")
+            character_var.hp = math.floor(character_var.hp - (enemy_var.strength_attribute /
+                                                              character_var.defence_points))
+        else:
+            print(enemy_var.name, " has attacked you.")
+            character_var.hp = character_var.hp - enemy_var.strength_attribute
         if character_var.hp > 0:
             print("Your health is now ", character_var.hp, ".", sep='')
         else:
@@ -142,7 +146,7 @@ def battle_state(character_var, enemy_var, surprise, chance):
                     enemy_defeat(character_var, enemy_var)
                     loot_chance = random.randint(0, 10)
                     if loot_chance > 4:
-                        loot_add(character)
+                        loot_add(character_var)
                         break
                     else:
                         break
@@ -158,8 +162,8 @@ def battle_state(character_var, enemy_var, surprise, chance):
                 else:
                     enemy_defeat(character_var, enemy_var)
                     loot_chance = random.randint(0, 10)
-                    if loot_chance > 4:
-                        loot_add(character)
+                    if loot_chance < character_var.luck_attribute:
+                        loot_add(character_var)
                         break
                     else:
                         break
@@ -193,23 +197,25 @@ def loot_add(character_var):
         print(loot_drop, " was added to your inventory.", sep='')
 
 
-def title_screen_selections(character_var, enemy_var):
+def title_screen_selections():
     option = input("> ")
     if option.lower() == ("play"):
-        battle_state(character_var, enemy_var, False, 0  )
+        class_data = hero.create_class_screen()
+        character = hero.Hero(class_data[0], class_data[1], class_data[2], class_data[3], class_data[4])
+        battle_state(character, enemy, True, 4)
     elif option.lower() == ("help"):
         help_menu()
-        title_screen_selections(character_var, enemy_var)
+        title_screen_selections()
     elif option.lower() == ("quit"):
         sys.exit()
     else:
         print("Type 'Play' to play the game. "
               "\n 'Quit' to exit"
               "\n You can type 'Help' at any time for assistance.")
-        title_screen_selections(character_var, enemy_var)
+        title_screen_selections()
 
 
-def title_screen(character_var, enemy_var):
+def title_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
     print('- A Sound of Distant Thunder -')
@@ -221,7 +227,7 @@ def title_screen(character_var, enemy_var):
     print('-           help             -')
     print('-           quit             -')
     print('------------------------------')
-    title_screen_selections(character_var, enemy_var)
+    title_screen_selections()
 
 
 def help_menu():
@@ -269,4 +275,4 @@ def help_menu():
     print('------------------------------')
 
 
-title_screen(character, enemy)
+title_screen()
