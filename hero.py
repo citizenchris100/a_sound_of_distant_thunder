@@ -10,7 +10,7 @@ class Hero:
         self.exp = 0
         self.hp = 5
         self.status_effects = []
-        self.inventory = ["med_pack", "med_pack"]
+        self.inventory = ["basic_med_pack", "basic_med_pack"]
         self.equipped_gun = ""
         self.equipped_melee = ""
         self.equipped_armour = ""

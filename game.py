@@ -129,7 +129,11 @@ def battle_state(character_var, enemy_var, surprise, chance):
         option = input("1. Melee Attack \n2. Gun Attack\n3. Flee\n> ")
         if option == "1":
             print("You swing your sword attacking the ", enemy_var.name, ".", sep='')
-            hit_chance = random.randint(0, 10) + character_var.luck_attribute
+            luck_chance = random.randint(0,10)
+            if luck_chance > 6:
+                hit_chance = random.randint(0, 10) + character_var.luck_attribute
+            else:
+                hit_chance = random.randint(0, 10)
             if hit_chance > 4:
                 enemy_var.hp = enemy_var.hp - character_var.strength_attribute
                 if enemy_var.hp > 0:
@@ -137,7 +141,7 @@ def battle_state(character_var, enemy_var, surprise, chance):
                 else:
                     enemy_defeat(character_var, enemy_var)
                     loot_chance = random.randint(0, 10)
-                    if loot_chance > 1:
+                    if loot_chance > 4:
                         loot_add(character)
                         break
                     else:
@@ -145,7 +149,7 @@ def battle_state(character_var, enemy_var, surprise, chance):
             else:
                 enemy_hit_back(character_var, enemy_var, False, 3)
         elif option == "2":
-            print("You cast a spell attacking the ", enemy_var.name, ".", sep='')
+            print("You fired your gun attacking the ", enemy_var.name, ".", sep='')
             hit_chance = random.randint(0, 10)
             if hit_chance > 4:
                 enemy_var.hp = enemy_var.hp - character_var.gun_skill_attribute
