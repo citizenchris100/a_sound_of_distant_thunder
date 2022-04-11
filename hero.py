@@ -1,8 +1,7 @@
 import random
 import sys
-import time
 import os
-from pprint import pprint
+import items
 
 
 class Hero:
@@ -11,7 +10,7 @@ class Hero:
         self.exp = 0
         self.hp = 85
         self.status_effects = []
-        self.inventory = ["basic_med_pack", "basic_med_pack"]
+        self.inventory = [items.basic_med_pack(), items.basic_med_pack()]
         self.equipped_gun = ""
         self.equipped_melee = ""
         self.equipped_armour = ""
@@ -43,7 +42,10 @@ class Hero:
         return self.inventory
 
     def add_inventory(self, item):
-        self.inventory.append(item)
+        if len(self.inventory) < 5:
+            self.inventory.append(item)
+        else:
+            print("Your Inventory is Full. You can drop Items to make room if you so choose")
 
     def del_inventory(self, item):
         self.inventory.remove(item)
