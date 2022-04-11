@@ -37,19 +37,12 @@ def enemy_select(basic_goblin, medium_goblin, hard_goblin):
 
 enemy = enemy_select(BasicGoblin, BetaGoblin, AlphaGoblin)
 
+
 # TODO: update to use objects
 def loot():
-    table_num = random.randint(0, 3)
-    loot_table_list = ["defence_points", "gun_skill_attribute", "items", "strength_attribute"]
-    itemType = loot_table_list[table_num]
-    file = open(itemType+".txt", "r")
-    lines = file.readlines()
-    item = random.randint(0, len(lines)-1)
-    item_line = lines[item]
-    split_item_line = item_line.split(",")
-    item_name = split_item_line[0]
-    item_value = split_item_line[1]
-
+    loot = ["potion", "sword", "shield"]
+    chance = random.randint(0, 2)
+    return loot[chance]
 
 
 def display_score():
@@ -194,6 +187,7 @@ def battle_state(character_var, enemy_var, surprise, chance):
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
     print("Your current Score is ", character_var.exp, sep='')
+
 
 # TODO: add ability to actually use inventory items
 def loot_add(character_var):
