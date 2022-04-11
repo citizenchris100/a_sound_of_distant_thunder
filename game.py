@@ -12,8 +12,6 @@ import hero
 import enemy
 
 
-
-
 basic_goblin_data = enemy.basic_goblin()
 BasicGoblin = enemy.Enemy(basic_goblin_data[0], basic_goblin_data[1], basic_goblin_data[2], basic_goblin_data[3],
                           basic_goblin_data[4])
@@ -111,17 +109,17 @@ def enemy_attack(character_var, enemy_var, chance):
 
 # TODO: do something with experience
 def enemy_defeat(character_var, enemy_var):
-    if enemy_var.name == "Goblin":
+    if enemy_var.get_name() == "Goblin":
         exp = 10
         print("You defeated the ", enemy_var.name, ".", sep='')
         character_var.exp = character_var.exp + exp
         print("You gained ", exp, " experience points.", sep='')
-    elif enemy_var.name == "Beta Goblin":
+    elif enemy_var.get_name() == "Beta Goblin":
         exp = 30
         print("You defeated the ", enemy_var.name, ".", sep='')
         character_var.exp = character_var.exp + exp
         print("You gained ", exp, " experience points.", sep='')
-    elif enemy_var.name == "Alpha Goblin":
+    elif enemy_var.get_name() == "Alpha Goblin":
         exp = 55
         print("You defeated the ", enemy_var.name, ".", sep='')
         character_var.exp = character_var.exp + exp
@@ -146,12 +144,8 @@ def battle_state(character_var, enemy_var, surprise, chance):
                     enemy_hit_back(character_var, enemy_var, True, 4)
                 else:
                     enemy_defeat(character_var, enemy_var)
-                    loot_chance = random.randint(0, 10)
-                    if loot_chance > 4:
-                        loot_add(character_var)
-                        break
-                    else:
-                        break
+                    loot_add(character_var)
+                    break
             else:
                 enemy_hit_back(character_var, enemy_var, False, 3)
         elif option == "2":
@@ -191,13 +185,15 @@ def battle_state(character_var, enemy_var, surprise, chance):
 
 # TODO: add ability to actually use inventory items
 def loot_add(character_var):
-    loot_drop = loot()
-    print("It appears to have dropped a ", loot_drop, ".", sep='')
-    print("Would you like to add ", loot_drop, " to your Inventory?", sep='')
-    option = input("Yes \nNo\n> ")
-    if option.lower() == "yes":
-        character_var.inventory.append(loot_drop)
-        print(loot_drop, " was added to your inventory.", sep='')
+    chance = random.randint(0, 10)
+    if chance < character_var.get_luck_attribute():
+        loot_drop = loot()
+        print("It appears to have dropped a ", loot_drop, ".", sep='')
+        print("Would you like to add ", loot_drop, " to your Inventory?", sep='')
+        option = input("Yes \nNo\n> ")
+        if option.lower() == "yes":
+            character_var.add_inventory(loot_drop)
+            print(loot_drop, " was added to your inventory.", sep='')
 
 
 def title_screen_selections():
