@@ -126,7 +126,7 @@ def basic_goblin():
     goblin_hp = random.randint(15, 30)
     goblin_dp = random.randint(1, 3)
     goblin_strength = random.randint(5, 10)
-    goblin_luck = random.randint(0, 3)
+    goblin_luck = random.randint(0, 5)
     return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
 
 
@@ -135,7 +135,7 @@ def beta_goblin():
     goblin_hp = random.randint(35, 65)
     goblin_dp = random.randint(4, 6)
     goblin_strength = random.randint(10, 17)
-    goblin_luck = random.randint(1, 5)
+    goblin_luck = random.randint(1, 7)
     return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
 
 
@@ -144,7 +144,7 @@ def alpha_goblin():
     goblin_hp = random.randint(75, 100)
     goblin_dp = random.randint(6, 8)
     goblin_strength = random.randint(17, 25)
-    goblin_luck = random.randint(4, 7)
+    goblin_luck = random.randint(4, 8)
     return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
 
 
