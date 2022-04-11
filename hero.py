@@ -122,23 +122,16 @@ def create_class_screen():
     print('------------------------------')
     return create_class_selections()
 
+
 # TODO there is a bug in the else part of this
 def create_class_selections():
     a = input("> ")
     if a.lower() == "merc":
-        hero_defence = 6
-        hero_strength = 5
-        hero_gun = 25
-        hero_luck = random.randint(1, 7)
-        hero_charm = 3
-        return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
+        return Hero(random.randint(3, 6), random.randint(2, 5), random.randint(20, 25), random.randint(1, 7),
+                    random.randint(1, 3))
     elif a.lower() == "soldier":
-        hero_defence = 8
-        hero_strength = 15
-        hero_gun = 15
-        hero_luck = random.randint(1, 7)
-        hero_charm = 5
-        return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
+        return Hero(random.randint(5, 8), random.randint(10, 15), random.randint(10, 15), random.randint(1, 7),
+                    random.randint(1, 5))
     elif a.lower() == "ranger":
         hero_defence = 7
         hero_strength = 25
