@@ -10,6 +10,7 @@ import random
 import math
 import hero
 import enemy
+import items
 
 
 basic_goblin_data = enemy.basic_goblin()
@@ -35,12 +36,11 @@ def enemy_select(basic_goblin, medium_goblin, hard_goblin):
 
 enemy = enemy_select(BasicGoblin, BetaGoblin, AlphaGoblin)
 
-
-# TODO: update to use objects
+# TODO: refactor this to be at the character / enemy level not here
 def loot():
-    loot = ["potion", "sword", "shield"]
+    this_loot = [items.basic_med_pack(), items.medium_med_pack(), items.advanced_med_pack()]
     chance = random.randint(0, 2)
-    return loot[chance]
+    return this_loot[chance]
 
 
 def display_score():
@@ -93,15 +93,16 @@ def enemy_hit_back(character_var, enemy_var, hit, chance):
 
 
 def enemy_attack(character_var, enemy_var, chance):
-    defend = random.randint(0,10)
+    defend = random.randint(0, 10)
     if enemy_var.get_luck() > chance:
+        start = vowel_start(enemy_var)
         if defend < character_var.luck_attribute:
-            print(enemy_var.get_name(), " has attacked you. However deflect some of the attack")
+            print(start, enemy_var.get_name(), " has attacked you. However you deflect some of the attack", sep='')
             character_updated_health = math.floor(character_var.get_health_points() - (enemy_var.get_strength() /
                                                                                        character_var.get_defence_points()))
             character_var.set_health_points(character_updated_health)
         else:
-            print(enemy_var.name, " has attacked you.")
+            print(start, enemy_var.name, " has attacked you.")
             character_updated_health = character_var.get_health_points() - enemy_var.get_strength()
             character_var.set_health_points(character_updated_health)
         if character_var.hp > 0:
@@ -110,23 +111,39 @@ def enemy_attack(character_var, enemy_var, chance):
             game_over(character_var)
 
 
+def vowel_start(enemy_var):
+    vowel = 'aeiou'
+    if enemy_var.get_name()[0].lower() in vowel:
+        start = "An "
+    else:
+        start = "A "
+    return start
+
+
 # TODO: do something with experience
 def enemy_defeat(character_var, enemy_var):
-    if enemy_var.get_name() == "Goblin":
-        exp = 10
-        print("You defeated the ", enemy_var.name, ".", sep='')
-        character_var.exp = character_var.exp + exp
-        print("You gained ", exp, " experience points.", sep='')
-    elif enemy_var.get_name() == "Beta Goblin":
-        exp = 30
-        print("You defeated the ", enemy_var.name, ".", sep='')
-        character_var.exp = character_var.exp + exp
-        print("You gained ", exp, " experience points.", sep='')
-    elif enemy_var.get_name() == "Alpha Goblin":
-        exp = 55
-        print("You defeated the ", enemy_var.name, ".", sep='')
-        character_var.exp = character_var.exp + exp
-        print("You gained ", exp, " experience points.", sep='')
+    chance = random.randint(0, 10)
+    if "Goblin" in enemy_var.get_name():
+        if chance < character_var.get_luck_attribute():
+            exp = math.ceil(enemy_var.get_strength() + random.randint(0, 10))
+        else:
+            exp = enemy_var.get_strength()
+        print("You killed the ", enemy_var.name, ".", sep='')
+    else:
+        if enemy_var.get_gun_skill() < enemy_var.get_strength():
+            if chance < character_var.get_luck_attribute():
+                exp = math.ceil(enemy_var.get_strength() + random.randint(0, 10))
+            else:
+                exp = enemy_var.get_strength()
+        else:
+            if chance < character_var.get_luck_attribute():
+                exp = math.ceil(enemy_var.get_gun_skill() + random.randint(0, 10))
+            else:
+                exp = enemy_var.get_gun_skill()
+        print("You killed ", enemy_var.name, ".", sep='')
+    print("You gained ", exp, " experience points.", sep='')
+    character_var.set_exp(character_var.get_exp() + exp)
+
 
 
 def battle_state(character_var, enemy_var, surprise):
@@ -184,16 +201,17 @@ def battle_state(character_var, enemy_var, surprise):
 
 
 # TODO: add ability to actually use inventory items
+# TODO: get loot from enemy inventory
 def loot_add(character_var):
     chance = random.randint(0, 10)
     if chance < character_var.get_luck_attribute():
         loot_drop = loot()
-        print("It appears to have dropped a ", loot_drop, ".", sep='')
-        print("Would you like to add ", loot_drop, " to your Inventory?", sep='')
+        print("It appears to have dropped a ", loot_drop.get_item_name(), ".", sep='')
+        print("Would you like to add ", loot_drop.get_item_name(), " to your Inventory?", sep='')
         option = input("Yes \nNo\n> ")
         if option.lower() == "yes":
             character_var.add_inventory(loot_drop)
-            print(loot_drop, " was added to your inventory.", sep='')
+            print(loot_drop.get_item_name(), " was added to your inventory.", sep='')
 
 
 def title_screen_selections():
@@ -201,7 +219,7 @@ def title_screen_selections():
     if option.lower() == ("play"):
         class_data = hero.create_class_screen()
         character = hero.Hero(class_data[0], class_data[1], class_data[2], class_data[3], class_data[4])
-        battle_state(character, enemy, True, 4)
+        battle_state(character, enemy, True)
     elif option.lower() == ("help"):
         help_menu()
         title_screen_selections()

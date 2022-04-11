@@ -122,7 +122,7 @@ def create_class_screen():
     print('------------------------------')
     return create_class_selections()
 
-
+# TODO there is a bug in the else part of this
 def create_class_selections():
     a = input("> ")
     if a.lower() == "merc":
@@ -160,8 +160,8 @@ def create_class_selections():
         sys.exit()
     else:
         print("Type the name of the Character Class you would like to play."
-              "\n 'Quit' to exit"
-              "\n You can type 'Help' to get details on the Character Classes.")
+              "\n'Quit' to exit"
+              "\nYou can type 'Help' to get details on the Character Classes.")
         create_class_selections()
 
 

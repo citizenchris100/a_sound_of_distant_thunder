@@ -1,7 +1,7 @@
 import random
 import names
 
-
+# TODO: move inventory to base Enemy class
 class Enemy:
     def __init__(self, en_name, health, defence, strength, luck):
         self.name = en_name
