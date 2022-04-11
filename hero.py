@@ -1,3 +1,4 @@
+import random
 import sys
 import time
 import os
@@ -126,28 +127,28 @@ def create_class_selections():
         hero_defence = 6
         hero_strength = 5
         hero_gun = 25
-        hero_luck = 4
+        hero_luck = random.randint(1, 7)
         hero_charm = 3
         return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
     elif a.lower() == "soldier":
         hero_defence = 8
         hero_strength = 15
         hero_gun = 15
-        hero_luck = 5
+        hero_luck = random.randint(1, 7)
         hero_charm = 5
         return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
     elif a.lower() == "ranger":
         hero_defence = 7
         hero_strength = 25
         hero_gun = 7
-        hero_luck = 3
+        hero_luck = random.randint(1, 7)
         hero_charm = 5
         return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
     elif a.lower() == "spy":
         hero_defence = 6
         hero_strength = 7
         hero_gun = 7
-        hero_luck = 7
+        hero_luck = random.randint(5, 8)
         hero_charm = 7
         return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
     elif a.lower() == "help":

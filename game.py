@@ -93,18 +93,19 @@ def enemy_hit_back(character_var, enemy_var, hit, chance):
 
 
 def enemy_attack(character_var, enemy_var, chance):
-    hit = random.randint(0, 10)
     defend = random.randint(0,10)
-    if hit > chance:
+    if enemy_var.get_luck() > chance:
         if defend < character_var.luck_attribute:
-            print(enemy_var.name, " has attacked you. However deflect some of the attack")
-            character_var.hp = math.floor(character_var.hp - (enemy_var.strength_attribute /
-                                                              character_var.defence_points))
+            print(enemy_var.get_name(), " has attacked you. However deflect some of the attack")
+            character_updated_health = math.floor(character_var.get_health_points() - (enemy_var.get_strength() /
+                                                                                       character_var.get_defence_points()))
+            character_var.set_health_points(character_updated_health)
         else:
             print(enemy_var.name, " has attacked you.")
-            character_var.hp = character_var.hp - enemy_var.strength_attribute
+            character_updated_health = character_var.get_health_points() - enemy_var.get_strength()
+            character_var.set_health_points(character_updated_health)
         if character_var.hp > 0:
-            print("Your health is now ", character_var.hp, ".", sep='')
+            print("Your health is now ", character_var.get_health_points(), ".", sep='')
         else:
             game_over(character_var)
 
@@ -128,19 +129,16 @@ def enemy_defeat(character_var, enemy_var):
         print("You gained ", exp, " experience points.", sep='')
 
 
-def battle_state(character_var, enemy_var, surprise, chance):
+def battle_state(character_var, enemy_var, surprise):
     if surprise:
+        chance = random.randint(0,10)
         enemy_attack(character_var, enemy_var, chance)
-    while enemy_var.hp > 0:
+    while enemy_var.get_health() > 0:
         option = input("1. Melee Attack \n2. Gun Attack\n3. Flee\n> ")
         if option == "1":
-            print("You swing your sword attacking the ", enemy_var.name, ".", sep='')
-            luck_chance = random.randint(0,10)
-            if luck_chance > 6:
-                hit_chance = random.randint(0, 10) + character_var.get_luck_attribute()
-            else:
-                hit_chance = random.randint(0, 10)
-            if hit_chance > 5:
+            print("You swing your sword attacking the ", enemy_var.get_name(), ".", sep='')
+            hit_chance = random.randint(0,10)
+            if hit_chance < character_var.get_luck_attribute():
                 enemy_var.hp = enemy_var.hp - character_var.strength_attribute
                 if enemy_var.hp > 0:
                     enemy_hit_back(character_var, enemy_var, True, 5)
