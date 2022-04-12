@@ -3,7 +3,7 @@ import sys
 import os
 import items
 
-
+# TODO: add use of weapons
 class Hero:
     def __init__(self, dp, strength, gun_skill, luck, charm):
         self.name = 'Alex'
