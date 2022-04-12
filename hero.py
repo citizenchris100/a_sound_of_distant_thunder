@@ -8,7 +8,7 @@ class Hero:
     def __init__(self, dp, strength, gun_skill, luck, charm):
         self.name = 'Alex'
         self.exp = 0
-        self.hp = 85
+        self.hp = 75
         self.status_effects = []
         self.inventory = [items.basic_med_pack(), items.basic_med_pack()]
         self.equipped_gun = ""

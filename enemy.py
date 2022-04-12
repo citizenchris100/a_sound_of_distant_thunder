@@ -1,7 +1,8 @@
 import random
 import names
+import items
 
-# TODO: move inventory to base Enemy class
+
 class Enemy:
     def __init__(self, en_name, health, defence, strength, luck):
         self.name = en_name
@@ -9,6 +10,7 @@ class Enemy:
         self.dp = defence
         self.strength_attribute = strength
         self.luck_attribute = luck
+        self.inventory = []
 
     def get_name(self):
         return self.name
@@ -40,18 +42,6 @@ class Enemy:
     def set_luck(self, update_luck):
         self.luck_attribute = update_luck
 
-
-class Human(Enemy):
-    def __init__(self, en_name, health, defence, strength, luck, gun_skill):
-        super().__init__(en_name, health, defence, strength, luck)
-
-        self.inventory = []
-        self.gun_skill_attribute = gun_skill
-        self.equipped_gun = []
-        self.equipped_melee = []
-        self.equipped_armour = []
-        self.happy = 0
-
     def get_inventory(self):
         return self.inventory
 
@@ -60,6 +50,17 @@ class Human(Enemy):
 
     def del_inventory(self, item):
         self.inventory.remove(item)
+
+
+class Human(Enemy):
+    def __init__(self, en_name, health, defence, strength, luck, gun_skill):
+        super().__init__(en_name, health, defence, strength, luck)
+
+        self.gun_skill_attribute = gun_skill
+        self.equipped_gun = []
+        self.equipped_melee = []
+        self.equipped_armour = []
+        self.happy = 0
 
     def get_gun_skill(self):
         return self.gun_skill_attribute
@@ -121,31 +122,28 @@ class BossEnemy(Enemy):
         self.super_move = new_move
 
 
+def med_pack_loot():
+    return [items.medium_med_pack(), items.basic_med_pack(), items.advanced_med_pack()]
+
+
 def basic_goblin():
-    goblin_name = "Goblin"
-    goblin_hp = random.randint(15, 30)
-    goblin_dp = random.randint(1, 3)
-    goblin_strength = random.randint(5, 10)
-    goblin_luck = random.randint(0, 5)
-    return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
+    goblin = Enemy("Goblin", random.randint(15, 30), random.randint(1, 3), random.randint(5, 10), random.randint(0, 5))
+    goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
+    return goblin
 
 
 def beta_goblin():
-    goblin_name = "Beta Goblin"
-    goblin_hp = random.randint(35, 65)
-    goblin_dp = random.randint(4, 6)
-    goblin_strength = random.randint(10, 17)
-    goblin_luck = random.randint(1, 7)
-    return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
+    goblin = Enemy("Beta Goblin", random.randint(35, 65), random.randint(4, 6), random.randint(10, 17),
+                   random.randint(1, 7))
+    goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
+    return goblin
 
 
 def alpha_goblin():
-    goblin_name = "Alpha Goblin"
-    goblin_hp = random.randint(75, 100)
-    goblin_dp = random.randint(6, 8)
-    goblin_strength = random.randint(17, 25)
-    goblin_luck = random.randint(4, 8)
-    return [goblin_name, goblin_hp, goblin_dp, goblin_strength, goblin_luck]
+    goblin = Enemy("Beta Goblin", random.randint(75, 100), random.randint(6, 8), random.randint(17, 25),
+                   random.randint(4, 8))
+    goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
+    return goblin
 
 
 def npc():

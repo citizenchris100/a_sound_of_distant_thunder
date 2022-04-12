@@ -13,21 +13,6 @@ import enemy
 import items
 
 
-basic_goblin_data = enemy.basic_goblin()
-BasicGoblin = enemy.Enemy(basic_goblin_data[0], basic_goblin_data[1], basic_goblin_data[2], basic_goblin_data[3],
-                          basic_goblin_data[4])
-
-
-basic_goblin_data = enemy.beta_goblin()
-BetaGoblin = enemy.Enemy(basic_goblin_data[0], basic_goblin_data[1], basic_goblin_data[2], basic_goblin_data[3],
-                         basic_goblin_data[4])
-
-
-basic_goblin_data = enemy.alpha_goblin()
-AlphaGoblin = enemy.Enemy(basic_goblin_data[0], basic_goblin_data[1], basic_goblin_data[2], basic_goblin_data[3],
-                          basic_goblin_data[4])
-
-
 def enemy_select(basic_goblin, medium_goblin, hard_goblin):
     enemy_list = [basic_goblin, medium_goblin, hard_goblin]
     chance = random.randint(0, 2)
@@ -159,7 +144,7 @@ def battle_state(character_var, enemy_var, surprise):
                     enemy_hit_back(character_var, enemy_var, True, 5)
                 else:
                     enemy_defeat(character_var, enemy_var)
-                    loot_add(character_var)
+                    loot_add(character_var, enemy_var)
                     break
             else:
                 enemy_hit_back(character_var, enemy_var, False, 4)
@@ -174,7 +159,7 @@ def battle_state(character_var, enemy_var, surprise):
                     enemy_defeat(character_var, enemy_var)
                     loot_chance = random.randint(0, 10)
                     if loot_chance < character_var.luck_attribute:
-                        loot_add(character_var)
+                        loot_add(character_var, enemy_var)
                         break
                     else:
                         break
@@ -199,11 +184,10 @@ def battle_state(character_var, enemy_var, surprise):
 
 
 # TODO: add ability to actually use inventory items
-# TODO: get loot from enemy inventory
-def loot_add(character_var):
+def loot_add(character_var, enemy_var):
     chance = random.randint(0, 10)
     if chance < character_var.get_luck_attribute():
-        loot_drop = loot()
+        loot_drop = enemy_var.get_inventory()
         print("It appears to have dropped a ", loot_drop.get_item_name(), ".", sep='')
         print("Would you like to add ", loot_drop.get_item_name(), " to your Inventory?", sep='')
         option = input("Yes \nNo\n> ")
@@ -217,7 +201,8 @@ def title_screen_selections():
     if option.lower() == ("play"):
         hero.create_class_screen()
         character = hero.class_selection()
-        battle_state(character, enemy, True)
+        enemy_to_use = [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
+        battle_state(character, enemy_to_use[random.randint(0, 2)], True)
     elif option.lower() == ("help"):
         help_menu()
         title_screen_selections()
