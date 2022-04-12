@@ -112,6 +112,7 @@ class Hero:
         self.charm_attribute = charm
 
 
+# TODO: move character creation to the game file
 def create_class_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
