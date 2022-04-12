@@ -8,7 +8,8 @@ class Hero:
     def __init__(self, dp, strength, gun_skill, luck, charm):
         self.name = 'Alex'
         self.exp = 0
-        self.hp = 75
+        self.lvl = 0
+        self.hp = 1000
         self.status_effects = []
         self.inventory = [items.basic_med_pack(), items.basic_med_pack()]
         self.equipped_gun = ""
@@ -28,6 +29,12 @@ class Hero:
 
     def set_exp(self, updated_exp):
         self.exp = updated_exp
+
+    def get_lvl(self):
+        return self.lvl
+
+    def up_lvl(self):
+        self.lvl = self.lvl + 1
 
     def get_status(self):
         return self.status_effects
@@ -126,13 +133,13 @@ def create_class_screen():
 def class_selection():
     a = input("> ")
     if a.lower() == "merc":
-        character = Hero(random.randint(3, 6), random.randint(2, 5), random.randint(20, 25), random.randint(1, 5),
+        character = Hero(random.randint(3, 6), random.randint(2, 5), random.randint(20, 25), random.randint(2, 4),
                          random.randint(1, 3))
     elif a.lower() == "soldier":
-        character = Hero(random.randint(5, 8), random.randint(10, 15), random.randint(10, 15), random.randint(1, 5),
+        character = Hero(random.randint(5, 8), random.randint(10, 15), random.randint(10, 15), random.randint(2, 4),
                          random.randint(1, 5))
     elif a.lower() == "ranger":
-        character = Hero(random.randint(4, 7), random.randint(20, 25), random.randint(4, 7), random.randint(1, 5),
+        character = Hero(random.randint(4, 7), random.randint(20, 25), random.randint(4, 7), random.randint(2, 4),
                          random.randint(1, 5))
     elif a.lower() == "spy":
         character = Hero(random.randint(1, 4), random.randint(4, 7), random.randint(4, 7), random.randint(5, 7),

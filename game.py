@@ -12,12 +12,6 @@ import hero
 import enemy
 
 
-def enemy_select(basic_goblin, medium_goblin, hard_goblin):
-    enemy_list = [basic_goblin, medium_goblin, hard_goblin]
-    chance = random.randint(0, 2)
-    return enemy_list[chance]
-
-
 def display_score():
     file = open("score.txt", "r")
     for line in file:
@@ -46,12 +40,12 @@ def game_over(character_var):
         display_score()
 
 
-def enemy_hit_back(character_var, enemy_var, hit, chance):
+def enemy_hit_back(character_var, enemy_var, hit):
     if hit:
         print("You hit the ", enemy_var.get_name(), " their health is now ", enemy_var.get_health(), ".", sep='')
     else:
         print("You did not hit the ", enemy_var.get_name(), ".", sep='')
-    if enemy_var.get_luck() > chance:
+    if enemy_var.get_luck() > random.randint(0, 6):
         if hit:
             print("The Enemy was able to strike back.")
             character_updated_health = math.floor(character_var.get_health_points() - (enemy_var.get_strength() /
@@ -97,7 +91,74 @@ def vowel_start(enemy_var):
     return start
 
 
-# TODO: do something with experience
+def level_up(character_var):
+    if 0 <= character_var.get_lvl() <= 1:
+        if 25 <= character_var.get_exp():
+            upgrade_character(character_var, 1, 5)
+    elif 1 <= character_var.get_lvl() <= 2:
+        if 50 <= character_var.get_exp():
+            character_var.up_lvl()
+    elif 2 <= character_var.get_lvl() <= 3:
+        if 100 <= character_var.get_exp():
+            character_var.up_lvl()
+    elif 3 <= character_var.get_lvl() <= 4:
+        if 175 <= character_var.get_exp():
+            character_var.up_lvl()
+    elif 4 <= character_var.get_lvl() <= 5:
+        if 275 <= character_var.get_exp():
+            character_var.up_lvl()
+    elif 5 <= character_var.get_lvl() <= 6:
+        if 475 <= character_var.get_exp():
+            character_var.up_lvl()
+    elif 6 <= character_var.get_lvl() <= 7:
+        if 775 <= character_var.get_exp():
+            character_var.up_lvl()
+    elif 7 <= character_var.get_lvl() <= 7:
+        if 1775 <= character_var.get_exp():
+            character_var.up_lvl()
+
+
+def upgrade_character(character_var, dp, hp):
+    option = input("You have leveled up.\nChoose which attribute you would like to improve.\n"
+                   "1. Melee Attack\n2. Gun Skill\n3. Luck\n4. Charm\nHelp\n> ")
+    # TODO: add gibberish catch
+    if option == "1":
+        character_var.set_strength_attribute(character_var.get_strength_attribute() + 1)
+    elif option == "2":
+        character_var.set_gun_skill(character_var.get_gun_skill() + 1)
+    elif option == "3":
+        character_var.set_luck_attribute(character_var.get_luck_attribute() + 1)
+    elif option == "4":
+        character_var.set_charm_attribute(character_var.get_charm_attribute() + 1)
+    elif option.lower() == "help":
+        print('------------------------------')
+        print('-About the Character         -')
+        print('-Attributes                  -')
+        print('------------------------------')
+        print('------------------------------')
+        print('-Melee Attack: affects how   -')
+        print('-you use hand help weapons   -')
+        print('-such as knives.             -')
+        print('------------------------------')
+        print('-Gun Skill: affects your     -')
+        print('-ability to use hand guns    -')
+        print('-and rifles.                 -')
+        print('------------------------------')
+        print('-Luck: can greatly affect    -')
+        print('-the outcome of battles and  -')
+        print('-your chance of getting loot.-')
+        print('------------------------------')
+        print('-Charm: affects how well     -')
+        print('-you can persuade others     -')
+        print('------------------------------')
+        upgrade_character(character_var, dp, hp)
+    character_var.up_lvl()
+    character_var.set_health_points(character_var.get_health_points() + hp)
+    character_var.set_defence_points(character_var.get_defence_points() + dp)
+    print("Alex is now Level ", character_var.get_lvl(), "\nYou've gained ", hp,
+          " health points & ", dp, " defence point", sep='')
+
+
 def enemy_defeat(character_var, enemy_var):
     chance = random.randint(0, 10)
     if "Goblin" in enemy_var.get_name():
@@ -120,46 +181,52 @@ def enemy_defeat(character_var, enemy_var):
         print("You killed ", enemy_var.name, ".", sep='')
     print("You gained ", exp, " experience points.", sep='')
     character_var.set_exp(character_var.get_exp() + exp)
+    level_up(character_var)
 
 
+# TODO: balance the combat mechanics
 def battle_state(character_var, enemy_var, surprise):
     if surprise:
-        enemy_attack(character_var, enemy_var, random.randint(0,10))
+        enemy_attack(character_var, enemy_var, random.randint(0, 10))
     while enemy_var.get_health() > 0:
         option = input("1. Melee Attack \n2. Gun Attack\n3. Flee\n> ")
         if option == "1":
             print("You swing your sword attacking the ", enemy_var.get_name(), ".", sep='')
             if random.randint(0, 6) < character_var.get_luck_attribute():
-                enemy_var.set_health(enemy_var.get_health() - character_var.get_strength_attribute())
+                new_hp = enemy_var.get_health() - character_var.get_strength_attribute()
+                enemy_var.set_health(new_hp)
                 if enemy_var.get_health() > 0:
-                    enemy_hit_back(character_var, enemy_var, True, 5)
+                    enemy_hit_back(character_var, enemy_var, True)
                 else:
                     enemy_defeat(character_var, enemy_var)
                     loot_add(character_var, enemy_var)
                     break
             else:
-                enemy_hit_back(character_var, enemy_var, False, 4)
+                enemy_hit_back(character_var, enemy_var, False)
         elif option == "2":
             print("You fired your gun attacking the ", enemy_var.name, ".", sep='')
             if random.randint(0, 6) < character_var.get_luck_attribute():
-                enemy_var.set_health(enemy_var.get_health() - character_var.gun_skill_attribute())
-                if random.randint(0,6) + character_var.get_luck_attribute() > 12:
+                new_hp = enemy_var.get_health() - character_var.get_gun_skill()
+                enemy_var.set_health(new_hp)
+                if random.randint(0, 6) + character_var.get_luck_attribute() > 12:
                     print("You were able to get off another shot as well.")
-                    enemy_var.set_health(enemy_var.get_health() - character_var.gun_skill_attribute())
+                    new_hp = enemy_var.get_health() - character_var.get_gun_skill()
+                    enemy_var.set_health(new_hp)
                 if enemy_var.hp > 0:
-                    enemy_hit_back(character_var, enemy_var, True, 6)
+                    enemy_hit_back(character_var, enemy_var, True)
                 else:
                     enemy_defeat(character_var, enemy_var)
                     loot_add(character_var, enemy_var)
                     break
             else:
-                enemy_hit_back(character_var, enemy_var, False, 3)
+                enemy_hit_back(character_var, enemy_var, False)
         elif option == "3":
-            if random.randint(0,6) + character_var.get_luck_attribute() > 12:
+            if random.randint(0, 6) + character_var.get_luck_attribute() > 12:
                 print("You escape battle with the ", enemy_var.name, ".", sep='')
                 break
             else:
-                character_var.set_health_points(character_var.get_health_points() - enemy_var.get_strength())
+                new_hp = enemy_var.get_health() - character_var.get_strength_attribute()
+                character_var.set_health_points(new_hp)
                 print("You were unable to escape battle. \nHowever the ", enemy_var.name,
                       " was able to strike you.", sep='')
                 if character_var.get_health_points() > 0:
@@ -175,9 +242,10 @@ def battle_state(character_var, enemy_var, surprise):
 def loot_add(character_var, enemy_var):
     chance = random.randint(0, 10)
     if chance < character_var.get_luck_attribute():
-        loot_drop = enemy_var.get_inventory()
+        loot_drop = enemy_var.get_inventory()[0]
         print("It appears to have dropped a ", loot_drop.get_item_name(), ".", sep='')
         print("Would you like to add ", loot_drop.get_item_name(), " to your Inventory?", sep='')
+        # TODO: add help and gibberish catch
         option = input("Yes \nNo\n> ")
         if option.lower() == "yes":
             character_var.add_inventory(loot_drop)
@@ -186,17 +254,22 @@ def loot_add(character_var, enemy_var):
 
 def title_screen_selections():
     option = input("> ")
-    if option.lower() == ("play"):
+    if option.lower() == "play":
         hero.create_class_screen()
         character = hero.class_selection()
-        enemy_to_use = [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
-        battle_state(character, enemy_to_use[random.randint(0, 2)], True)
-        battle_state(character, enemy_to_use[random.randint(0, 2)], False)
-        battle_state(character, enemy_to_use[random.randint(0, 2)], True)
-    elif option.lower() == ("help"):
+        print("---------------battle 1")
+        battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
+        [random.randint(0, 2)], False)
+        print("---------------battle 2")
+        battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
+        [random.randint(0, 2)], False)
+        print("---------------battle 3")
+        battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
+        [random.randint(0, 2)], False)
+    elif option.lower() == "help":
         help_menu()
         title_screen_selections()
-    elif option.lower() == ("quit"):
+    elif option.lower() == "quit":
         sys.exit()
     else:
         print("Type 'Play' to play the game. "
