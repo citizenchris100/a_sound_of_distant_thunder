@@ -120,11 +120,9 @@ def create_class_screen():
     print('-           help             -')
     print('-           quit             -')
     print('------------------------------')
-    return create_class_selections()
 
 
-# TODO there is a bug in the else part of this
-def create_class_selections():
+def class_selection():
     a = input("> ")
     if a.lower() == "merc":
         return Hero(random.randint(3, 6), random.randint(2, 5), random.randint(20, 25), random.randint(1, 7),
@@ -133,29 +131,24 @@ def create_class_selections():
         return Hero(random.randint(5, 8), random.randint(10, 15), random.randint(10, 15), random.randint(1, 7),
                     random.randint(1, 5))
     elif a.lower() == "ranger":
-        hero_defence = 7
-        hero_strength = 25
-        hero_gun = 7
-        hero_luck = random.randint(1, 7)
-        hero_charm = 5
-        return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
+        return Hero(random.randint(4, 7), random.randint(20, 25), random.randint(4, 7), random.randint(1, 7),
+                    random.randint(1, 5))
     elif a.lower() == "spy":
-        hero_defence = 6
-        hero_strength = 7
-        hero_gun = 7
-        hero_luck = random.randint(5, 8)
-        hero_charm = 7
-        return [hero_defence, hero_strength, hero_gun, hero_luck, hero_charm]
+        return Hero(random.randint(1, 4), random.randint(4, 7), random.randint(4, 7), random.randint(5, 8),
+                    random.randint(7, 8))
+    elif a.lower() == "random":
+        return Hero(random.randint(1, 7), random.randint(4, 20), random.randint(4, 20), random.randint(1, 8),
+                    random.randint(1, 8))
     elif a.lower() == "help":
         help_menu()
-        create_class_selections()
+        class_selection()
     elif a.lower() == "quit":
         sys.exit()
     else:
         print("Type the name of the Character Class you would like to play."
               "\n'Quit' to exit"
               "\nYou can type 'Help' to get details on the Character Classes.")
-        create_class_selections()
+        class_selection()
 
 
 def help_menu():

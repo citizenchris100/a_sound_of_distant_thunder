@@ -34,8 +34,6 @@ def enemy_select(basic_goblin, medium_goblin, hard_goblin):
     return enemy_list[chance]
 
 
-enemy = enemy_select(BasicGoblin, BetaGoblin, AlphaGoblin)
-
 # TODO: refactor this to be at the character / enemy level not here
 def loot():
     this_loot = [items.basic_med_pack(), items.medium_med_pack(), items.advanced_med_pack()]
@@ -217,8 +215,8 @@ def loot_add(character_var):
 def title_screen_selections():
     option = input("> ")
     if option.lower() == ("play"):
-        class_data = hero.create_class_screen()
-        character = hero.Hero(class_data[0], class_data[1], class_data[2], class_data[3], class_data[4])
+        hero.create_class_screen()
+        character = hero.class_selection()
         battle_state(character, enemy, True)
     elif option.lower() == ("help"):
         help_menu()
