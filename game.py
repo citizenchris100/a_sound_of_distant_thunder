@@ -77,8 +77,8 @@ def enemy_hit_back(character_var, enemy_var, hit, chance):
 
 def enemy_attack(character_var, enemy_var, chance):
     defend = random.randint(0, 10)
+    start = vowel_start(enemy_var)
     if enemy_var.get_luck() > chance:
-        start = vowel_start(enemy_var)
         if defend < character_var.luck_attribute:
             print(start, enemy_var.get_name(), " has attacked you. However you deflect some of the attack", sep='')
             character_updated_health = math.floor(character_var.get_health_points() - (enemy_var.get_strength() /
@@ -92,6 +92,8 @@ def enemy_attack(character_var, enemy_var, chance):
             print("Your health is now ", character_var.get_health_points(), ".", sep='')
         else:
             game_over(character_var)
+    else:
+        print(start, enemy_var.get_name(), " has attempted a surprise attack", sep='')
 
 
 def vowel_start(enemy_var):
@@ -128,11 +130,9 @@ def enemy_defeat(character_var, enemy_var):
     character_var.set_exp(character_var.get_exp() + exp)
 
 
-
 def battle_state(character_var, enemy_var, surprise):
     if surprise:
-        chance = random.randint(0,10)
-        enemy_attack(character_var, enemy_var, chance)
+        enemy_attack(character_var, enemy_var, random.randint(0,10))
     while enemy_var.get_health() > 0:
         option = input("1. Melee Attack \n2. Gun Attack\n3. Flee\n> ")
         if option == "1":
