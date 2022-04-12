@@ -126,20 +126,20 @@ def create_class_screen():
 def class_selection():
     a = input("> ")
     if a.lower() == "merc":
-        return Hero(random.randint(3, 6), random.randint(2, 5), random.randint(20, 25), random.randint(1, 7),
-                    random.randint(1, 3))
+        character = Hero(random.randint(3, 6), random.randint(2, 5), random.randint(20, 25), random.randint(1, 5),
+                         random.randint(1, 3))
     elif a.lower() == "soldier":
-        return Hero(random.randint(5, 8), random.randint(10, 15), random.randint(10, 15), random.randint(1, 7),
-                    random.randint(1, 5))
+        character = Hero(random.randint(5, 8), random.randint(10, 15), random.randint(10, 15), random.randint(1, 5),
+                         random.randint(1, 5))
     elif a.lower() == "ranger":
-        return Hero(random.randint(4, 7), random.randint(20, 25), random.randint(4, 7), random.randint(1, 7),
-                    random.randint(1, 5))
+        character = Hero(random.randint(4, 7), random.randint(20, 25), random.randint(4, 7), random.randint(1, 5),
+                         random.randint(1, 5))
     elif a.lower() == "spy":
-        return Hero(random.randint(1, 4), random.randint(4, 7), random.randint(4, 7), random.randint(5, 8),
-                    random.randint(7, 8))
+        character = Hero(random.randint(1, 4), random.randint(4, 7), random.randint(4, 7), random.randint(5, 7),
+                         random.randint(5, 7))
     elif a.lower() == "random":
-        return Hero(random.randint(1, 7), random.randint(4, 20), random.randint(4, 20), random.randint(1, 8),
-                    random.randint(1, 8))
+        character = Hero(random.randint(1, 7), random.randint(4, 20), random.randint(4, 20), random.randint(1, 7),
+                         random.randint(1, 7))
     elif a.lower() == "help":
         help_menu()
         class_selection()
@@ -150,6 +150,15 @@ def class_selection():
               "\n'Quit' to exit"
               "\nYou can type 'Help' to get details on the Character Classes.")
         class_selection()
+    print('------------------------------')
+    print('--Your Character\'s Stats-----')
+    print('-Defence: ', character.get_defence_points())
+    print('-Melee Attack: ', character.get_strength_attribute())
+    print('-Gun Skill: ', character.get_gun_skill())
+    print('-Luck: ', character.get_luck_attribute())
+    print('-Charm: ', character.get_charm_attribute())
+    print('------------------------------')
+    return character
 
 
 def help_menu():
