@@ -121,7 +121,6 @@ def level_up(character_var):
 def upgrade_character(character_var, dp, hp):
     option = input("You have leveled up.\nChoose which attribute you would like to improve.\n"
                    "1. Melee Attack\n2. Gun Skill\n3. Luck\n4. Charm\nHelp\n> ")
-    # TODO: add gibberish catch
     if option == "1":
         character_var.set_strength_attribute(character_var.get_strength_attribute() + 1)
     elif option == "2":
@@ -152,6 +151,9 @@ def upgrade_character(character_var, dp, hp):
         print('-you can persuade others     -')
         print('------------------------------')
         upgrade_character(character_var, dp, hp)
+    else:
+        print("Invalid Input, please select an Attribute you wish to upgrade. If you need more information \n"
+              "about the Class Attributes type \'Help\'")
     character_var.up_lvl()
     character_var.set_health_points(character_var.get_health_points() + hp)
     character_var.set_defence_points(character_var.get_defence_points() + dp)
