@@ -113,6 +113,7 @@ def level_up(character_var):
             character_var.up_lvl()
 
 
+# TODO: upgrade
 def upgrade_character(character_var, dp, hp):
     option = input("You have leveled up.\nChoose which attribute you would like to improve.\n"
                    "1. Melee Attack\n2. Gun Skill\n3. Luck\n4. Charm\nHelp\n> ")
@@ -147,10 +148,11 @@ def upgrade_character(character_var, dp, hp):
         print('------------------------------')
         upgrade_character(character_var, dp, hp)
     else:
-        print("Invalid Input, please select an Attribute you wish to upgrade. If you need more information \n"
+        print("Invalid Input, please select an Attribute you wish to upgrade. \nIf you need more information"
               "about the Class Attributes type \'Help\'")
         upgrade_character(character_var, dp, hp)
     character_var.up_lvl()
+    character_var.set_hp_limit(character_var.get_hp_limit() + hp)
     character_var.set_health_points(character_var.get_health_points() + hp)
     character_var.set_defence_points(character_var.get_defence_points() + dp)
     print("Alex is now Level ", character_var.get_lvl(), "\nYou've gained ", hp,

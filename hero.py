@@ -9,7 +9,8 @@ class Hero:
         self.name = 'Alex'
         self.exp = 0
         self.lvl = 0
-        self.hp = 1000
+        self.hp = 65
+        self.hp_limit = 65
         self.status_effects = []
         self.inventory = [items.basic_med_pack(), items.basic_med_pack()]
         self.equipped_gun = items.basic_pistol()
@@ -79,7 +80,13 @@ class Hero:
         return self.hp
 
     def set_health_points(self, updated_health):
-        self.hp = updated_health
+        self.hp = min(updated_health, self.hp_limit)
+
+    def get_hp_limit(self):
+        return self.hp_limit
+
+    def set_hp_limit(self, new_limit):
+        self.hp_limit = new_limit
 
     def get_defence_points(self):
         return self.defence_points
