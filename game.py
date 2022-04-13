@@ -40,18 +40,18 @@ def game_over(character_var):
         display_score()
 
 
-def enemy_hit_back(character_var, enemy_var, hit):
+def enemy_hit_back(character_var, enemy_var, hit, fire):
     if hit:
         print("You hit the ", enemy_var.get_name(), " their health is now ", enemy_var.get_health(), ".", sep='')
     else:
         print("You did not hit the ", enemy_var.get_name(), ".", sep='')
     if enemy_var.get_luck() > random.randint(0, 6):
-        if hit:
+        if hit is True & fire is False:
             print("The Enemy was able to strike back.")
             character_updated_health = math.floor(character_var.get_health_points() - (enemy_var.get_strength() /
                                                                                        character_var.get_defence_points()))
             character_var.set_health_points(character_updated_health)
-        else:
+        elif hit is False & fire is False:
             print("However they were able to strike you.")
             character_updated_health = character_var.get_health_points() - enemy_var.get_strength()
             character_var.set_health_points(character_updated_health)
@@ -193,6 +193,7 @@ def battle_state(character_var, enemy_var, surprise):
     while enemy_var.get_health() > 0:
         option = input("1. Melee Attack \n2. Gun Attack\n3. Flee\n> ")
         if option == "1":
+            # TODO: add in weapon name to this line
             print("You swing your sword attacking the ", enemy_var.get_name(), ".", sep='')
             if random.randint(0, 6) < character_var.get_luck_attribute():
                 print("You are lucky and landed a full hit")
@@ -215,11 +216,28 @@ def battle_state(character_var, enemy_var, surprise):
                     break
             else:
                 enemy_hit_back(character_var, enemy_var, False)
+        # TODO: add weapon check
         elif option == "2":
             print("You fired your gun attacking the ", enemy_var.name, ".", sep='')
-            if random.randint(0, 6) < character_var.get_luck_attribute():
-                new_hp = enemy_var.get_health() - character_var.get_gun_skill()
-                enemy_var.set_health(new_hp)
+            if random.randint(0, 6) < random.randint(0, 10):
+                if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
+                    enemy_var.set_health(enemy_var.get_health() - (character_var.get_gun_skill() +
+                                                                   character_var.get_equipped_gun().get_item_attribute()))
+                    if enemy_var.hp > 0 & random.randint(0, 6) < character_var.get_luck_attribute():
+                        enemy_var.set_health(enemy_var.get_health() - (character_var.get_gun_skill() +
+                                                                       character_var.get_equipped_gun().get_item_attribute()))
+                    elif enemy_var.hp > 0:
+                        enemy_hit_back(character_var, enemy_var, True)
+                elif enemy_var.get_equipped_armour() is not None:
+                    gun_hit = character_var.get_gun_skill() + character_var.get_equipped_gun().get_item_attribute()
+                    enemy_def = enemy_var.get_defence() + enemy_var.get_equipped_armour().get_item_attribute()
+                    enemy_var.set_health(enemy_var.get_health() - (gun_hit / enemy_def))
+                    if enemy_var.hp > 0:
+                        enemy_hit_back(character_var, enemy_var, True)
+                    else:
+                        enemy_defeat(character_var, enemy_var)
+                        loot_add(character_var, enemy_var)
+                        break
                 if random.randint(0, 6) + character_var.get_luck_attribute() > 12:
                     print("You were able to get off another shot as well.")
                     new_hp = enemy_var.get_health() - character_var.get_gun_skill()
@@ -264,7 +282,6 @@ def loot_add(character_var, enemy_var):
             print("The ", loot_drop.get_item_name(), " is left behind.", sep='')
         else:
             print("Invalid Input, please choose either \'Yes\' or \'No\'.")
-
 
 
 def title_screen_selections():

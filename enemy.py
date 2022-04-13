@@ -57,9 +57,9 @@ class Human(Enemy):
         super().__init__(en_name, health, defence, strength, luck)
 
         self.gun_skill_attribute = gun_skill
-        self.equipped_gun = []
-        self.equipped_melee = []
-        self.equipped_armour = []
+        self.equipped_gun = None
+        self.equipped_melee = None
+        self.equipped_armour = None
         self.happy = 0
 
     def get_gun_skill(self):
