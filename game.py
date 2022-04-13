@@ -113,7 +113,6 @@ def level_up(character_var):
             character_var.up_lvl()
 
 
-# TODO: upgrade
 def upgrade_character(character_var, dp, hp):
     option = input("You have leveled up.\nChoose which attribute you would like to improve.\n"
                    "1. Melee Attack\n2. Gun Skill\n3. Luck\n4. Charm\nHelp\n> ")
@@ -148,7 +147,7 @@ def upgrade_character(character_var, dp, hp):
         print('------------------------------')
         upgrade_character(character_var, dp, hp)
     else:
-        print("Invalid Input, please select an Attribute you wish to upgrade. \nIf you need more information"
+        print("Invalid Input, please select an Attribute you wish to upgrade. \nIf you need more information "
               "about the Class Attributes type \'Help\'")
         upgrade_character(character_var, dp, hp)
     character_var.up_lvl()
@@ -184,6 +183,9 @@ def enemy_defeat(character_var, enemy_var):
     level_up(character_var)
 
 
+# TODO: add use of Inventory
+# TODO: add equip functionality
+# TODO: add use of melee weapons to melee attacks
 def battle_state(character_var, enemy_var):
     enemy_attack(character_var, enemy_var, "surprise")
     while enemy_var.get_health() > 0:
@@ -272,7 +274,7 @@ def loot_add(character_var, enemy_var):
         loot_drop = enemy_var.get_inventory()[0]
         print("It appears to have dropped a ", loot_drop.get_item_name(), ".", sep='')
         print("Would you like to add ", loot_drop.get_item_name(), " to your Inventory?", sep='')
-        # TODO: add help and gibberish catch
+        # TODO: gibberish catch still not working
         option = input("Yes \nNo\n> ")
         if option.lower() == "yes":
             character_var.add_inventory(loot_drop)
