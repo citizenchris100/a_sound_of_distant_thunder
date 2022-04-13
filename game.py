@@ -195,8 +195,16 @@ def battle_state(character_var, enemy_var, surprise):
         if option == "1":
             print("You swing your sword attacking the ", enemy_var.get_name(), ".", sep='')
             if random.randint(0, 6) < character_var.get_luck_attribute():
-                new_hp = enemy_var.get_health() - character_var.get_strength_attribute()
-                enemy_var.set_health(new_hp)
+                enemy_var.set_health(enemy_var.get_health() - character_var.get_strength_attribute())
+                if enemy_var.get_health() > 0:
+                    enemy_hit_back(character_var, enemy_var, True)
+                else:
+                    enemy_defeat(character_var, enemy_var)
+                    loot_add(character_var, enemy_var)
+                    break
+            elif random.randint(0, 6) < random.randint(0, 10):
+                enemy_var.set_health(math.floor(enemy_var.get_health() - (character_var.get_strength_attribute() /
+                                                                          enemy_var.get_defence())))
                 if enemy_var.get_health() > 0:
                     enemy_hit_back(character_var, enemy_var, True)
                 else:
