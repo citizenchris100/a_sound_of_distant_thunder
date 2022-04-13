@@ -34,3 +34,7 @@ def medium_med_pack():
 
 def advanced_med_pack():
     return Item("Advanced Med Pack", 80, "hp")
+
+
+def basic_pistol():
+    return Item("Basic Pistol", 10, "gun")

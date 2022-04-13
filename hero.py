@@ -12,7 +12,7 @@ class Hero:
         self.hp = 1000
         self.status_effects = []
         self.inventory = [items.basic_med_pack(), items.basic_med_pack()]
-        self.equipped_gun = None
+        self.equipped_gun = items.basic_pistol()
         self.equipped_melee = None
         self.equipped_armour = None
         self.defence_points = dp

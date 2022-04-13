@@ -40,58 +40,50 @@ def game_over(character_var):
         display_score()
 
 
-def enemy_hit_back(character_var, enemy_var, hit):
-    if hit:
+def enemy_attack(character_var, enemy_var, hit):
+    if hit == "yes":
         print("You hit the ", enemy_var.get_name(), " their health is now ", enemy_var.get_health(), ".", sep='')
-    else:
+    elif hit == "no":
         print("You did not hit the ", enemy_var.get_name(), ".", sep='')
-    if random.randint(0,6) < enemy_var.get_luck():
-        if "Goblin" in enemy_var.get_name() or enemy_var.set_equipped_gun() is not None:
-            character_var.set_health_points(
-                math.floor(
-                    (
-                        character_var.get_health_points() -
-                        (
-                            enemy_var.get_strength() /
-                            character_var.get_defence_points()
-                        )
-                    )
-                )
-            )
+    elif hit == "surprise" and "Goblin" in enemy_var.get_name():
+        vowel = 'aeiou'
+        if enemy_var.get_name()[0].lower() in vowel:
+            start = "An "
+        else:
+            start = "A "
+        print(start, enemy_var.get_name(), " has attacked you.", sep='')
+    elif hit == "surprise":
+        print("Someone has attacked you.")
+    if random.randint(0, 6) < enemy_var.get_luck():
+        # TODO: add use of melee weapons to enemy
+        if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_gun() is None:
+            if hit == "yes":
+                print("They were able to strike back with a melee attack")
+            else:
+                print("They hit you with a melee attack")
+            character_var.set_health_points(math.floor(character_var.get_health_points() - (enemy_var.get_strength() /
+                                                       character_var.get_defence_points())))
             if character_var.hp > 0:
                 print("Your health is now ", character_var.get_health_points(), ".", sep='')
             else:
                 game_over(character_var)
-
-
-def enemy_attack(character_var, enemy_var, chance):
-    defend = random.randint(0, 10)
-    start = vowel_start(enemy_var)
-    if enemy_var.get_luck() > chance:
-        if defend < character_var.get_luck_attribute():
-            print(start, enemy_var.get_name(), " has attacked you. However you deflect some of the attack", sep='')
-            character_updated_health = math.floor(character_var.get_health_points() - (enemy_var.get_strength() /
-                                                                                       character_var.get_defence_points()))
-            character_var.set_health_points(character_updated_health)
         else:
-            print(start, enemy_var.name, " has attacked you.")
-            character_updated_health = character_var.get_health_points() - enemy_var.get_strength()
-            character_var.set_health_points(character_updated_health)
-        if character_var.hp > 0:
-            print("Your health is now ", character_var.get_health_points(), ".", sep='')
-        else:
-            game_over(character_var)
+            if hit == "yes":
+                print("They were able to strike back with their fire arm")
+            else:
+                print("They hit you with  their fire arm")
+            hit = enemy_var.get_gun_skill() + enemy_var.get_equipped_gun().get_item_value()
+            if character_var.get_equipped_armour() is not None:
+                defend = character_var.get_defence_points() + character_var.get_equipped_armour().get_item_value()
+            else:
+                defend = character_var.get_defence_points()
+            character_var.set_health_points(math.floor(character_var.get_health_points() - (hit / defend)))
+            if character_var.hp > 0:
+                print("Your health is now ", character_var.get_health_points(), ".", sep='')
+            else:
+                game_over(character_var)
     else:
-        print(start, enemy_var.get_name(), " has attempted a surprise attack", sep='')
-
-
-def vowel_start(enemy_var):
-    vowel = 'aeiou'
-    if enemy_var.get_name()[0].lower() in vowel:
-        start = "An "
-    else:
-        start = "A "
-    return start
+        print("They attempted to strike you, however you deflected the attack.")
 
 
 def level_up(character_var):
@@ -157,6 +149,7 @@ def upgrade_character(character_var, dp, hp):
     else:
         print("Invalid Input, please select an Attribute you wish to upgrade. If you need more information \n"
               "about the Class Attributes type \'Help\'")
+        upgrade_character(character_var, dp, hp)
     character_var.up_lvl()
     character_var.set_health_points(character_var.get_health_points() + hp)
     character_var.set_defence_points(character_var.get_defence_points() + dp)
@@ -189,10 +182,8 @@ def enemy_defeat(character_var, enemy_var):
     level_up(character_var)
 
 
-# TODO: balance the combat mechanics
-def battle_state(character_var, enemy_var, surprise):
-    if surprise:
-        enemy_attack(character_var, enemy_var, random.randint(0, 10))
+def battle_state(character_var, enemy_var):
+    enemy_attack(character_var, enemy_var, "surprise")
     while enemy_var.get_health() > 0:
         option = input("1. Melee Attack \n2. Gun Attack\n3. Flee\n> ")
         if option == "1":
@@ -202,7 +193,7 @@ def battle_state(character_var, enemy_var, surprise):
                 print("You are lucky and landed a full hit")
                 enemy_var.set_health(enemy_var.get_health() - character_var.get_strength_attribute())
                 if enemy_var.get_health() > 0:
-                    enemy_hit_back(character_var, enemy_var, True)
+                    enemy_attack(character_var, enemy_var, "yes")
                 else:
                     enemy_defeat(character_var, enemy_var)
                     loot_add(character_var, enemy_var)
@@ -212,14 +203,13 @@ def battle_state(character_var, enemy_var, surprise):
                 enemy_var.set_health(math.floor(enemy_var.get_health() - (character_var.get_strength_attribute() /
                                                                           enemy_var.get_defence())))
                 if enemy_var.get_health() > 0:
-                    enemy_hit_back(character_var, enemy_var, True)
+                    enemy_attack(character_var, enemy_var, "yes")
                 else:
                     enemy_defeat(character_var, enemy_var)
                     loot_add(character_var, enemy_var)
                     break
             else:
-                enemy_hit_back(character_var, enemy_var, False)
-        # TODO: add weapon check
+                enemy_attack(character_var, enemy_var, "no")
         elif option == "2":
             print("You fired your gun attacking the ", enemy_var.name, ".", sep='')
             if random.randint(0, 6) < random.randint(0, 10):
@@ -235,7 +225,7 @@ def battle_state(character_var, enemy_var, surprise):
                         if random.randint(0, 12) < character_var.get_luck_attribute():
                             gun_hit_armour(character_var, enemy_var)
                     if enemy_var.get_health() > 0:
-                        enemy_hit_back(character_var, enemy_var, True)
+                        enemy_attack(character_var, enemy_var, "yes")
                     else:
                         enemy_defeat(character_var, enemy_var)
                         loot_add(character_var, enemy_var)
@@ -243,7 +233,7 @@ def battle_state(character_var, enemy_var, surprise):
                 else:
                     print("You do not have a gun equipped.")
             else:
-                enemy_hit_back(character_var, enemy_var, False)
+                enemy_attack(character_var, enemy_var, "no")
         elif option == "3":
             if random.randint(0, 6) + character_var.get_luck_attribute() > 12:
                 print("You escape battle with the ", enemy_var.name, ".", sep='')
@@ -272,7 +262,7 @@ def gun_hit_armour(character_var, enemy_var):
 def gun_hit_no_armour(character_var, enemy_var):
     hit = (character_var.get_gun_skill() + character_var.get_equipped_gun().get_item_value())
     defend = enemy_var.get_defence()
-    enemy_var.set_health(math.floor(hit / defend))
+    enemy_var.set_health(math.floor(enemy_var.get_health() - (hit / defend)))
 
 
 def loot_add(character_var, enemy_var):
@@ -289,6 +279,7 @@ def loot_add(character_var, enemy_var):
             print("The ", loot_drop.get_item_name(), " is left behind.", sep='')
         else:
             print("Invalid Input, please choose either \'Yes\' or \'No\'.")
+            loot_add(character_var, enemy_var)
 
 
 def title_screen_selections():
@@ -298,13 +289,13 @@ def title_screen_selections():
         character = hero.class_selection()
         print("---------------battle 1")
         battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
-        [random.randint(0, 2)], False)
+        [random.randint(0, 2)])
         print("---------------battle 2")
         battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
-        [random.randint(0, 2)], False)
+        [random.randint(0, 2)])
         print("---------------battle 3")
         battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
-        [random.randint(0, 2)], False)
+        [random.randint(0, 2)])
     elif option.lower() == "help":
         help_menu()
         title_screen_selections()
