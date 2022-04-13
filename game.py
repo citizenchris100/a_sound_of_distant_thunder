@@ -195,6 +195,7 @@ def battle_state(character_var, enemy_var, surprise):
         if option == "1":
             print("You swing your sword attacking the ", enemy_var.get_name(), ".", sep='')
             if random.randint(0, 6) < character_var.get_luck_attribute():
+                print("You are lucky and landed a full hit")
                 enemy_var.set_health(enemy_var.get_health() - character_var.get_strength_attribute())
                 if enemy_var.get_health() > 0:
                     enemy_hit_back(character_var, enemy_var, True)
@@ -203,6 +204,7 @@ def battle_state(character_var, enemy_var, surprise):
                     loot_add(character_var, enemy_var)
                     break
             elif random.randint(0, 6) < random.randint(0, 10):
+                print("However they were able to deflect some of the hit.")
                 enemy_var.set_health(math.floor(enemy_var.get_health() - (character_var.get_strength_attribute() /
                                                                           enemy_var.get_defence())))
                 if enemy_var.get_health() > 0:
@@ -248,10 +250,8 @@ def battle_state(character_var, enemy_var, surprise):
     print("Your current Score is ", character_var.get_exp(), sep='')
 
 
-# TODO: add ability to actually use inventory items
 def loot_add(character_var, enemy_var):
-    chance = random.randint(0, 10)
-    if chance < character_var.get_luck_attribute():
+    if random.randint(0, 6) < character_var.get_luck_attribute():
         loot_drop = enemy_var.get_inventory()[0]
         print("It appears to have dropped a ", loot_drop.get_item_name(), ".", sep='')
         print("Would you like to add ", loot_drop.get_item_name(), " to your Inventory?", sep='')
@@ -260,6 +260,11 @@ def loot_add(character_var, enemy_var):
         if option.lower() == "yes":
             character_var.add_inventory(loot_drop)
             print(loot_drop.get_item_name(), " was added to your inventory.", sep='')
+        elif option.lower() == "no":
+            print("The ", loot_drop.get_item_name(), " is left behind.", sep='')
+        else:
+            print("Invalid Input, please choose either \'Yes\' or \'No\'.")
+
 
 
 def title_screen_selections():
