@@ -3,6 +3,7 @@ import sys
 import os
 import items
 
+
 # TODO: add default weapons to classes
 class Hero:
     def __init__(self, dp, strength, gun_skill, luck, charm):

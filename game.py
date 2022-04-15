@@ -284,6 +284,12 @@ def inventory(character_var):
                 print(character_var.get_inventory()[nn].get_item_value(), " was added to your Health.", sep='')
                 print("Your Health is now ", character_var.get_health_points(), sep='')
                 break
+            elif character_var.get_inventory()[nn].get_item_attribute() == "gun":
+                print("Would you like to eqip this ", character_var.get_inventory()[nn].get_item_name(), "?", sep='')
+                d = input("Yes.\nNo.\n> ")
+                if d.lower() == "yes":
+                    character_var.set_equipped_gun(character_var.get_inventory()[nn])
+                    print("The ", character_var.get_equipped_gun(), " is now equipped.", sep='')
         else:
             print('Invalid Option. Please Enter the number of the corresponding '
                   'Inventory item you would like to use.\n> ')

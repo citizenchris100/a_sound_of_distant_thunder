@@ -37,8 +37,8 @@ def advanced_med_pack():
 
 
 def basic_pistol():
-    return Item("Basic Pistol", 10, "gun")
+    return Item("Basic Pistol", 5, "gun")
 
 
 def basic_knife():
-    return Item("Basic Knife", 10, "gun")
+    return Item("Basic Knife", 5, "melee")
