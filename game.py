@@ -283,7 +283,7 @@ def inventory(character_var):
                 print("You used ", start, character_var.get_inventory()[nn].get_item_name(), sep='')
                 print(character_var.get_inventory()[nn].get_item_value(), " was added to your Health.", sep='')
                 print("Your Health is now ", character_var.get_health_points(), sep='')
-            break
+                break
         else:
             print('Invalid Option. Please Enter the number of the corresponding '
                   'Inventory item you would like to use.\n> ')
