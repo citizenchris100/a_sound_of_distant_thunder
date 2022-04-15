@@ -274,9 +274,9 @@ def inventory(character_var):
     print('------------------------------')
     print('------------------------------')
     while True:
-        n = int(input("Enter the number of the corresponding Inventory item you would like to use.\n> "))
-        if n <= len(character_var.get_inventory()):
-            nn = n - 1
+        n = input("Enter the number of the corresponding Inventory item you would like to use.\n> ")
+        if n.isdigit() and int(n) <= len(character_var.get_inventory()):
+            nn = int(n) - 1
             start = vowel_start(character_var.get_inventory()[nn].get_item_name())
             if character_var.get_inventory()[nn].get_item_attribute() == "hp":
                 character_var.set_health_points((character_var.get_health_points() +
@@ -286,8 +286,10 @@ def inventory(character_var):
                 print(character_var.get_inventory()[nn].get_item_value(), " was added to your Health.", sep='')
                 print("Your Health is now ", character_var.get_health_points(), sep='')
             break
-        print('Invalid Option')
-        break
+        else:
+            print('Invalid Option. Please Enter the number of the corresponding '
+                  'Inventory item you would like to use.\n> ')
+            inventory(character_var)
 
 
 def gun_hit_armour(character_var, enemy_var):
