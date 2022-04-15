@@ -189,7 +189,7 @@ def enemy_defeat(character_var, enemy_var):
 def battle_state(character_var, enemy_var):
     enemy_attack(character_var, enemy_var, "surprise")
     while enemy_var.get_health() > 0:
-        option = input("1. Melee Attack \n2. Gun Attack\n3. Flee\n> ")
+        option = input("1. Melee Attack \n2. Gun Attack\n3. Inventory\n4. Flee\n> ")
         if option == "1":
             # TODO: add in weapon name to this line
             print("You swing your sword attacking the ", enemy_var.get_name(), ".", sep='')
@@ -238,7 +238,7 @@ def battle_state(character_var, enemy_var):
                     print("You do not have a gun equipped.")
             else:
                 enemy_attack(character_var, enemy_var, "no")
-        elif option == "3":
+        elif option == "4":
             if random.randint(0, 6) + character_var.get_luck_attribute() > 12:
                 print("You escape battle with the ", enemy_var.name, ".", sep='')
                 break
@@ -251,6 +251,13 @@ def battle_state(character_var, enemy_var):
                     print("Your health is now ", character_var.get_health_points(), ".", sep='')
                 else:
                     game_over(character_var)
+        elif option == "3":
+            print('------------------------------')
+            print('-         Inventory          -')
+            print('------------------------------')
+            print('------------------------------')
+            for i in range(len(character_var.get_inventory())):
+                print(character_var.get_inventory()[i])
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
     print("Your current Score is ", character_var.get_exp(), sep='')
