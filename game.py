@@ -279,7 +279,7 @@ def inventory(character_var):
             if character_var.get_inventory()[nn].get_item_attribute() == "hp":
                 character_var.set_health_points((character_var.get_health_points() +
                                                  character_var.get_inventory()[nn].get_item_value()))
-
+                character_var.del_inventory(nn)
                 print("You used ", start, character_var.get_inventory()[nn].get_item_name(), sep='')
                 print(character_var.get_inventory()[nn].get_item_value(), " was added to your Health.", sep='')
                 print("Your Health is now ", character_var.get_health_points(), sep='')
@@ -294,7 +294,7 @@ def gun_hit_armour(character_var, enemy_var):
     hit = (character_var.get_gun_skill() + character_var.get_equipped_gun().get_item_value())
     defend = (enemy_var.get_defence() +
               enemy_var.get_equipped_armour().get_item_value())
-    enemy_var.set_health(math.floor(hit / defend))
+    enemy_var.set_health(math.floor(enemy_var.get_health() - (hit / defend)))
 
 
 def gun_hit_no_armour(character_var, enemy_var):

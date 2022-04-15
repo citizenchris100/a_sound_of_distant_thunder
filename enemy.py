@@ -140,7 +140,7 @@ def beta_goblin():
 
 
 def alpha_goblin():
-    goblin = Enemy("Beta Goblin", random.randint(75, 100), random.randint(6, 8), random.randint(17, 25),
+    goblin = Enemy("Alpha Goblin", random.randint(75, 100), random.randint(6, 8), random.randint(17, 25),
                    random.randint(4, 8))
     goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
     return goblin

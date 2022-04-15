@@ -57,7 +57,7 @@ class Hero:
             print("Your Inventory is Full. You can drop Items to make room if you so choose")
 
     def del_inventory(self, item):
-        self.inventory.remove(item)
+        del self.inventory[item]
 
     def get_equipped_gun(self):
         return self.equipped_gun
