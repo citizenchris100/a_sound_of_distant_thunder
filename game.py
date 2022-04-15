@@ -303,6 +303,7 @@ def gun_hit_no_armour(character_var, enemy_var):
     enemy_var.set_health(math.floor(enemy_var.get_health() - (hit / defend)))
 
 
+# TODO: add ability to retrieve more than one item from enemy
 def loot_add(character_var, enemy_var):
     if random.randint(0, 6) < character_var.get_luck_attribute():
         loot_drop = enemy_var.get_inventory()[0]
