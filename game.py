@@ -11,7 +11,7 @@ import math
 import hero
 import enemy
 
-
+# TODO: improve combat verbiage
 def display_score():
     file = open("score.txt", "r")
     for line in file:
@@ -42,7 +42,7 @@ def game_over(character_var):
 
 def enemy_attack(character_var, enemy_var, hit):
     if hit == "yes":
-        print("You hit the ", enemy_var.get_name(), " their health is now ", enemy_var.get_health(), ".", sep='')
+        print(enemy_var.get_name(), "'s health is now ", enemy_var.get_health(), ".", sep='')
     elif hit == "no":
         print("You did not hit the ", enemy_var.get_name(), ".", sep='')
     elif hit == "surprise" and "Goblin" in enemy_var.get_name():
