@@ -257,7 +257,10 @@ def battle_state(character_var, enemy_var):
             print('------------------------------')
             print('------------------------------')
             for i in range(len(character_var.get_inventory())):
-                print(character_var.get_inventory()[i])
+                num = i + 1
+                print(num, ": ", character_var.get_inventory()[i].get_item_name(), sep='')
+            print('------------------------------')
+            print('------------------------------')
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
     print("Your current Score is ", character_var.get_exp(), sep='')
