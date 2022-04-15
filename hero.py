@@ -21,6 +21,7 @@ class Hero:
         self.gun_skill_attribute = gun_skill
         self.luck_attribute = luck
         self.charm_attribute = charm
+        self.location = None
 
     def get_name(self):
         return self.name
@@ -117,6 +118,12 @@ class Hero:
 
     def set_charm_attribute(self, charm):
         self.charm_attribute = charm
+
+    def get_location(self):
+        return self.location
+
+    def set_location(self, new_location):
+        self.location = new_location
 
 
 # TODO: move character creation to the game file
