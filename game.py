@@ -252,18 +252,28 @@ def battle_state(character_var, enemy_var):
                 else:
                     game_over(character_var)
         elif option == "3":
-            print('------------------------------')
-            print('-         Inventory          -')
-            print('------------------------------')
-            print('------------------------------')
-            for i in range(len(character_var.get_inventory())):
-                num = i + 1
-                print(num, ": ", character_var.get_inventory()[i].get_item_name(), sep='')
-            print('------------------------------')
-            print('------------------------------')
+            inventory(character_var)
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
     print("Your current Score is ", character_var.get_exp(), sep='')
+
+
+def inventory(character_var):
+    print('------------------------------')
+    print('-         Inventory          -')
+    print('------------------------------')
+    print('------------------------------')
+    for i in range(len(character_var.get_inventory())):
+        num = i + 1
+        print(num, ": ", character_var.get_inventory()[i].get_item_name(), sep='')
+    print('------------------------------')
+    print('------------------------------')
+    while True:
+        n = int(input("Enter the number of the corresponding Inventory item you would like to use.\n> "))
+        if n <= len(character_var.get_inventory()):
+            print("cool")
+            break
+        print('try again')
 
 
 def gun_hit_armour(character_var, enemy_var):
