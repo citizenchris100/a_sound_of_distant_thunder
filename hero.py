@@ -174,6 +174,7 @@ def class_selection():
         class_selection()
     print('------------------------------')
     print('--Your Character\'s Stats-----')
+    print('-Health: ', character.get_health_points())
     print('-Defence: ', character.get_defence_points())
     print('-Melee Attack: ', character.get_strength_attribute())
     print('-Gun Skill: ', character.get_gun_skill())

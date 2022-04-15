@@ -46,11 +46,7 @@ def enemy_attack(character_var, enemy_var, hit):
     elif hit == "no":
         print("You did not hit the ", enemy_var.get_name(), ".", sep='')
     elif hit == "surprise" and "Goblin" in enemy_var.get_name():
-        vowel = 'aeiou'
-        if enemy_var.get_name()[0].lower() in vowel:
-            start = "An "
-        else:
-            start = "A "
+        start = vowel_start(enemy_var.get_name())
         print(start, enemy_var.get_name(), " has attacked you.", sep='')
     elif hit == "surprise":
         print("Someone has attacked you.")
@@ -84,6 +80,15 @@ def enemy_attack(character_var, enemy_var, hit):
                 game_over(character_var)
     else:
         print("They attempted to strike you, however you deflected the attack.")
+
+
+def vowel_start(word):
+    vowel = 'aeiou'
+    if word[0].lower() in vowel:
+        start = "An "
+    else:
+        start = "A "
+    return start
 
 
 def level_up(character_var):
@@ -271,9 +276,18 @@ def inventory(character_var):
     while True:
         n = int(input("Enter the number of the corresponding Inventory item you would like to use.\n> "))
         if n <= len(character_var.get_inventory()):
-            print("cool")
+            nn = n - 1
+            start = vowel_start(character_var.get_inventory()[nn].get_item_name())
+            if character_var.get_inventory()[nn].get_item_attribute() == "hp":
+                character_var.set_health_points((character_var.get_health_points() +
+                                                 character_var.get_inventory()[nn].get_item_value()))
+
+                print("You used ", start, character_var.get_inventory()[nn].get_item_name(), sep='')
+                print(character_var.get_inventory()[nn].get_item_value(), " was added to your Health.", sep='')
+                print("Your Health is now ", character_var.get_health_points(), sep='')
             break
-        print('try again')
+        print('Invalid Option')
+        break
 
 
 def gun_hit_armour(character_var, enemy_var):
