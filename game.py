@@ -39,7 +39,7 @@ def game_over(character_var):
         write_score(score, name)
         display_score()
 
-
+# TODO: enenmy should be able to get a full hit
 def enemy_attack(character_var, enemy_var, hit):
     if hit == "yes":
         print(enemy_var.get_name(), "'s health is now ", enemy_var.get_health(), ".", sep='')
@@ -262,6 +262,7 @@ def battle_state(character_var, enemy_var):
     print("Your current Score is ", character_var.get_exp(), sep='')
 
 
+# TODO: add catch for empty inventory
 def inventory(character_var):
     print('------------------------------')
     print('-         Inventory          -')
@@ -273,7 +274,8 @@ def inventory(character_var):
     print('------------------------------')
     print('------------------------------')
     while True:
-        n = input("Enter the number of the corresponding Inventory item you would like to Use or Discard.\n> ")
+        n = input("Enter the number of the corresponding Inventory item\nyou would like to Use / Equip or Discard.\n"
+                  "Additionally you can type \'Exit\' to return to the previous Menu.> ")
         if n.isdigit() and int(n) <= len(character_var.get_inventory()):
             nn = int(n) - 1
             start = vowel_start(character_var.get_inventory()[nn].get_item_name())
@@ -283,13 +285,13 @@ def inventory(character_var):
                 if d.lower() == "use" or d == "1":
                     character_var.set_health_points((character_var.get_health_points() +
                                                      character_var.get_inventory()[nn].get_item_value()))
-                    character_var.del_inventory(nn)
                     print("You used ", start, character_var.get_inventory()[nn].get_item_name(), sep='')
                     print(character_var.get_inventory()[nn].get_item_value(), " was added to your Health.", sep='')
                     print("Your Health is now ", character_var.get_health_points(), sep='')
+                    character_var.del_inventory(nn)
                     break
                 elif d.lower() == "discard" or d == "2":
-                    print("The ", character_var.get_equipped_armour().get_item_name(), " will be deleted.", sep='')
+                    print("The ", character_var.get_inventory()[nn].get_item_name(), " will be deleted.", sep='')
                     character_var.del_inventory(nn)
                     break
             elif character_var.get_inventory()[nn].get_item_attribute() == "gun" or \
@@ -298,7 +300,8 @@ def inventory(character_var):
                 print("Would you like to eqip this ", character_var.get_inventory()[nn].get_item_name(), "?", sep='')
                 d = input("1. Equip.\n2. Discard.\n> ")
                 if d.lower() == "equip" or d == "1":
-                    character_var.add_inventory(character_var.get_equipped_gun())
+                    if character_var.get_equipped_gun() is not None:
+                        character_var.add_inventory(character_var.get_equipped_gun())
                     character_var.set_equipped_gun(character_var.get_inventory()[nn])
                     if character_var.get_inventory()[nn].get_item_attribute() == "gun":
                         print("The ", character_var.get_equipped_gun().get_item_name(), " is now equipped.", sep='')
@@ -315,6 +318,8 @@ def inventory(character_var):
                 else:
                     print('Invalid Option. Please choose to either Equip or Discard the item.\n> ')
                     inventory(character_var)
+        elif n.lower() == "exit":
+            break
         else:
             print('Invalid Option. Please Enter the number of the corresponding '
                   'Inventory item you would like to use.\n> ')

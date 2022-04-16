@@ -36,6 +36,10 @@ def advanced_med_pack():
     return Item("Advanced Med Pack", 80, "hp")
 
 
+def pop_gun():
+    return Item("Pop Gun", 1, "gun")
+
+
 def basic_pistol():
     return Item("Basic Pistol", 5, "gun")
 
