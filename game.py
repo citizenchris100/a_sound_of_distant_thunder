@@ -90,7 +90,7 @@ def vowel_start(word):
         start = "A "
     return start
 
-
+# TODO: complete level up
 def level_up(character_var):
     if 0 <= character_var.get_lvl() <= 1:
         if 25 <= character_var.get_exp():
@@ -218,9 +218,9 @@ def battle_state(character_var, enemy_var):
             else:
                 enemy_attack(character_var, enemy_var, "no")
         elif option == "2":
-            print("You fired your gun attacking the ", enemy_var.name, ".", sep='')
-            if random.randint(0, 6) < random.randint(0, 10):
-                if character_var.get_equipped_gun() is not None:
+            if character_var.get_equipped_gun() is not None:
+                if random.randint(0, 6) < random.randint(0, 10):
+                    print("You fired your gun attacking the ", enemy_var.name, ".", sep='')
                     if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is not None:
                         print("You hit the enemy")
                         gun_hit_no_armour(character_var, enemy_var)
@@ -238,9 +238,10 @@ def battle_state(character_var, enemy_var):
                         loot_add(character_var, enemy_var)
                         break
                 else:
-                    print("You do not have a gun equipped.")
+                    enemy_attack(character_var, enemy_var, "no")
             else:
-                enemy_attack(character_var, enemy_var, "no")
+                print("You do not have a gun equipped.\nCheck your Inventory for any available guns to equip.")
+
         elif option == "4":
             if random.randint(0, 6) + character_var.get_luck_attribute() > 12:
                 print("You escape battle with the ", enemy_var.name, ".", sep='')
@@ -272,7 +273,7 @@ def inventory(character_var):
     print('------------------------------')
     print('------------------------------')
     while True:
-        n = input("Enter the number of the corresponding Inventory item you would like to use.\n> ")
+        n = input("Enter the number of the corresponding Inventory item you would like to use or discard.\n> ")
         if n.isdigit() and int(n) <= len(character_var.get_inventory()):
             nn = int(n) - 1
             start = vowel_start(character_var.get_inventory()[nn].get_item_name())
@@ -284,12 +285,26 @@ def inventory(character_var):
                 print(character_var.get_inventory()[nn].get_item_value(), " was added to your Health.", sep='')
                 print("Your Health is now ", character_var.get_health_points(), sep='')
                 break
-            elif character_var.get_inventory()[nn].get_item_attribute() == "gun":
+            elif character_var.get_inventory()[nn].get_item_attribute() == "gun" or \
+                    character_var.get_inventory()[nn].get_item_attribute() == "melee" or \
+                    character_var.get_inventory()[nn].get_item_attribute() == "armour":
                 print("Would you like to eqip this ", character_var.get_inventory()[nn].get_item_name(), "?", sep='')
-                d = input("Yes.\nNo.\n> ")
-                if d.lower() == "yes":
+                d = input("1. Equip.\n2. Discard.\n> ")
+                if d.lower() == "equip" or d == "1":
+                    character_var.add_inventory(character_var.get_equipped_gun())
                     character_var.set_equipped_gun(character_var.get_inventory()[nn])
-                    print("The ", character_var.get_equipped_gun(), " is now equipped.", sep='')
+                    character_var.del_inventory(nn)
+                    if character_var.get_inventory()[nn].get_item_attribute() == "gun":
+                        print("The ", character_var.get_equipped_gun(), " is now equipped.", sep='')
+                    elif character_var.get_inventory()[nn].get_item_attribute() == "melee":
+                        print("The ", character_var.get_equipped_melee(), " is now equipped.", sep='')
+                    else:
+                        print("The ", character_var.get_equipped_armour(), " is now equipped.", sep='')
+                elif d.lower() == "discard" or d == "2":
+                    character_var.del_inventory(nn)
+                else:
+                    print('Invalid Option. Please choose to either Equip or Discard the item.\n> ')
+                    inventory(character_var)
         else:
             print('Invalid Option. Please Enter the number of the corresponding '
                   'Inventory item you would like to use.\n> ')
