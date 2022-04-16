@@ -188,7 +188,6 @@ def enemy_defeat(character_var, enemy_var):
     level_up(character_var)
 
 
-# TODO: add equip functionality
 def battle_state(character_var, enemy_var):
     enemy_attack(character_var, enemy_var, "surprise")
     while enemy_var.get_health() > 0:
