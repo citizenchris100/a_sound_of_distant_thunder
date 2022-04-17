@@ -1,13 +1,11 @@
 
 class Zone:
-    def __init__(self, zone_name, desc, char, zone_items, zone_control, zone_missions, zone_affiliation):
+    def __init__(self, zone_name, desc, char, zone_items):
         self.name = zone_name
         self.description = desc
         self.characters = char
         self.items = zone_items
-        self.control = zone_control
-        self.missions = zone_missions
-        self.affiliation = zone_affiliation
+
 
     def get_name(self):
         return self.name
@@ -45,12 +43,20 @@ class Zone:
     def del_items(self, del_items):
         del self.items[del_items]
         
+
+class StoryZone(Zone):
+    def __init__(self, zone_name, desc, char, zone_items, zone_control, zone_missions, zone_affiliation):
+        super().__init__(zone_name, desc, char, zone_items)
+        self.control = zone_control
+        self.missions = zone_missions
+        self.affiliation = zone_affiliation
+
     def get_zone_control(self):
         return self.control
 
     def set_zone_control(self, new_zone_control):
         self.control = new_zone_control
-        
+
     def get_zone_missions(self):
         return self.missions
 
@@ -62,10 +68,9 @@ class Zone:
 
     def del_zone_missions(self, del_zone_missions):
         del self.missions[del_zone_missions]
-        
+
     def get_affiliation(self):
         return self.affiliation
 
     def set_affiliation(self, new_affiliation):
         self.affiliation = new_affiliation
-        
