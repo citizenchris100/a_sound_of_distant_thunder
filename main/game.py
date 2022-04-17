@@ -1,9 +1,6 @@
 # a sound of distant thunder
 # by christopher manning
 
-import time
-import cmd
-import textwrap
 import sys
 import os
 import random
@@ -11,9 +8,10 @@ import math
 import hero
 import enemy
 
+
 # TODO: improve combat verbiage
 def display_score():
-    file = open("score.txt", "r")
+    file = open("../score.txt", "r")
     for line in file:
         xline = line.split(",")
         print(xline[0], xline[1])
@@ -21,7 +19,7 @@ def display_score():
 
 
 def write_score(score, name):
-    file = open("score.txt", "a")
+    file = open("../score.txt", "a")
     file.write(str(name))
     file.write(",")
     file.write(str(score))
@@ -38,6 +36,7 @@ def game_over(character_var):
         name = input("Enter your Name : ")
         write_score(score, name)
         display_score()
+
 
 # TODO: enenmy should be able to get a full hit
 def enemy_attack(character_var, enemy_var, hit):
@@ -89,6 +88,7 @@ def vowel_start(word):
     else:
         start = "A "
     return start
+
 
 # TODO: complete level up
 def level_up(character_var):
