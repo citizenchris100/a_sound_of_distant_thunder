@@ -363,13 +363,13 @@ def title_screen_selections():
         character = hero.class_selection()
         print("---------------battle 1")
         battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
-        [random.randint(0, 2)])
+                     [random.randint(0, 2)])
         print("---------------battle 2")
         battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
-        [random.randint(0, 2)])
+                     [random.randint(0, 2)])
         print("---------------battle 3")
         battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
-        [random.randint(0, 2)])
+                     [random.randint(0, 2)])
     elif option.lower() == "help":
         help_menu()
         title_screen_selections()
