@@ -57,7 +57,7 @@ def enemy_attack(character_var, enemy_var, hit):
             else:
                 print("They hit you with a melee attack")
             character_var.set_health_points(math.floor(character_var.get_health_points() - (enemy_var.get_strength() /
-                                                       character_var.get_defence_points())))
+                                                                                            character_var.get_defence_points())))
             if character_var.hp > 0:
                 print("Your health is now ", character_var.get_health_points(), ".", sep='')
             else:
