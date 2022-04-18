@@ -7,6 +7,12 @@ import hero
 import enemy
 import battle_system
 import random
+import zone
+
+
+def game():
+    boat = zone.boat_start()
+
 
 def title_screen_selections():
     option = input("> ")
