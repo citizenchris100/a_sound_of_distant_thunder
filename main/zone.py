@@ -1,3 +1,5 @@
+import enemy
+import items
 
 class Zone:
     def __init__(self, zone_name, desc, char, zone_items):
@@ -5,7 +7,6 @@ class Zone:
         self.description = desc
         self.characters = char
         self.items = zone_items
-
 
     def get_name(self):
         return self.name
@@ -30,7 +31,7 @@ class Zone:
 
     def del_character(self, del_char):
         del self.characters[del_char]
-        
+
     def get_items(self):
         return self.items
 
@@ -42,7 +43,7 @@ class Zone:
 
     def del_items(self, del_items):
         del self.items[del_items]
-        
+
 
 class StoryZone(Zone):
     def __init__(self, zone_name, desc, char, zone_items, zone_control, zone_missions, zone_affiliation):
@@ -74,3 +75,17 @@ class StoryZone(Zone):
 
     def set_affiliation(self, new_affiliation):
         self.affiliation = new_affiliation
+
+
+def boat_start():
+    desc_value = """A creaky old dirty ship like this is not my ideal method of travel. I guess I shouldn't complain
+    though. This gig came up last minute and the paycheck is insane. However I'm a firm believer that if its too 
+    good to be true it probably is. Some money people want me to get control of this island. Some kind of manufacturing
+    facility. The dossier here has the details. It's looking like we're getting pretty close. The captain is 
+    approaching. Looks like its time to disembark."""
+    captain = enemy.npc()
+    boat_items = [items.basic_med_pack(), items.basic_pistol(), items.basic_knife()]
+    return Zone("Boat", desc_value, captain, boat_items)
+
+
+
