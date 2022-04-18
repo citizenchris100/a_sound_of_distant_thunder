@@ -5,10 +5,8 @@ import sys
 import os
 import textwrap
 import hero
-import enemy
-import battle_system
-import random
 import zone
+import battle_system
 
 
 def use_textwrap(value):
@@ -18,28 +16,47 @@ def use_textwrap(value):
         print(element)
 
 
-def start():
+def start(character):
     os.system('cls' if os.name == 'nt' else 'clear')
     boat = zone.boat_start()
     use_textwrap(boat.get_description()["initial"])
     print('------------------------------')
     print('------------------------------')
-    game(boat)
+    game(character)
 
 
-def game(boat):
+def game(character):
     prompt = input("1. Read Dossier\n2. Speak to the Captain\n3. Look Around the Ship\n4. Inventory\n5. Help\n> ")
+    boat = zone.boat_start()
+    captain = boat.get_characters()[0]
+    deck_hand_01 = boat.get_characters()[1]
+    deck_hand_02 = boat.get_characters()[2]
     if "read" in prompt.lower() or prompt == "1":
+        os.system('cls' if os.name == 'nt' else 'clear')
         use_textwrap(boat.get_description()["dossier"])
         print('------------------------------')
-        game(boat)
+        game(character)
     elif "speak" in prompt.lower() or prompt == "2":
+        os.system('cls' if os.name == 'nt' else 'clear')
         print('Alex: "Looks like we\'re nearly there Captain"')
-        print('Captain: "Indeed we are. That dock is in no condition for a ship of this size. You\'ll have to '
-              'disembark on one of our small inflatable crafts. Let me know when you\'re ready to head out '
+        print('Captain: "Indeed we are. That dock is in no condition for a ship of this size.\nYou\'ll have to '
+              'disembark on one of our small inflatable crafts.\nLet me know when you\'re ready to head out\n'
               'or if you have any other questions."')
         print('------------------------------')
         speak = input("1. Disembark\n2. The Storm\n3. The Island\n4. Attack\n5. Return\n6. Help\n> ")
+        if "disembark" in speak.lower() or speak == "1":
+            print(captain.get_dialog()["Disembark"])
+            game(character)
+        elif "storm" in speak.lower() or speak == "2":
+            print(captain.get_dialog()["Storm"])
+            game(character)
+        elif "island" in speak.lower() or speak == "3":
+            print(captain.get_dialog()["Island"])
+            game(character)
+        elif "attack" in speak.lower() or speak == "4":
+            battle_system.battle_state(character, captain)
+
+
 
 
 def title_screen_selections():
@@ -47,9 +64,7 @@ def title_screen_selections():
     if option.lower() == "play" or option == "1":
         hero.create_class_screen()
         character = hero.class_selection()
-        start()
-        #battle_system.battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
-        #                           [random.randint(0, 2)])
+        start(character)
     elif option.lower() == "help" or option == "2":
         help_menu()
         title_screen_selections()

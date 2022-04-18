@@ -44,5 +44,17 @@ def basic_pistol():
     return Item("Basic Pistol", 5, "gun")
 
 
+def large_revolver():
+    return Item("Large Revolver", 15, "gun")
+
+
 def basic_knife():
     return Item("Basic Knife", 5, "melee")
+
+
+def cologne():
+    return Item("Cologne", 2, "charm")
+
+
+def charm():
+    return Item("Charm", 2, "luck")

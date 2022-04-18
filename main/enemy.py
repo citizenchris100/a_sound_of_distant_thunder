@@ -52,6 +52,9 @@ class Enemy:
     def get_inventory(self):
         return self.inventory
 
+    def set_inventory(self, new_inventory):
+        self.inventory = new_inventory
+
     def add_inventory(self, new):
         self.inventory.append(new)
 
@@ -192,8 +195,26 @@ def boat_captain():
     captain.set_dialog({
         "Disembark": "You're ready? Ok. So we're going to get you onto one of our small inflatable crafts. Don't worry"
                      "it has a motor.",
-        "Storm": "This system has been heading our way from the east. It's looking to be a bad one. Whatever you have"
-                 "to do on that Island I'd suggest doing it fast. You won't want to be out here once this storm hits.",
-        "Island": "Don't know much about it. A buddy of mine was making pretty good money ferrying people to and from"
-                  "the island. He mentioned that he stopped getting ferry jobs about a month ago."
+        "Storm": "This system has been heading our way from the east.\nIt's looking to be a bad one. Whatever you have"
+                 "to do on that Island\nI'd suggest doing it fast.\nYou won't want to be out here once this storm hits.",
+        "Island": "Don't know much about it. A buddy of mine was making pretty\ngood money ferrying people to and from"
+                  "the island.\nHe mentioned that he stopped getting ferry jobs about a month ago."
     })
+    captain.set_equipped_gun(items.large_revolver())
+    captain.set_inventory([items.medium_med_pack(), items.cologne()])
+    captain.set_name("Boat Captain")
+    return captain
+
+
+def deck_hand01():
+    deck_hand = npc(True)
+    deck_hand.set_equipped_gun(items.basic_knife())
+    deck_hand.set_inventory([items.basic_med_pack()])
+    return deck_hand
+
+
+def deck_hand02():
+    deck_hand = npc(True)
+    deck_hand.set_equipped_gun(items.basic_knife())
+    deck_hand.set_inventory([items.basic_med_pack()])
+    return deck_hand
