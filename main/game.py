@@ -18,21 +18,35 @@ def use_textwrap(value):
         print(element)
 
 
-def game():
+def start():
+    os.system('cls' if os.name == 'nt' else 'clear')
     boat = zone.boat_start()
     use_textwrap(boat.get_description()["initial"])
     print('------------------------------')
     print('------------------------------')
-    prompt = input("1. Read Dossier\n2. Speak Captain\n3. Look Around the Ship\n4. Inventory\n5. Help\n> ")
+    game(boat)
 
+
+def game(boat):
+    prompt = input("1. Read Dossier\n2. Speak to the Captain\n3. Look Around the Ship\n4. Inventory\n5. Help\n> ")
+    if "read" in prompt.lower() or prompt == "1":
+        use_textwrap(boat.get_description()["dossier"])
+        print('------------------------------')
+        game(boat)
+    elif "speak" in prompt.lower() or prompt == "2":
+        print('Alex: "Looks like we\'re nearly there Captain"')
+        print('Captain: "Indeed we are. That dock is in no condition for a ship of this size. You\'ll have to '
+              'disembark on one of our small inflatable crafts. Let me know when you\'re ready to head out '
+              'or if you have any other questions."')
+        print('------------------------------')
+        speak = input("1. Disembark\n2. The Storm\n3. The Island")
 
 def title_screen_selections():
     option = input("> ")
     if option.lower() == "play" or option == "1":
         hero.create_class_screen()
         character = hero.class_selection()
-        game()
-
+        start()
         #battle_system.battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
         #                           [random.randint(0, 2)])
     elif option.lower() == "help" or option == "2":

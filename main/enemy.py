@@ -6,6 +6,7 @@ import items
 class Enemy:
     def __init__(self, en_name, health, defence, strength, luck):
         self.name = en_name
+        self.description = None
         self.hp = health
         self.dp = defence
         self.strength_attribute = strength
@@ -17,6 +18,12 @@ class Enemy:
 
     def set_name(self, new_name):
         self.name = new_name
+
+    def get_description(self):
+        return self.description
+
+    def set_description(self, new_description):
+        self.description = new_description
 
     def get_health(self):
         return self.hp
@@ -61,6 +68,7 @@ class Human(Enemy):
         self.equipped_melee = None
         self.equipped_armour = None
         self.happy = 0
+        self.dialog = None
 
     def get_gun_skill(self):
         return self.gun_skill_attribute
@@ -94,6 +102,12 @@ class Human(Enemy):
             self.happy = self.happy + value
         else:
             self.happy = self.happy - value
+
+    def get_dialog(self):
+        return self.dialog
+
+    def set_dialog(self, new_dialog):
+        self.dialog = new_dialog
 
 
 class BossHuman(Human):
@@ -146,8 +160,7 @@ def alpha_goblin():
     return goblin
 
 
-def npc():
-    gender = bool(random.getrandbits(1))
+def npc(gender):
     if gender:
         npc_name = names.get_full_name(gender='male')
         npc_health = random.randint(60, 100)
@@ -158,7 +171,7 @@ def npc():
         else:
             npc_gun_skill = random.randint(4, 18)
         npc_luck = random.randint(1, 10)
-        return [npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck]
+        return Human(npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck)
     else:
         npc_name = names.get_full_name(gender='female')
         npc_health = random.randint(60, 100)
@@ -169,5 +182,20 @@ def npc():
         else:
             npc_gun_skill = random.randint(4, 18)
         npc_luck = random.randint(1, 10)
-        return [npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck]
+        return Human(npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck)
+
+
+def boat_captain():
+    captain = npc(True)
+    captain.set_description("""A gruff older man in his mid 50\'s or there about. A no nonsense looking guy.""")
+    captain.set_dialog({
+        "Disembark": "You're ready? Ok. So we're going to get you onto one of our small inflatable crafts. Don't worry"
+                     "it has a motor.",
+        "Storm": "This system has been heading our way from the east. It's looking to be a bad one. Whatever you have"
+                 "to do on that Island I'd suggest doing it fast. You won't want to be out here once this storm hits.",
+
+    })
+
+
+
 

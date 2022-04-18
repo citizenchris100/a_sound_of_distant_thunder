@@ -79,8 +79,10 @@ class StoryZone(Zone):
 
 def boat_start():
     desc = {
-        "initial": """A creaky old ship like this is not my ideal method of travel. I guess I shouldn't complain  
-                   though. This gig came up last minute and the paycheck is insane. Some money people want me to get 
+        "initial": """A creaky old ship like this is not my ideal method of travel. Especially in this kind of weather.
+                   The sea was pretty rough on the way here. That distant thunder is getting closer. From the look of 
+                   these clouds we're about to get hit with a pretty bad storm.I guess I shouldn't complain though. 
+                   This gig came up last minute and the paycheck is insane. Some money people want me to get 
                    control of this  island. Some kind of manufacturing facility. The dossier here has the details. 
                    For this kind of money, I'm more than willing to oblige. Seems easy enough. However I'm a firm 
                    believer that  if its too good to be true it probably is. It's looking like  we're getting pretty 
@@ -99,7 +101,7 @@ def boat_start():
                         such short notice. There is a case near by. Probably the supplies prepared for me. Might
                         be a good idea to take a look. They could help."""
     }
-    captain = enemy.npc()
+    captain = enemy.npc(True)
     boat_items = [items.basic_med_pack(), items.basic_pistol(), items.basic_knife()]
     return Zone("Boat", desc, captain, boat_items)
 
