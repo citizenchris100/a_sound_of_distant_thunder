@@ -13,8 +13,8 @@ class Hero:
         self.hp = 65
         self.hp_limit = 65
         self.status_effects = []
-        self.inventory = [items.basic_med_pack(), items.basic_med_pack(), items.basic_pistol()]
-        self.equipped_gun = items.pop_gun()
+        self.inventory = [items.basic_med_pack()]
+        self.equipped_gun = None
         self.equipped_melee = None
         self.equipped_armour = None
         self.defence_points = dp
@@ -144,6 +144,7 @@ def create_class_screen():
     print('-           help             -')
     print('-           quit             -')
     print('------------------------------')
+    print('------------------------------')
 
 
 def class_selection():
@@ -174,6 +175,7 @@ def class_selection():
               "\nYou can type 'Help' to get details on the Character Classes.")
         class_selection()
     print('------------------------------')
+    print('------------------------------')
     print('--Your Character\'s Stats-----')
     print('-Health: ', character.get_health_points())
     print('-Defence: ', character.get_defence_points())
@@ -181,6 +183,7 @@ def class_selection():
     print('-Gun Skill: ', character.get_gun_skill())
     print('-Luck: ', character.get_luck_attribute())
     print('-Charm: ', character.get_charm_attribute())
+    print('------------------------------')
     print('------------------------------')
     return character
 

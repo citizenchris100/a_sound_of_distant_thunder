@@ -3,6 +3,7 @@
 
 import sys
 import os
+import textwrap
 import hero
 import enemy
 import battle_system
@@ -10,26 +11,39 @@ import random
 import zone
 
 
+def use_textwrap(value):
+    wrapper = textwrap.TextWrapper(width=100)
+    word_list = wrapper.wrap(text=value)
+    for element in word_list:
+        print(element)
+
+
 def game():
     boat = zone.boat_start()
+    use_textwrap(boat.get_description()["initial"])
+    print('------------------------------')
+    print('------------------------------')
+    prompt = input("1. Read Dossier\n2. Speak Captain\n3. Look Around the Ship\n4. Inventory\n5. Help\n> ")
 
 
 def title_screen_selections():
     option = input("> ")
-    if option.lower() == "play":
+    if option.lower() == "play" or option == "1":
         hero.create_class_screen()
         character = hero.class_selection()
-        battle_system.battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
-                                   [random.randint(0, 2)])
-    elif option.lower() == "help":
+        game()
+
+        #battle_system.battle_state(character, [enemy.basic_goblin(), enemy.beta_goblin(), enemy.alpha_goblin()]
+        #                           [random.randint(0, 2)])
+    elif option.lower() == "help" or option == "2":
         help_menu()
         title_screen_selections()
-    elif option.lower() == "quit":
+    elif option.lower() == "quit" or option == "3":
         sys.exit()
     else:
-        print("Type 'Play' to play the game. "
-              "\n 'Quit' to exit"
-              "\n You can type 'Help' at any time for assistance.")
+        print("Type '1' or 'Play' to play the game. "
+              "\n You can type '2' or 'Help' for assistance."
+              "\n '3' or 'Quit' to exit")
         title_screen_selections()
 
 
@@ -41,14 +55,17 @@ def title_screen():
     print('------------------------------')
     print('-   by Christopher Manning   -')
     print('------------------------------')
-    print('-           1. Play          -')
-    print('-           2. Help          -')
-    print('-           3. Quit          -')
+    print('------------------------------')
+    print('-          1. Play           -')
+    print('-          2. Help           -')
+    print('-          3. Quit           -')
+    print('------------------------------')
     print('------------------------------')
     title_screen_selections()
 
 
 def help_menu():
+    print('------------------------------')
     print('------------------------------')
     print('-         How to Play        -')
     print('------------------------------')
@@ -91,6 +108,7 @@ def help_menu():
     print('- "Flee"                     -')
     print('-   :Attempt to retreat      -')
     print('-    from battle / attack    -')
+    print('------------------------------')
     print('------------------------------')
 
 
