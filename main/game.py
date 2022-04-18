@@ -39,7 +39,8 @@ def game(boat):
               'disembark on one of our small inflatable crafts. Let me know when you\'re ready to head out '
               'or if you have any other questions."')
         print('------------------------------')
-        speak = input("1. Disembark\n2. The Storm\n3. The Island")
+        speak = input("1. Disembark\n2. The Storm\n3. The Island\n4. Attack\n5. Return\n6. Help\n> ")
+
 
 def title_screen_selections():
     option = input("> ")
@@ -109,7 +110,7 @@ def help_menu():
     print('-  conversation with         -')
     print('-  an NPC                    -')
     print('------------------------------')
-    print('- "<Weapon> Attack":         -')
+    print('- "(Weapon) Attack":         -')
     print('-  Attack a person or thing  -')
     print('-  with the corresponding    -')
     print('-  weapon                    -')
@@ -119,9 +120,13 @@ def help_menu():
     print('-  inventory to either use or-')
     print('-  equip items               -')
     print('------------------------------')
-    print('- "Flee"                     -')
-    print('-   :Attempt to retreat      -')
-    print('-    from battle / attack    -')
+    print('- "Flee":                    -')
+    print('-   Attempt to retreat       -')
+    print('-   from battle / attack     -')
+    print('------------------------------')
+    print('- "Return":                  -')
+    print('-   Go back to the previous  -')
+    print('-   set of prompts           -')
     print('------------------------------')
     print('------------------------------')
 

@@ -140,6 +140,7 @@ def med_pack_loot():
     return [items.medium_med_pack(), items.basic_med_pack(), items.advanced_med_pack()]
 
 
+# TODO : add descriptions to goblins
 def basic_goblin():
     goblin = Enemy("Goblin", random.randint(15, 30), random.randint(1, 3), random.randint(5, 10), random.randint(0, 5))
     goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
@@ -193,9 +194,6 @@ def boat_captain():
                      "it has a motor.",
         "Storm": "This system has been heading our way from the east. It's looking to be a bad one. Whatever you have"
                  "to do on that Island I'd suggest doing it fast. You won't want to be out here once this storm hits.",
-
+        "Island": "Don't know much about it. A buddy of mine was making pretty good money ferrying people to and from"
+                  "the island. He mentioned that he stopped getting ferry jobs about a month ago."
     })
-
-
-
-
