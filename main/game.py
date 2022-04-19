@@ -37,26 +37,55 @@ def game(character):
         print('------------------------------')
         game(character)
     elif "speak" in prompt.lower() or prompt == "2":
+        speak_to_captain(captain, character)
+    elif "look" in prompt.lower() or prompt == "3":
         os.system('cls' if os.name == 'nt' else 'clear')
-        print('Alex: "Looks like we\'re nearly there Captain"')
-        print('Captain: "Indeed we are. That dock is in no condition for a ship of this size.\nYou\'ll have to '
-              'disembark on one of our small inflatable crafts.\nLet me know when you\'re ready to head out\n'
-              'or if you have any other questions."')
+        use_textwrap(boat.get_description()["surroundings"])
         print('------------------------------')
-        speak = input("1. Disembark\n2. The Storm\n3. The Island\n4. Attack\n5. Return\n6. Help\n> ")
-        if "disembark" in speak.lower() or speak == "1":
-            print(captain.get_dialog()["Disembark"])
-            game(character)
-        elif "storm" in speak.lower() or speak == "2":
-            print(captain.get_dialog()["Storm"])
-            game(character)
-        elif "island" in speak.lower() or speak == "3":
-            print(captain.get_dialog()["Island"])
-            game(character)
-        elif "attack" in speak.lower() or speak == "4":
-            battle_system.battle_state(character, captain, False)
+        boat_prompt = input("1. Look at the Case\n2. Speak to the Captain\n3. Inventory\n4. Return\n5. Help\n> ")
+        if "look" in boat_prompt.lower() or boat_prompt == "1":
+            print("As I approach the case one of the deck hands stops what he's doing to speak to me.")
+            print("Deck Hand: \"Your agency had us prepare this for you.\nThey weren't specific about what was"
+                  "needed. So its just our general survival kit. Take a look.\"\n"
+                  "The deck hand opens the case.\nInside there appears to be pretty much what he said.\n"
+                  "Standard med kit and a 9mm pistol and hunting knife.\n")
+            print('------------------------------')
+            option = input("Would you like to add the items from the case to your Inventory?\nYes \nNo\n> ")
+            if option.lower() == "yes":
+                character.get_inventory().extend(boat.get_items())
+                print("The case items have been added to your inventory.\nYou can view your inventory by"
+                      "choosing the 'Inventory' prompt.")
+                game(character)
+            elif option.lower() == "no":
+                print("Maybe I don't need this stuff")
+                game(character)
+            else:
+                print("Invalid Input, please choose either \'Yes\' or \'No\'.")
+                game(character)
+    elif "inventory" in prompt.lower() or prompt == "4":
+        battle_system.inventory(character)
+        game(character)
 
 
+def speak_to_captain(captain, character):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print('Alex: "Looks like we\'re nearly there Captain"')
+    print('Captain: "Indeed we are. That dock is in no condition for a ship of this size.\nYou\'ll have to '
+          'disembark on one of our small inflatable crafts.\nLet me know when you\'re ready to head out\n'
+          'or if you have any other questions."')
+    print('------------------------------')
+    speak = input("1. Disembark\n2. The Storm\n3. The Island\n4. Attack\n5. Return\n6. Help\n> ")
+    if "disembark" in speak.lower() or speak == "1":
+        print(captain.get_dialog()["Disembark"])
+        game(character)
+    elif "storm" in speak.lower() or speak == "2":
+        print(captain.get_dialog()["Storm"])
+        game(character)
+    elif "island" in speak.lower() or speak == "3":
+        print(captain.get_dialog()["Island"])
+        game(character)
+    elif "attack" in speak.lower() or speak == "4":
+        battle_system.battle_state(character, captain, False)
 
 
 def title_screen_selections():
