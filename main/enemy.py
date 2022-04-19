@@ -210,6 +210,7 @@ def deck_hand01():
     deck_hand = npc(True)
     deck_hand.set_equipped_gun(items.basic_knife())
     deck_hand.set_inventory([items.basic_med_pack()])
+    deck_hand.set_name("Deck Hand")
     return deck_hand
 
 
@@ -217,4 +218,5 @@ def deck_hand02():
     deck_hand = npc(True)
     deck_hand.set_equipped_gun(items.basic_knife())
     deck_hand.set_inventory([items.basic_med_pack()])
+    deck_hand.set_name("Deck Hand")
     return deck_hand

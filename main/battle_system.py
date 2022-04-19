@@ -181,8 +181,9 @@ def enemy_defeat(character_var, enemy_var):
     level_up(character_var)
 
 
-def battle_state(character_var, enemy_var):
-    enemy_attack(character_var, enemy_var, "surprise")
+def battle_state(character_var, enemy_var, surprise):
+    if surprise:
+        enemy_attack(character_var, enemy_var, "surprise")
     while enemy_var.get_health() > 0:
         option = input("1. Melee Attack \n2. Gun Attack\n3. Inventory\n4. Flee\n> ")
         if option == "1":
@@ -267,7 +268,7 @@ def inventory(character_var):
     print('------------------------------')
     while True:
         n = input("Enter the number of the corresponding Inventory item\nyou would like to Use / Equip or Discard.\n"
-                  "Additionally you can type \'Exit\' to return to the previous Menu.> ")
+                  "Additionally you can type \'Exit\' to return to the previous Menu.\n> ")
         if n.isdigit() and int(n) <= len(character_var.get_inventory()):
             nn = int(n) - 1
             start = vowel_start(character_var.get_inventory()[nn].get_item_name())

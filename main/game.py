@@ -54,7 +54,7 @@ def game(character):
             print(captain.get_dialog()["Island"])
             game(character)
         elif "attack" in speak.lower() or speak == "4":
-            battle_system.battle_state(character, captain)
+            battle_system.battle_state(character, captain, False)
 
 
 
