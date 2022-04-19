@@ -28,16 +28,13 @@ def start(character):
 def game(character):
     prompt = input("1. Read Dossier\n2. Speak to the Captain\n3. Look Around the Ship\n4. Inventory\n5. Help\n> ")
     boat = zone.boat_start()
-    captain = boat.get_characters()[0]
-    deck_hand_01 = boat.get_characters()[1]
-    deck_hand_02 = boat.get_characters()[2]
     if "read" in prompt.lower() or prompt == "1":
         os.system('cls' if os.name == 'nt' else 'clear')
         use_textwrap(boat.get_description()["dossier"])
         print('------------------------------')
         game(character)
     elif "speak" in prompt.lower() or prompt == "2":
-        speak_to_captain(captain, character)
+        speak_to_captain(character, boat)
     elif "look" in prompt.lower() or prompt == "3":
         os.system('cls' if os.name == 'nt' else 'clear')
         use_textwrap(boat.get_description()["surroundings"])
@@ -50,8 +47,8 @@ def game(character):
                   "The deck hand opens the case.\nInside there appears to be pretty much what he said.\n"
                   "Standard med kit and a 9mm pistol and hunting knife.\n")
             print('------------------------------')
-            option = input("Would you like to add the items from the case to your Inventory?\nYes \nNo\n> ")
-            if option.lower() == "yes":
+            option = input("Would you like to add the items from the case to your Inventory?\n1. Yes \n2. No\n> ")
+            if option.lower() == "yes" :
                 character.get_inventory().extend(boat.get_items())
                 print("The case items have been added to your inventory.\nYou can view your inventory by"
                       "choosing the 'Inventory' prompt.")
@@ -60,14 +57,20 @@ def game(character):
                 print("Maybe I don't need this stuff")
                 game(character)
             else:
-                print("Invalid Input, please choose either \'Yes\' or \'No\'.")
+                print("Invalid Input, please choose either \'1. Yes\' or \'2. No\'.")
                 game(character)
     elif "inventory" in prompt.lower() or prompt == "4":
         battle_system.inventory(character)
         game(character)
+    elif "help" in prompt.lower() or prompt == "5":
+        help_menu()
+        game(character)
 
 
-def speak_to_captain(captain, character):
+def speak_to_captain(character, boat):
+    captain = boat.get_characters()[0]
+    deck_hand_01 = boat.get_characters()[1]
+    deck_hand_02 = boat.get_characters()[2]
     os.system('cls' if os.name == 'nt' else 'clear')
     print('Alex: "Looks like we\'re nearly there Captain"')
     print('Captain: "Indeed we are. That dock is in no condition for a ship of this size.\nYou\'ll have to '
@@ -86,6 +89,8 @@ def speak_to_captain(captain, character):
         game(character)
     elif "attack" in speak.lower() or speak == "4":
         battle_system.battle_state(character, captain, False)
+        battle_system.battle_state(character, deck_hand_01, True)
+        battle_system.battle_state(character, deck_hand_02, True)
 
 
 def title_screen_selections():
