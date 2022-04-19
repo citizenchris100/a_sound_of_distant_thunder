@@ -89,8 +89,11 @@ def speak_to_captain(character, boat):
         game(character)
     elif "attack" in speak.lower() or speak == "4":
         battle_system.battle_state(character, captain, False)
+        print('------------------------------')
         battle_system.battle_state(character, deck_hand_01, True)
+        print('------------------------------')
         battle_system.battle_state(character, deck_hand_02, True)
+        print('------------------------------')
 
 
 def title_screen_selections():
