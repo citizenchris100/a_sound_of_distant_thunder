@@ -105,3 +105,15 @@ def boat_start():
     boat_characters = [enemy.boat_captain(), enemy.deck_hand01(), enemy.deck_hand02()]
     boat_item = [items.basic_pistol(), items.basic_knife(), items.basic_med_pack()]
     return Zone("Boat", desc, boat_characters, boat_item)
+
+
+def lighthouse():
+    desc = {
+        "initial": """As I approach the light house it"""
+    }
+
+
+def dock():
+    desc = {
+        "initial": """"""
+    }

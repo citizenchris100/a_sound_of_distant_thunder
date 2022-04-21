@@ -22,17 +22,17 @@ def start(character):
     use_textwrap(boat.get_description()["initial"])
     print('------------------------------')
     print('------------------------------')
-    game(character)
+    boat_zone(character)
 
 
-def game(character):
+def boat_zone(character):
     prompt = input("1. Read Dossier\n2. Speak to the Captain\n3. Look Around the Ship\n4. Inventory\n5. Help\n> ")
     boat = zone.boat_start()
     if "read" in prompt.lower() or prompt == "1":
         os.system('cls' if os.name == 'nt' else 'clear')
         use_textwrap(boat.get_description()["dossier"])
         print('------------------------------')
-        game(character)
+        boat_zone(character)
     elif "speak" in prompt.lower() or prompt == "2":
         speak_to_captain(character, boat)
     elif "look" in prompt.lower() or prompt == "3":
@@ -48,23 +48,26 @@ def game(character):
                   "Standard med kit and a 9mm pistol and hunting knife.\n")
             print('------------------------------')
             option = input("Would you like to add the items from the case to your Inventory?\n1. Yes \n2. No\n> ")
-            if option.lower() == "yes" :
+            if option.lower() == "yes" or option == "1":
                 character.get_inventory().extend(boat.get_items())
                 print("The case items have been added to your inventory.\nYou can view your inventory by"
                       "choosing the 'Inventory' prompt.")
-                game(character)
-            elif option.lower() == "no":
+                boat_zone(character)
+            elif option.lower() == "no" or option == "2":
                 print("Maybe I don't need this stuff")
-                game(character)
+                boat_zone(character)
             else:
-                print("Invalid Input, please choose either \'1. Yes\' or \'2. No\'.")
-                game(character)
+                print("Invalid Option")
+                boat_zone(character)
     elif "inventory" in prompt.lower() or prompt == "4":
         battle_system.inventory(character)
-        game(character)
+        boat_zone(character)
     elif "help" in prompt.lower() or prompt == "5":
         help_menu()
-        game(character)
+        boat_zone(character)
+    else:
+        print("Invalid Option")
+        boat_zone(character)
 
 
 def speak_to_captain(character, boat):
@@ -80,13 +83,21 @@ def speak_to_captain(character, boat):
     speak = input("1. Disembark\n2. The Storm\n3. The Island\n4. Attack\n5. Return\n6. Help\n> ")
     if "disembark" in speak.lower() or speak == "1":
         print(captain.get_dialog()["Disembark"])
-        game(character)
+        print('------------------------------')
+        small_boat = """I board the small inflatable craft the Captain prepared for me. It did in fact have a small
+        4 stroke motor. Which should be enough to get me to the Island from here. However in the distance I can 
+        see a light house. Which had it been functioning would be useful on a pitch black night such as this.
+        Sort of makes you wonder how bad things could have gone on this island for the light house to just be
+        sitting there like that. No light, no nothing. In any case, I have a decision to make. Head to the dock
+        or check out this ominous Light House."""
+        use_textwrap(small_boat)
+        disembark(boat, character)
     elif "storm" in speak.lower() or speak == "2":
         print(captain.get_dialog()["Storm"])
-        game(character)
+        boat_zone(character)
     elif "island" in speak.lower() or speak == "3":
         print(captain.get_dialog()["Island"])
-        game(character)
+        boat_zone(character)
     elif "attack" in speak.lower() or speak == "4":
         battle_system.battle_state(character, captain, False)
         print('------------------------------')
@@ -94,6 +105,41 @@ def speak_to_captain(character, boat):
         print('------------------------------')
         battle_system.battle_state(character, deck_hand_02, True)
         print('------------------------------')
+        disembark(boat, character)
+    else: 
+        print("Invalid Option")
+        speak_to_captain(captain, boat)
+
+
+def disembark(boat, character):
+    option = input("1. Light House\n2. Dock\n3. Return\n4. Help\n> ")
+    if "light" in option.lower() or option == "1":
+        os.system('cls' if os.name == 'nt' else 'clear')
+        use_textwrap(zone.lighthouse().get_description()["initial"])
+        print('------------------------------')
+        print('------------------------------')
+        light_house(character)
+    elif "dock" in option.lower() or option == "1":
+        os.system('cls' if os.name == 'nt' else 'clear')
+        use_textwrap(zone.dock().get_description()["initial"])
+        print('------------------------------')
+        print('------------------------------')
+        dock(character)
+    elif "return" in option.lower() or option == "3":
+        speak_to_captain(character, boat)
+    elif "help" in option.lower() or option == "4":
+        help_menu()
+        speak_to_captain(character, boat)
+    else:
+        print("Invalid Option")
+
+
+def light_house(character):
+    print("foo")
+    
+    
+def dock(character):
+    print("bar")
 
 
 def title_screen_selections():
