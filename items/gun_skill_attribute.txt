@@ -1,4 +1,0 @@
-basic pistol,2,
-medium pistol,4,
-large pistol,6,
-special pistol,8,

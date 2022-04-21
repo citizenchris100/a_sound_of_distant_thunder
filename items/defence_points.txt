@@ -1,4 +1,0 @@
-basic armour,3,
-medium armour,6,
-advanced armour,12,
-special armour,16,
