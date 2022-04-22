@@ -4,7 +4,6 @@ import os
 import items
 
 
-# TODO: add default weapons to classes
 class Hero:
     def __init__(self, dp, strength, gun_skill, luck, charm):
         self.name = 'Alex'
@@ -127,7 +126,6 @@ class Hero:
         self.location = new_location
 
 
-# TODO: move character creation to the game file
 def create_class_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
