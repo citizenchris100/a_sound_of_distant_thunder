@@ -10,10 +10,8 @@ import battle_system
 
 
 def use_textwrap(value):
-    wrapper = textwrap.TextWrapper(width=100)
-    word_list = wrapper.wrap(text=value)
-    for element in word_list:
-        print(element)
+    dedented_text = textwrap.dedent(value).strip()
+    print(dedented_text)
 
 
 def start(character):
@@ -66,7 +64,7 @@ def boat_zone(character):
         help_menu()
         boat_zone(character)
     else:
-        print("Invalid Option")
+        print("*Invalid Option")
         boat_zone(character)
 
 
@@ -74,23 +72,16 @@ def speak_to_captain(character, boat):
     captain = boat.get_characters()[0]
     deck_hand_01 = boat.get_characters()[1]
     deck_hand_02 = boat.get_characters()[2]
-    os.system('cls' if os.name == 'nt' else 'clear')
     print('Alex: "Looks like we\'re nearly there Captain"')
-    print('Captain: "Indeed we are. That dock is in no condition for a ship of this size.\nYou\'ll have to '
-          'disembark on one of our small inflatable crafts.\nLet me know when you\'re ready to head out\n'
-          'or if you have any other questions."')
+    use_textwrap('Captain: "Indeed we are. That dock is in no condition for a ship of this size. You\'ll have to '
+                 'disembark on one of our small inflatable crafts. Let me know when you\'re ready to head out '
+                 'or if you have any other questions."')
     print('------------------------------')
     speak = input("1. Disembark\n2. The Storm\n3. The Island\n4. Attack\n5. Return\n6. Help\n> ")
     if "disembark" in speak.lower() or speak == "1":
-        print(captain.get_dialog()["Disembark"])
+        use_textwrap(captain.get_dialog()["Disembark"])
         print('------------------------------')
-        small_boat = """I board the small inflatable craft the Captain prepared for me. It did in fact have a small
-        4 stroke motor. Which should be enough to get me to the Island from here. However in the distance I can 
-        see a light house. Which had it been functioning would be useful on a pitch black night such as this.
-        Sort of makes you wonder how bad things could have gone on this island for the light house to just be
-        sitting there like that. No light, no nothing. In any case, I have a decision to make. Head to the dock
-        or check out this ominous Light House."""
-        use_textwrap(small_boat)
+        use_textwrap("""I board the small inflatable craft the Captain prepared for me. It did in fact have a small 4 stroke motor. Which should be enough to get me to the Island from here. However in the distance I can see a light house. Which had it been functioning would be useful on a pitch black night such as this.Sort of makes you wonder how bad things could have gone on this island for the light house to just be sitting there like that. No light, no nothing. In any case, I have a decision to make. Head to the dock or check out this ominous Light House.""")
         disembark(boat, character)
     elif "storm" in speak.lower() or speak == "2":
         print(captain.get_dialog()["Storm"])
@@ -133,9 +124,11 @@ def disembark(boat, character):
     else:
         print("Invalid Option")
 
+boat_broke = """As I make my way ashore the boat engine starts to make a sound that can't be good. I'm no mechnic but I'm guessing either I need to get this thing fixed or find another way back to the pick up point. Wonderful. This gig is already starting off well."""
 
-def light_house(character):
-    print("foo")
+def light_house(character, first):
+    if first:
+        use_textwrap(boat_broke)
     
     
 def dock(character):

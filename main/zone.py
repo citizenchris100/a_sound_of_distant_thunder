@@ -79,29 +79,31 @@ class StoryZone(Zone):
 
 
 def boat_start():
-    desc = {
-        "initial": """A creaky old ship like this is not my ideal method of travel. Especially in this kind of weather.
-                   The sea was pretty rough on the way here. That distant thunder is getting closer. From the look of 
-                   these clouds we're about to get hit with a pretty bad storm.I guess I shouldn't complain though. 
-                   This gig came up last minute and the paycheck is insane. Some money people want me to get 
-                   control of this  island. Some kind of manufacturing facility. The dossier here has the details. 
-                   For this kind of money, I'm more than willing to oblige. Seems easy enough. However I'm a firm 
-                   believer that  if its too good to be true it probably is. It's looking like  we're getting pretty 
-                   close. The captain is approaching. Looks like its time to disembark.""",
-        "dossier": """A brief Dossier put together by my boss. The Client: Venture Capital Consortium. This is big money 
-                    for our agency Alex, don't fuck this up. The Job: Our Client has put significant money into this 
-                    small upstart Pharma company. I couldn't get much info on the company. It all looks pretty hush 
-                    hush. What I could gather from the Client is that the company produces some kind of experimental 
-                    pharmaceutical. The production facility is on a small Caribbean island I'd never heard of. 
-                    Our client has lost contact with the island. Seems all communication has been cut off. Sounds like 
-                    before things went dark there had been some drama related to unauthorized use of the pharmaceutical.
-                    Your mission if you choose to accept it. You'd better accept it. For this kind of money you'd be 
-                    crazy not to. In any case the ask is simple. Restore communications to the island and return with 
-                    information as to what the hell is going on.""",
-        "surroundings": """This boat or ship rather is pretty beat up. I'm guessing this was all we could get with
-                        such short notice. There is a case near by. Probably the supplies prepared for me. Might
-                        be a good idea to take a look. They could help."""
-    }
+    desc = {"initial":
+            """That sound of distant thunder was low and ominous. Like some kind of a warning. It was clearly 
+telling me to turn back. Was I going to listen? Hell no. The money was speaking louder than the thunder. Money 
+can make you do stupid things. Like board a creaky dirty old ship at 9pm on a Thursday evening. A Thursday 
+evening that seemed intent on levying some kind of storm upon all of us. I should be home drinking. Instead I’m 
+here on the deck of a ship heading toward the thunder. Suffice is to say this gig came up last minute and the 
+paycheck is insane. Some money people want me to get control of this  island. Some kind of manufacturing 
+facility. The dossier here has the details. For this kind of money, I'm more than willing to oblige. Seems easy 
+enough. However I'm a firm believer that  if its too good to be true it probably is. It's looking like  we're 
+getting pretty close. The captain is approaching. Looks like its time to disembark.""",
+            "dossier":
+                """A brief Dossier put together by my boss. The Client: Venture Capital Consortium. This is big money 
+for our agency Alex, don't fuck this up. The Job: Our Client has put significant money into this 
+small upstart Pharma company. I couldn't get much info on the company. It all looks pretty hush 
+hush. What I could gather from the Client is that the company produces some kind of experimental 
+pharmaceutical. The production facility is on a small Caribbean island I'd never heard of. 
+Our client has lost contact with the island. Seems all communication has been cut off. Sounds like 
+before things went dark there had been some drama related to unauthorized use of the pharmaceutical.
+Your mission if you choose to accept it. You'd better accept it. For this kind of money you'd be 
+crazy not to. In any case the ask is simple. Restore communications to the island and return with 
+information as to what the hell is going on.""",
+            "surroundings": """This boat or ship rather is pretty beat up. I'm guessing this was all we could get with
+such short notice. There is a case near by. Probably the supplies prepared for me. Might
+be a good idea to take a look. They could help."""
+            }
     boat_characters = [enemy.boat_captain(), enemy.deck_hand01(), enemy.deck_hand02()]
     boat_item = [items.basic_pistol(), items.basic_knife(), items.basic_med_pack()]
     return Zone("Boat", desc, boat_characters, boat_item)
@@ -109,7 +111,7 @@ def boat_start():
 
 def lighthouse():
     desc = {
-        "initial": """As I approach the light house it"""
+        "initial": """The light house was on a tiny peninsula that was about 100 feet or so """
     }
 
 

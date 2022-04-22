@@ -193,11 +193,10 @@ def boat_captain():
     captain = npc(True)
     captain.set_description("""A gruff older man in his mid 50\'s or there about. A no nonsense looking guy.""")
     captain.set_dialog({
-        "Disembark": "You're ready? Ok. So we're going to get you onto one of our small inflatable crafts. Don't worry"
-                     "it has a motor.",
-        "Storm": "This system has been heading our way from the east.\nIt's looking to be a bad one. Whatever you have"
+        "Disembark": "Captain: You're ready? Ok. So we're going to get you onto one of our small inflatable crafts. Don't worry it has a motor. I'd suggest you take care of it. We will be back to the precise coordinates we drop you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be back here in 12 hours or find another ride home.",
+        "Storm": "Captain: This system has been heading our way from the east.\nIt's looking to be a bad one. Whatever you have"
                  "to do on that Island\nI'd suggest doing it fast.\nYou won't want to be out here once this storm hits.",
-        "Island": "Don't know much about it. A buddy of mine was making pretty\ngood money ferrying people to and from"
+        "Island": "Captain: Don't know much about it. A buddy of mine was making pretty\ngood money ferrying people to and from"
                   "the island.\nHe mentioned that he stopped getting ferry jobs about a month ago."
     })
     captain.set_equipped_gun(items.large_revolver())
@@ -208,7 +207,7 @@ def boat_captain():
 
 def deck_hand01():
     deck_hand = npc(True)
-    deck_hand.set_equipped_gun(items.basic_knife())
+    deck_hand.set_equipped_melee(items.basic_knife())
     deck_hand.set_inventory([items.basic_med_pack()])
     deck_hand.set_name("Deck Hand")
     return deck_hand
@@ -216,7 +215,7 @@ def deck_hand01():
 
 def deck_hand02():
     deck_hand = npc(True)
-    deck_hand.set_equipped_gun(items.basic_knife())
+    deck_hand.set_equipped_melee(items.basic_knife())
     deck_hand.set_inventory([items.basic_med_pack()])
     deck_hand.set_name("Deck Hand")
     return deck_hand
