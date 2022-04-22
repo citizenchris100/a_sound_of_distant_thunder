@@ -293,14 +293,20 @@ def inventory(character_var):
                 print("Would you like to eqip this ", character_var.get_inventory()[nn].get_item_name(), "?", sep='')
                 d = input("1. Equip.\n2. Discard.\n> ")
                 if d.lower() == "equip" or d == "1":
-                    if character_var.get_equipped_gun() is not None:
-                        character_var.add_inventory(character_var.get_equipped_gun())
-                    character_var.set_equipped_gun(character_var.get_inventory()[nn])
                     if character_var.get_inventory()[nn].get_item_attribute() == "gun":
+                        if character_var.get_equipped_gun() is not None:
+                            character_var.add_inventory(character_var.get_equipped_gun())
+                        character_var.set_equipped_gun(character_var.get_inventory()[nn])
                         print("The ", character_var.get_equipped_gun().get_item_name(), " is now equipped.", sep='')
                     elif character_var.get_inventory()[nn].get_item_attribute() == "melee":
+                        if character_var.get_equipped_melee() is not None:
+                            character_var.add_inventory(character_var.get_equipped_melee())
+                        character_var.set_equipped_melee(character_var.get_inventory()[nn])
                         print("The ", character_var.get_equipped_melee().get_item_name(), " is now equipped.", sep='')
-                    else:
+                    elif character_var.get_inventory()[nn].get_item_attribute() == "armour":
+                        if character_var.get_equipped_armour() is not None:
+                            character_var.add_inventory(character_var.get_equipped_armour())
+                        character_var.set_equipped_armour(character_var.get_inventory()[nn])
                         print("The ", character_var.get_equipped_armour().get_item_name(), " is now equipped.", sep='')
                     character_var.del_inventory(nn)
                     break

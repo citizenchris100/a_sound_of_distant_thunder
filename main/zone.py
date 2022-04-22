@@ -111,7 +111,10 @@ be a good idea to take a look. They could help."""
 
 def lighthouse():
     desc = {
-        "initial": """The light house was on a tiny peninsula that was about 100 feet or so """
+        "initial": """The light house was on a tiny peninsula and was sitting about 100 feet or so above the shore.
+I walked the shoreline around the peninsula until I found a stair case built into the side of the cliff wall. A couple
+minutes later I'm up the stairs. Up close this place wasn't exactly the inviting looking spot I've ever seen. That
+hasn't ever stopped me before."""
     }
 
 

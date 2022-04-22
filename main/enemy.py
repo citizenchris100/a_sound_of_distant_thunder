@@ -219,3 +219,6 @@ def deck_hand02():
     deck_hand.set_inventory([items.basic_med_pack()])
     deck_hand.set_name("Deck Hand")
     return deck_hand
+
+def ligh_house_keeper():
+    lhk = npc(True)
