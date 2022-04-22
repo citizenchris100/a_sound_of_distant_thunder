@@ -193,13 +193,18 @@ def boat_captain():
     captain = npc(True)
     captain.set_description("""A gruff older man in his mid 50\'s or there about. A no nonsense looking guy.""")
     captain.set_dialog({
-        "Disembark": "Captain: You're ready? Ok. So we're going to get you onto one of our small inflatable crafts. Don't worry it has a motor. I'd suggest you take care of it. We will be back to the precise coordinates we drop you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be back here in 12 hours or find another ride home.",
-        "Storm": "Captain: This system has been heading our way from the east.\nIt's looking to be a bad one. Whatever you have"
-                 "to do on that Island\nI'd suggest doing it fast.\nYou won't want to be out here once this storm hits.",
-        "Island": "Captain: Don't know much about it. A buddy of mine was making pretty\ngood money ferrying people to and from"
-                  "the island.\nHe mentioned that he stopped getting ferry jobs about a month ago."
+        "Disembark": """Captain: You're ready? Ok. So we're going to get you onto one of our small inflatable crafts. 
+        Don't worry it has a motor. I'd suggest you take care of it. We will be back to the precise coordinates we drop 
+        you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be 
+        back here in 12 hours or find another ride home.""",
+        "Storm": """Captain: This system has been heading our way from the east. It's looking to be a bad one. 
+        Whatever you have to do on that Island. I'd suggest doing it fast. You won't want to be out here once this 
+        storm hits.""",
+        "Island": """Captain: Don't know much about it. A buddy of mine was making pretty good money ferrying people 
+        to and from the island.\nHe mentioned that he stopped getting ferry jobs about a month ago."""
     })
     captain.set_equipped_gun(items.large_revolver())
+    captain.set_equipped_armour(items.medium_body_armour())
     captain.set_inventory([items.medium_med_pack(), items.cologne()])
     captain.set_name("Boat Captain")
     return captain
@@ -220,5 +225,15 @@ def deck_hand02():
     deck_hand.set_name("Deck Hand")
     return deck_hand
 
-def ligh_house_keeper():
-    lhk = npc(True)
+
+def light_house_keeper():
+    light_hk = npc(True)
+    light_hk.set_equipped_gun(items.large_revolver())
+    light_hk.set_equipped_armour(items.epic_body_armour())
+    light_hk.set_inventory([items.basic_med_pack(), items.basic_med_pack(), items.basic_med_pack(),
+                            items.medium_med_pack(), items.medium_med_pack(), items.medium_med_pack(),
+                            items.advanced_med_pack(), items.advanced_med_pack(), items.advanced_med_pack(),
+                            items.medium_pistol(), items.advanced_pistol(), items.medium_knife(),
+                            items.large_knife(), items.basic_body_armour(), items.medium_body_armour(),
+                            items.advanced_body_armour(), items.cologne(), items.charm()])
+    light_hk.set_name("Lighthouse Keeper")
