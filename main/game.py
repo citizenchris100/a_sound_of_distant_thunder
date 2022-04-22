@@ -40,11 +40,11 @@ def boat_zone(character):
         boat_prompt = input("1. Look at the Case\n2. Speak to the Captain\n3. Inventory\n4. Return\n5. Help\n> ")
         if "look" in boat_prompt.lower() or boat_prompt == "1":
             print("As I approach the case one of the deck hands stops what he's doing to speak to me.")
-            print("Deck Hand: \"Your agency had us prepare this for you.\nThey weren't specific about what was"
-                  "needed. So its just our general survival kit. Take a look.\"\n"
-                  "The deck hand opens the case.\nInside there appears to be pretty much what he said.\n"
-                  "Standard med kit and a 9mm pistol and hunting knife.\n")
+            use_textwrap("""Deck Hand: Your agency had us prepare this for you. They weren't specific about what was 
+            needed. So its just our general survival kit. Take a look.""")
             print('------------------------------')
+            use_textwrap("""The deck hand opens the case. Inside there appears to be pretty much what he said. Standard 
+            med kit and a 9mm pistol and hunting knife.""")
             option = input("Would you like to add the items from the case to your Inventory?\n1. Yes \n2. No\n> ")
             if option.lower() == "yes" or option == "1":
                 character.get_inventory().extend(boat.get_items())
@@ -81,7 +81,11 @@ def speak_to_captain(character, boat):
     if "disembark" in speak.lower() or speak == "1":
         use_textwrap(captain.get_dialog()["Disembark"])
         print('------------------------------')
-        use_textwrap("""I board the small inflatable craft the Captain prepared for me. It did in fact have a small 4 stroke motor. Which should be enough to get me to the Island from here. However in the distance I can see a light house. Which had it been functioning would be useful on a pitch black night such as this.Sort of makes you wonder how bad things could have gone on this island for the light house to just be sitting there like that. No light, no nothing. In any case, I have a decision to make. Head to the dock or check out this ominous Light House.""")
+        use_textwrap("""I board the small inflatable craft the Captain prepared for me. It did in fact have a small 4 
+stroke motor. Which should be enough to get me to the Island from here. However in the distance I can see a light house.
+ Which had it been functioning would be useful on a pitch black night such as this.Sort of makes you wonder how bad 
+ things could have gone on this island for the light house to just be sitting there like that. No light, no nothing. 
+ In any case, I have a decision to make. Head to the dock or check out this ominous Light House.""")
         disembark(boat, character)
     elif "storm" in speak.lower() or speak == "2":
         print(captain.get_dialog()["Storm"])
