@@ -183,7 +183,7 @@ def battle_state(character_var, enemy_var, surprise):
     while enemy_var.get_health() > 0:
         option = input("1. Melee Attack \n2. Gun Attack\n3. Inventory\n4. Flee\n> ")
         if option == "1":
-            if random.randint(0, 6) < random.randint(0, 12):
+            if random.randint(0, 6) < character_var.get_luck_attribute():
                 if character_var.get_equipped_melee() is not None:
                     print("You swing your ", character_var.get_equipped_melee.get_item_name(), " attacking the ",
                           enemy_var.get_name(), ".", sep='')
@@ -206,7 +206,7 @@ def battle_state(character_var, enemy_var, surprise):
                 enemy_attack(character_var, enemy_var, "no")
         elif option == "2":
             if character_var.get_equipped_gun() is not None:
-                if random.randint(0, 6) < random.randint(0, 10):
+                if random.randint(0, 6) < character_var.get_luck_attribute():
                     print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
                           enemy_var.name, ".", sep='')
                     if random.randint(0, 12) < character_var.get_luck_attribute():
