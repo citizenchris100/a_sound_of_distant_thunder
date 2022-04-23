@@ -209,15 +209,16 @@ def battle_state(character_var, enemy_var, surprise):
                 if random.randint(0, 6) < random.randint(0, 10):
                     print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
                           enemy_var.name, ".", sep='')
-                    hit = (character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
+                    if random.randint(0, 12) < character_var.get_luck_attribute():
+                        print("You managed to get two hits")
+                        hit = ((character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill()) * 2)
+                    else:
+                        hit = (character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
                     if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
                         defend = enemy_var.get_defence()
                     else:
                         defend = (enemy_var.get_defence() + enemy_var.get_equipped_armour().get_item_value())
                     enemy_var.set_health(enemy_var.get_health() - math.floor(hit / defend))
-                    if random.randint(0, 10) < character_var.get_luck_attribute():
-                        print("You managed to get another shot off.")
-                        enemy_var.set_health(math.floor(enemy_var.get_health - (hit / defend)))
                     if enemy_var.get_health() > 0:
                         enemy_attack(character_var, enemy_var, "yes")
                     else:
