@@ -50,8 +50,10 @@ med kit and a 9mm pistol and hunting knife.""")
             option = input("Would you like to add the items from the case to your Inventory?\n1. Yes \n2. No\n> ")
             if option.lower() == "yes" or option == "1":
                 character.get_inventory().extend(boat.get_items())
-                print("The case items have been added to your inventory.\nYou can view your inventory by"
-                      "choosing the 'Inventory' prompt.")
+                print('------------------------------')
+                use_textwrap("""The case items have been added to your inventory. You can view your inventory by 
+choosing the 'Inventory' prompt.""")
+                print('------------------------------')
                 boat_zone(character)
             elif option.lower() == "no" or option == "2":
                 print("Maybe I don't need this stuff")
@@ -86,9 +88,9 @@ def speak_to_captain(character, boat):
     deck_hand_01 = boat.get_characters()[1]
     deck_hand_02 = boat.get_characters()[2]
     print('Alex: "Looks like we\'re nearly there Captain"')
-    use_textwrap('Captain: "Indeed we are. That dock is in no condition for a ship of this size. You\'ll have to '
-                 'disembark on one of our small inflatable crafts. Let me know when you\'re ready to head out '
-                 'or if you have any other questions."')
+    use_textwrap("""Captain: "Indeed we are. That dock is in no condition for a ship of this size. You\'ll have to 
+disembark on one of our small inflatable crafts. Let me know when you\'re ready to head out or if you have any other 
+questions.""")
     print('------------------------------')
     speak = input("1. Disembark\n2. The Storm\n3. The Island\n4. Attack\n5. Return\n6. Help\n> ")
     if "disembark" in speak.lower() or speak == "1":

@@ -207,7 +207,7 @@ def battle_state(character_var, enemy_var, surprise):
         elif option == "2":
             if character_var.get_equipped_gun() is not None:
                 if random.randint(0, 6) < random.randint(0, 10):
-                    print("You fired your ", character_var.get_equipped_gun().get_item_name(), "attacking the ",
+                    print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
                           enemy_var.name, ".", sep='')
                     hit = (character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
                     if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
