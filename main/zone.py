@@ -90,8 +90,10 @@ facility. The dossier here has the details. For this kind of money, I'm more tha
 enough. However I'm a firm believer that  if its too good to be true it probably is. It's looking like  we're 
 getting pretty close. The captain is approaching. Looks like its time to disembark.""",
             "dossier":
-                """A brief Dossier put together by my boss. The Client: Venture Capital Consortium. This is big money 
-for our agency Alex, don't fuck this up. The Job: Our Client has put significant money into this 
+                """A brief Dossier put together by my boss. 
+The Client: Venture Capital Consortium. This is big money 
+for our agency Alex, don't fuck this up. 
+The Job: Our Client has put significant money into this 
 small upstart Pharma company. I couldn't get much info on the company. It all looks pretty hush 
 hush. What I could gather from the Client is that the company produces some kind of experimental 
 pharmaceutical. The production facility is on a small Caribbean island I'd never heard of. 

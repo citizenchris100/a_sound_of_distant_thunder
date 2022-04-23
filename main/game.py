@@ -32,6 +32,7 @@ def boat_zone(character):
     print('------------------------------')
     if "read" in prompt.lower() or prompt == "1":
         os.system('cls' if os.name == 'nt' else 'clear')
+        print('------------------------------')
         use_textwrap(boat.get_description()["dossier"])
         print('------------------------------')
         boat_zone(character)
@@ -39,10 +40,12 @@ def boat_zone(character):
         speak_to_captain(character, boat)
     elif "look" in prompt.lower() or prompt == "3":
         os.system('cls' if os.name == 'nt' else 'clear')
+        print('------------------------------')
         use_textwrap(boat.get_description()["surroundings"])
         print('------------------------------')
         boat_prompt = input("1. Look at the Case\n2. Return\n3. Help\n> ")
         if "look" in boat_prompt.lower() or boat_prompt == "1":
+            print('------------------------------')
             print("As I approach the case one of the deck hands stops what he's doing to speak to me.")
             print('------------------------------')
             use_textwrap("""Deck Hand: Your agency had us prepare this for you. They weren't specific about what was 
@@ -50,6 +53,7 @@ needed. So its just our general survival kit. Take a look.""")
             print('------------------------------')
             use_textwrap("""The deck hand opens the case. Inside there appears to be pretty much what he said. Standard 
 med kit and a 9mm pistol and hunting knife.""")
+            print('------------------------------')
             option = input("Would you like to add the items from the case to your Inventory?\n1. Yes \n2. No\n> ")
             if option.lower() == "yes" or option == "1":
                 character.get_inventory().extend(boat.get_items())
@@ -90,6 +94,7 @@ def speak_to_captain(character, boat):
     captain = boat.get_characters()[0]
     deck_hand_01 = boat.get_characters()[1]
     deck_hand_02 = boat.get_characters()[2]
+    print('------------------------------')
     print('Alex: "Looks like we\'re nearly there Captain"')
     use_textwrap("""Captain: "Indeed we are. That dock is in no condition for a ship of this size. You\'ll have to 
 disembark on one of our small inflatable crafts. Let me know when you\'re ready to head out or if you have any other 
