@@ -26,6 +26,7 @@ def start(character):
 def boat_zone(character):
     prompt = input("1. Read Dossier\n2. Speak to the Captain\n3. Look Around the Ship\n4. Inventory\n5. Help\n> ")
     boat = zone.boat_start()
+    print('------------------------------')
     if "read" in prompt.lower() or prompt == "1":
         os.system('cls' if os.name == 'nt' else 'clear')
         use_textwrap(boat.get_description()["dossier"])
@@ -37,14 +38,15 @@ def boat_zone(character):
         os.system('cls' if os.name == 'nt' else 'clear')
         use_textwrap(boat.get_description()["surroundings"])
         print('------------------------------')
-        boat_prompt = input("1. Look at the Case\n2. Speak to the Captain\n3. Inventory\n4. Return\n5. Help\n> ")
+        boat_prompt = input("1. Look at the Case\n2. Return\n3. Help\n> ")
         if "look" in boat_prompt.lower() or boat_prompt == "1":
             print("As I approach the case one of the deck hands stops what he's doing to speak to me.")
+            print('------------------------------')
             use_textwrap("""Deck Hand: Your agency had us prepare this for you. They weren't specific about what was 
-            needed. So its just our general survival kit. Take a look.""")
+needed. So its just our general survival kit. Take a look.""")
             print('------------------------------')
             use_textwrap("""The deck hand opens the case. Inside there appears to be pretty much what he said. Standard 
-            med kit and a 9mm pistol and hunting knife.""")
+med kit and a 9mm pistol and hunting knife.""")
             option = input("Would you like to add the items from the case to your Inventory?\n1. Yes \n2. No\n> ")
             if option.lower() == "yes" or option == "1":
                 character.get_inventory().extend(boat.get_items())
@@ -56,7 +58,17 @@ def boat_zone(character):
                 boat_zone(character)
             else:
                 print("Invalid Option")
+                print('------------------------------')
                 boat_zone(character)
+        elif "return" in boat_prompt.lower() or boat_prompt == "2":
+            boat_zone(character)
+        elif "help" in boat_prompt.lower() or boat_prompt == "3":
+            help_menu()
+            boat_zone(character)
+        else:
+            print("Invalid Option")
+            print('------------------------------')
+            boat_zone(character)
     elif "inventory" in prompt.lower() or prompt == "4":
         battle_system.inventory(character)
         boat_zone(character)
@@ -64,7 +76,8 @@ def boat_zone(character):
         help_menu()
         boat_zone(character)
     else:
-        print("*Invalid Option")
+        print("Invalid Option")
+        print('------------------------------')
         boat_zone(character)
 
 
