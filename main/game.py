@@ -116,6 +116,11 @@ stroke motor. Which should be enough to get me to the Island from here. However 
         battle_system.battle_state(character, deck_hand_02, True)
         print('------------------------------')
         disembark(boat, character)
+    elif "return" in speak.lower() or speak == "5":
+        boat_zone(character)
+    elif "help" in speak.lower() or speak == "6":
+        help_menu()
+        speak_to_captain(character, boat)
     else: 
         print("Invalid Option")
         speak_to_captain(captain, boat)
