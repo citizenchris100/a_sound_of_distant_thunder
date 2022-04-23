@@ -138,15 +138,14 @@ def disembark(boat, character):
     option = input("1. Light House\n2. Dock\n3. Return\n4. Help\n> ")
     if "light" in option.lower() or option == "1":
         os.system('cls' if os.name == 'nt' else 'clear')
+        print('------------------------------')
+        print('-         Chapter 2          -')
+        print('------------------------------')
         use_textwrap(zone.lighthouse().get_description()["initial"])
-        print('------------------------------')
-        print('------------------------------')
-        light_house(character)
+        light_house(character, True)
     elif "dock" in option.lower() or option == "1":
         os.system('cls' if os.name == 'nt' else 'clear')
         use_textwrap(zone.dock().get_description()["initial"])
-        print('------------------------------')
-        print('------------------------------')
         dock(character)
     elif "return" in option.lower() or option == "3":
         speak_to_captain(character, boat)
@@ -156,15 +155,20 @@ def disembark(boat, character):
     else:
         print("Invalid Option")
 
-boat_broke = """As I make my way ashore the boat engine starts to make a sound that can't be good. I'm no mechnic but I'm guessing either I need to get this thing fixed or find another way back to the pick up point. Wonderful. This gig is already starting off well."""
+
+boat_broke = """As I make my way ashore the boat engine starts to make a sound that can't be good. 
+I'm no mechanic but I'm guessing either I need to get this thing fixed or find another way back to the pickup point. 
+Wonderful. This gig is already starting off well."""
+
 
 def light_house(character, first):
     if first:
         use_textwrap(boat_broke)
     
     
-def dock(character):
-    print("bar")
+def dock(character, first):
+    if first:
+        use_textwrap(boat_broke)
 
 
 def title_screen_selections():
