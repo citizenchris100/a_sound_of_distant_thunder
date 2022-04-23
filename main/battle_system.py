@@ -200,7 +200,8 @@ def battle_state(character_var, enemy_var, surprise):
                     enemy_attack(character_var, enemy_var, "yes")
                 else:
                     enemy_defeat(character_var, enemy_var)
-                    loot_add(character_var, enemy_var)
+                    if random.randint(0, 6) < character_var.get_luck_attribute():
+                        loot_add(character_var, enemy_var)
                     break
             else:
                 enemy_attack(character_var, enemy_var, "no")
@@ -223,7 +224,8 @@ def battle_state(character_var, enemy_var, surprise):
                         enemy_attack(character_var, enemy_var, "yes")
                     else:
                         enemy_defeat(character_var, enemy_var)
-                        loot_add(character_var, enemy_var)
+                        if random.randint(0, 6) < character_var.get_luck_attribute():
+                            loot_add(character_var, enemy_var)
                         break
                 else:
                     enemy_attack(character_var, enemy_var, "no")
@@ -268,45 +270,60 @@ def inventory(character_var):
             nn = int(n) - 1
             start = vowel_start(character_var.get_inventory()[nn].get_item_name())
             if character_var.get_inventory()[nn].get_item_attribute() == "hp":
+                print('------------------------------')
                 print("Would you like to Use this ", character_var.get_inventory()[nn].get_item_name(), "?", sep='')
+                print('------------------------------')
                 d = input("1. Use.\n2. Discard.\n> ")
                 if d.lower() == "use" or d == "1":
                     character_var.set_health_points((character_var.get_health_points() +
                                                      character_var.get_inventory()[nn].get_item_value()))
+                    print('------------------------------')
                     print("You used ", start, character_var.get_inventory()[nn].get_item_name(), sep='')
                     print(character_var.get_inventory()[nn].get_item_value(), " was added to your Health.", sep='')
                     print("Your Health is now ", character_var.get_health_points(), sep='')
+                    print('------------------------------')
                     character_var.del_inventory(nn)
                     break
                 elif d.lower() == "discard" or d == "2":
+                    print('------------------------------')
                     print("The ", character_var.get_inventory()[nn].get_item_name(), " will be deleted.", sep='')
+                    print('------------------------------')
                     character_var.del_inventory(nn)
                     break
             elif character_var.get_inventory()[nn].get_item_attribute() == "gun" or \
                     character_var.get_inventory()[nn].get_item_attribute() == "melee" or \
                     character_var.get_inventory()[nn].get_item_attribute() == "armour":
+                print('------------------------------')
                 print("Would you like to eqip this ", character_var.get_inventory()[nn].get_item_name(), "?", sep='')
+                print('------------------------------')
                 d = input("1. Equip.\n2. Discard.\n> ")
                 if d.lower() == "equip" or d == "1":
                     if character_var.get_inventory()[nn].get_item_attribute() == "gun":
                         if character_var.get_equipped_gun() is not None:
                             character_var.add_inventory(character_var.get_equipped_gun())
                         character_var.set_equipped_gun(character_var.get_inventory()[nn])
+                        print('------------------------------')
                         print("The ", character_var.get_equipped_gun().get_item_name(), " is now equipped.", sep='')
+                        print('------------------------------')
                     elif character_var.get_inventory()[nn].get_item_attribute() == "melee":
                         if character_var.get_equipped_melee() is not None:
                             character_var.add_inventory(character_var.get_equipped_melee())
                         character_var.set_equipped_melee(character_var.get_inventory()[nn])
+                        print('------------------------------')
                         print("The ", character_var.get_equipped_melee().get_item_name(), " is now equipped.", sep='')
+                        print('------------------------------')
                     elif character_var.get_inventory()[nn].get_item_attribute() == "armour":
                         if character_var.get_equipped_armour() is not None:
                             character_var.add_inventory(character_var.get_equipped_armour())
                         character_var.set_equipped_armour(character_var.get_inventory()[nn])
+                        print('------------------------------')
                         print("The ", character_var.get_equipped_armour().get_item_name(), " is now equipped.", sep='')
+                        print('------------------------------')
                     character_var.del_inventory(nn)
                     break
                 elif d.lower() == "discard" or d == "2":
                     print("The ", character_var.get_equipped_armour().get_item_name(), " will be deleted.", sep='')
+                    print('------------------------------')
                     character_var.del_inventory(nn)
                     break
                 else:
@@ -320,19 +337,18 @@ def inventory(character_var):
             inventory(character_var)
 
 
-# TODO: add ability to retrieve more than one item from enemy
 def loot_add(character_var, enemy_var):
-    if random.randint(0, 6) < character_var.get_luck_attribute():
-        loot_drop = enemy_var.get_inventory()[0]
-        print("It appears to have dropped a ", loot_drop.get_item_name(), ".", sep='')
-        print("Would you like to add ", loot_drop.get_item_name(), " to your Inventory?", sep='')
-        # TODO: gibberish catch still not working
-        option = input("Yes \nNo\n> ")
-        if option.lower() == "yes":
-            character_var.add_inventory(loot_drop)
-            print(loot_drop.get_item_name(), " was added to your inventory.", sep='')
-        elif option.lower() == "no":
-            print("The ", loot_drop.get_item_name(), " is left behind.", sep='')
-        else:
-            print("Invalid Input, please choose either \'Yes\' or \'No\'.")
-            loot_add(character_var, enemy_var)
+    loot_drop = enemy_var.get_inventory()[0]
+    print("It appears to have dropped a ", loot_drop.get_item_name(), ".", sep='')
+    print("Would you like to add ", loot_drop.get_item_name(), " to your Inventory?", sep='')
+    # TODO: gibberish catch still not working
+    option = input("Yes \nNo\n> ")
+    if option.lower() == "yes":
+        character_var.add_inventory(loot_drop)
+        print(loot_drop.get_item_name(), " was added to your inventory.", sep='')
+    elif option.lower() == "no":
+        print("The ", loot_drop.get_item_name(), " is left behind.", sep='')
+    else:
+        print("Invalid Input, please choose either \'Yes\' or \'No\'.")
+        loot_add(character_var, enemy_var)
+

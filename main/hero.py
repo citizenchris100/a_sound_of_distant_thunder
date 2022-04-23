@@ -132,40 +132,40 @@ def create_class_screen():
     print('-  Choose a Character Class  -')
     print('------------------------------')
     print('------------------------------')
-    print('-           Merc             -')
-    print('-           Soldier          -')
-    print('-           Ranger           -')
-    print('-           Spy              -')
-    print('-           Random           -')
+    print('-          1. Merc           -')
+    print('-          2. Soldier        -')
+    print('-          3. Ranger         -')
+    print('-          4. Spy            -')
+    print('-          5. Random         -')
     print('------------------------------')
     print('------------------------------')
-    print('-           help             -')
-    print('-           quit             -')
+    print('-          6. help           -')
+    print('-          7. quit           -')
     print('------------------------------')
     print('------------------------------')
 
 
 def class_selection():
     a = input("> ")
-    if a.lower() == "merc":
+    if a.lower() == "merc" or a == "1":
         character = Hero(random.randint(3, 6), random.randint(2, 5), random.randint(20, 25), random.randint(2, 4),
                          random.randint(1, 3))
-    elif a.lower() == "soldier":
+    elif a.lower() == "soldier" or a == "2":
         character = Hero(random.randint(5, 8), random.randint(10, 15), random.randint(10, 15), random.randint(2, 4),
                          random.randint(1, 5))
-    elif a.lower() == "ranger":
+    elif a.lower() == "ranger" or a == "3":
         character = Hero(random.randint(4, 7), random.randint(20, 25), random.randint(4, 7), random.randint(2, 4),
                          random.randint(1, 5))
-    elif a.lower() == "spy":
+    elif a.lower() == "spy" or a == "4":
         character = Hero(random.randint(1, 4), random.randint(4, 7), random.randint(4, 7), random.randint(5, 7),
                          random.randint(5, 7))
-    elif a.lower() == "random":
+    elif a.lower() == "random" or a == "5":
         character = Hero(random.randint(1, 7), random.randint(4, 20), random.randint(4, 20), random.randint(1, 7),
                          random.randint(1, 7))
-    elif a.lower() == "help":
+    elif a.lower() == "help" or a == "6":
         help_menu()
         class_selection()
-    elif a.lower() == "quit":
+    elif a.lower() == "quit" or a == "7":
         sys.exit()
     else:
         print("Type the name of the Character Class you would like to play."
