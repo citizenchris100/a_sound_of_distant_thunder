@@ -17,6 +17,9 @@ def use_textwrap(value):
 def start(character):
     os.system('cls' if os.name == 'nt' else 'clear')
     boat = zone.boat_start()
+    print('------------------------------')
+    print('-         Chapter 1          -')
+    print('------------------------------')
     use_textwrap(boat.get_description()["initial"])
     print('------------------------------')
     print('------------------------------')
