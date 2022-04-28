@@ -193,14 +193,14 @@ def boat_captain():
     captain.set_description("""A gruff older man in his mid 50\'s or there about. A no nonsense looking guy.""")
     captain.set_dialog({
         "Disembark": """Captain: You're ready? Ok. So we're going to get you onto one of our small inflatable crafts. 
-        Don't worry it has a motor. I'd suggest you take care of it. We will be back to the precise coordinates we drop 
-        you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be 
-        back here in 12 hours or find another ride home.""",
+Don't worry it has a motor. I'd suggest you take care of it. We will be back to the precise coordinates we drop 
+you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be 
+back here in 12 hours or find another ride home.""",
         "Storm": """Captain: This system has been heading our way from the east. It's looking to be a bad one. 
-        Whatever you have to do on that Island. I'd suggest doing it fast. You won't want to be out here once this 
-        storm hits.""",
+Whatever you have to do on that Island. I'd suggest doing it fast. You won't want to be out here once this 
+torm hits.""",
         "Island": """Captain: Don't know much about it. A buddy of mine was making pretty good money ferrying people 
-        to and from the island.\nHe mentioned that he stopped getting ferry jobs about a month ago."""
+to and from the island.\nHe mentioned that he stopped getting ferry jobs about a month ago."""
     })
     captain.set_equipped_gun(items.large_revolver())
     captain.set_equipped_armour(items.medium_body_armour())
