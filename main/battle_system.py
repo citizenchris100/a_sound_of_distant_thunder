@@ -180,9 +180,7 @@ def enemy_defeat(character_var, enemy_var):
 
 
 def check_ammo(character_var):
-    for i in range(len(character_var.get_inventory())):
-        if character_var.get_inventory()[i].get_item_attribute() == "ammo":
-            return character_var.get_inventory()[i].get_item_value()
+    return [item for item in character_var.get_inventory() if item.attribute == "ammo"]
 
 
 
@@ -216,7 +214,7 @@ def battle_state(character_var, enemy_var, surprise):
                 enemy_attack(character_var, enemy_var, "no")
         elif option == "2":
             if character_var.get_equipped_gun() is not None:
-                if check_ammo(character_var) > 0:
+                if check_ammo(character_var)[0].get_item_value() > 0:
                     if random.randint(0, 6) < character_var.get_luck_attribute():
                         print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
                               enemy_var.name, ".", sep='')
@@ -265,6 +263,7 @@ def battle_state(character_var, enemy_var, surprise):
 
 # TODO: system to add ammo to box
 # TODO: add catch for empty inventory
+# TODO: move to its own file
 def inventory(character_var):
     print('------------------------------')
     print('-         Inventory          -')
@@ -353,7 +352,6 @@ def loot_add(character_var, enemy_var):
     loot_drop = enemy_var.get_inventory()[0]
     print("It appears to have dropped a ", loot_drop.get_item_name(), ".", sep='')
     print("Would you like to add ", loot_drop.get_item_name(), " to your Inventory?", sep='')
-    # TODO: gibberish catch still not working
     option = input("Yes \nNo\n> ")
     if option.lower() == "yes":
         character_var.add_inventory(loot_drop)
