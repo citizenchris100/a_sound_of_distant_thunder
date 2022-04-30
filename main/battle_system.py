@@ -183,6 +183,11 @@ def check_ammo(character_var):
     return [item for item in character_var.get_inventory() if item.attribute == "ammo"]
 
 
+def use_ammo(character_var):
+    for i, item in enumerate(character_var.get_inventory()):
+        if item.attribute == "ammo":
+            character_var.get_inventory()[i].set_item_value((character_var.get_inventory()[i].get_item_value() - 1))
+
 
 def battle_state(character_var, enemy_var, surprise):
     if surprise:
@@ -220,8 +225,7 @@ def battle_state(character_var, enemy_var, surprise):
                               enemy_var.name, ".", sep='')
                         if random.randint(0, 12) < character_var.get_luck_attribute():
                             print("You managed to get two hits")
-                            hit = ((
-                                               character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill()) * 2)
+                            hit = ((character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill()) * 2)
                         else:
                             hit = (character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
                         if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
