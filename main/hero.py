@@ -63,6 +63,7 @@ class Hero:
     def get_inventory_limit(self):
         return self.inventory_limit
 
+# TODO: system to upgrade inventory limit
     def set_inventory_limit(self, new_limit):
         self.inventory_limit = self.inventory_limit + new_limit
 

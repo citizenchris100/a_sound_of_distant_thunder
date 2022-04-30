@@ -1,5 +1,7 @@
 import random
 import math
+from operator import attrgetter
+from itertools import groupby
 
 
 # TODO: improve combat verbiage
@@ -177,6 +179,13 @@ def enemy_defeat(character_var, enemy_var):
     level_up(character_var)
 
 
+def check_ammo(character_var):
+    for i in range(len(character_var.get_inventory())):
+        if character_var.get_inventory()[i].get_item_attribute() == "ammo":
+            return character_var.get_inventory()[i].get_item_value()
+
+
+
 def battle_state(character_var, enemy_var, surprise):
     if surprise:
         enemy_attack(character_var, enemy_var, "surprise")
@@ -206,30 +215,31 @@ def battle_state(character_var, enemy_var, surprise):
             else:
                 enemy_attack(character_var, enemy_var, "no")
         elif option == "2":
-            if character_var.get_equipped_gun() is not None and any(obj['attribute'] == 'ammo' for obj in
-                                                                    character_var.get_inventory):
-                if random.randint(0, 6) < character_var.get_luck_attribute():
-                    print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
-                          enemy_var.name, ".", sep='')
-                    if random.randint(0, 12) < character_var.get_luck_attribute():
-                        print("You managed to get two hits")
-                        hit = ((character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill()) * 2)
+            if character_var.get_equipped_gun() is not None:
+                if check_ammo(character_var) > 0:
+                    if random.randint(0, 6) < character_var.get_luck_attribute():
+                        print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
+                              enemy_var.name, ".", sep='')
+                        if random.randint(0, 12) < character_var.get_luck_attribute():
+                            print("You managed to get two hits")
+                            hit = ((
+                                               character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill()) * 2)
+                        else:
+                            hit = (character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
+                        if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
+                            defend = enemy_var.get_defence()
+                        else:
+                            defend = (enemy_var.get_defence() + enemy_var.get_equipped_armour().get_item_value())
+                        enemy_var.set_health(enemy_var.get_health() - math.floor(hit / defend))
+                        if enemy_var.get_health() > 0:
+                            enemy_attack(character_var, enemy_var, "yes")
+                        else:
+                            enemy_defeat(character_var, enemy_var)
+                            if random.randint(0, 6) < character_var.get_luck_attribute():
+                                loot_add(character_var, enemy_var)
+                            break
                     else:
-                        hit = (character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
-                    if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
-                        defend = enemy_var.get_defence()
-                    else:
-                        defend = (enemy_var.get_defence() + enemy_var.get_equipped_armour().get_item_value())
-                    enemy_var.set_health(enemy_var.get_health() - math.floor(hit / defend))
-                    if enemy_var.get_health() > 0:
-                        enemy_attack(character_var, enemy_var, "yes")
-                    else:
-                        enemy_defeat(character_var, enemy_var)
-                        if random.randint(0, 6) < character_var.get_luck_attribute():
-                            loot_add(character_var, enemy_var)
-                        break
-                else:
-                    enemy_attack(character_var, enemy_var, "no")
+                        enemy_attack(character_var, enemy_var, "no")
             else:
                 print("You do not have a gun equipped.\nCheck your Inventory for any available guns to equip.")
 
@@ -253,6 +263,7 @@ def battle_state(character_var, enemy_var, surprise):
     print("Your current Score is ", character_var.get_exp(), sep='')
 
 
+# TODO: system to add ammo to box
 # TODO: add catch for empty inventory
 def inventory(character_var):
     print('------------------------------')
@@ -352,4 +363,3 @@ def loot_add(character_var, enemy_var):
     else:
         print("Invalid Input, please choose either \'Yes\' or \'No\'.")
         loot_add(character_var, enemy_var)
-
