@@ -107,7 +107,7 @@ such short notice. There is a case near by. Probably the supplies prepared for m
 be a good idea to take a look. They could help."""
             }
     boat_characters = [enemy.boat_captain(), enemy.deck_hand01(), enemy.deck_hand02()]
-    boat_item = [items.basic_pistol(), items.basic_knife(), items.basic_med_pack()]
+    boat_item = [items.basic_pistol(), items.basic_knife(), items.basic_med_pack(), items.small_ammo_box()]
     return Zone("Boat", desc, boat_characters, boat_item)
 
 

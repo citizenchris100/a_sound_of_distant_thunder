@@ -36,6 +36,18 @@ def advanced_med_pack():
     return Item("Advanced Med Pack", 80, "hp")
 
 
+def small_ammo_box():
+    return Item("Small Ammo Box", 6, "ammo")
+
+
+def med_ammo_box():
+    return Item("Medium Ammo Box", 12, "ammo")
+
+
+def large_ammo_box():
+    return Item("Large Ammo Box", 24, "ammo")
+
+
 def pop_gun():
     return Item("Pop Gun", 1, "gun")
 

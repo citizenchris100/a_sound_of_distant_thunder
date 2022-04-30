@@ -206,7 +206,8 @@ def battle_state(character_var, enemy_var, surprise):
             else:
                 enemy_attack(character_var, enemy_var, "no")
         elif option == "2":
-            if character_var.get_equipped_gun() is not None:
+            if character_var.get_equipped_gun() is not None and any(obj['attribute'] == 'ammo' for obj in
+                                                                    character_var.get_inventory):
                 if random.randint(0, 6) < character_var.get_luck_attribute():
                     print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
                           enemy_var.name, ".", sep='')

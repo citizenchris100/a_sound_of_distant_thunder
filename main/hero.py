@@ -13,6 +13,7 @@ class Hero:
         self.hp_limit = 65
         self.status_effects = []
         self.inventory = [items.basic_med_pack()]
+        self.inventory_limit = 5
         self.equipped_gun = None
         self.equipped_melee = None
         self.equipped_armour = None
@@ -51,13 +52,19 @@ class Hero:
         return self.inventory
 
     def add_inventory(self, item):
-        if len(self.inventory) < 5:
+        if len(self.inventory) < self.inventory_limit:
             self.inventory.append(item)
         else:
             print("Your Inventory is Full. You can drop Items to make room if you so choose")
 
     def del_inventory(self, item):
         del self.inventory[item]
+
+    def get_inventory_limit(self):
+        return self.inventory_limit
+
+    def set_inventory_limit(self, new_limit):
+        self.inventory_limit = self.inventory_limit + new_limit
 
     def get_equipped_gun(self):
         return self.equipped_gun
