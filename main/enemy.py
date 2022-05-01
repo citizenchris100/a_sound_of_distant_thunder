@@ -151,14 +151,14 @@ def basic_goblin():
 
 def beta_goblin():
     goblin = Enemy("Beta Goblin", random.randint(35, 65), random.randint(4, 6), random.randint(10, 17),
-                   random.randint(1, 7))
+                   random.randint(2, 7))
     goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
     return goblin
 
 
 def alpha_goblin():
     goblin = Enemy("Alpha Goblin", random.randint(75, 100), random.randint(6, 8), random.randint(17, 25),
-                   random.randint(4, 8))
+                   random.randint(4, 7))
     goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
     return goblin
 
@@ -173,7 +173,7 @@ def npc(gender):
             npc_gun_skill = random.randint(0, 7)
         else:
             npc_gun_skill = random.randint(4, 18)
-        npc_luck = random.randint(1, 10)
+        npc_luck = random.randint(1, 7)
         return Human(npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck)
     else:
         npc_name = names.get_full_name(gender='female')
@@ -184,7 +184,7 @@ def npc(gender):
             npc_gun_skill = random.randint(0, 7)
         else:
             npc_gun_skill = random.randint(4, 18)
-        npc_luck = random.randint(1, 10)
+        npc_luck = random.randint(1, 7)
         return Human(npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck)
 
 

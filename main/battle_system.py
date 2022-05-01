@@ -34,6 +34,7 @@ def game_over(character_var):
 
 
 def enemy_attack(character_var, enemy_var, hit_enemy):
+    print("----------------------------------Enemy Luck = ", enemy_var.get_luck(), sep='')
     if hit_enemy == "yes":
         print(enemy_var.get_name(), "'s health is now ", enemy_var.get_health(), ".", sep='')
     elif hit_enemy == "no":
@@ -205,10 +206,10 @@ def battle_state(character_var, enemy_var, surprise):
                     print("You punch the ", enemy_var.get_name(), ".", sep='')
                     hit = character_var.get_strength_attribute()
                 if enemy_var.get_equipped_armour() is not None:
-                    defend = (enemy_var.get_defence() + enemy_var.get_equipped_armour.get_item_value())
+                    defend = (enemy_var.get_defence() + enemy_var.get_equipped_armour().get_item_value())
                 else:
                     defend = enemy_var.get_defence()
-                enemy_var.set_health(math.floor(enemy_var.get_health - (hit / defend)))
+                enemy_var.set_health(enemy_var.get_health - math.floor(hit / defend))
                 if enemy_var.get_health() > 0:
                     enemy_attack(character_var, enemy_var, "yes")
                 else:

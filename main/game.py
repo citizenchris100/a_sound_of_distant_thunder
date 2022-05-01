@@ -15,7 +15,6 @@ def use_textwrap(value):
 
 
 def start(character):
-    os.system('cls' if os.name == 'nt' else 'clear')
     boat = zone.boat_start()
     print('------------------------------')
     print('-         Chapter 1          -')
@@ -31,7 +30,6 @@ def boat_zone(character):
     boat = zone.boat_start()
     print('------------------------------')
     if "read" in prompt.lower() or prompt == "1":
-        os.system('cls' if os.name == 'nt' else 'clear')
         print('------------------------------')
         use_textwrap(boat.get_description()["dossier"])
         print('------------------------------')
@@ -39,7 +37,7 @@ def boat_zone(character):
     elif "speak" in prompt.lower() or prompt == "2":
         speak_to_captain(character, boat)
     elif "look" in prompt.lower() or prompt == "3":
-        os.system('cls' if os.name == 'nt' else 'clear')
+        # TODO: add check for if player has already gotten the case
         print('------------------------------')
         use_textwrap(boat.get_description()["surroundings"])
         print('------------------------------')
