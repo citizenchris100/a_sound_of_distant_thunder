@@ -209,7 +209,7 @@ def battle_state(character_var, enemy_var, surprise):
                     defend = (enemy_var.get_defence() + enemy_var.get_equipped_armour().get_item_value())
                 else:
                     defend = enemy_var.get_defence()
-                enemy_var.set_health(enemy_var.get_health - math.floor(hit / defend))
+                enemy_var.set_health(enemy_var.get_health - (math.floor(hit / defend)))
                 if enemy_var.get_health() > 0:
                     enemy_attack(character_var, enemy_var, "yes")
                 else:
@@ -220,6 +220,7 @@ def battle_state(character_var, enemy_var, surprise):
             else:
                 enemy_attack(character_var, enemy_var, "no")
         elif option == "2":
+            print("======================================Enemy Health =", enemy_var.get_health())
             if character_var.get_equipped_gun() is not None:
                 if check_ammo(character_var)[0].get_item_value() > 0:
                     if random.randint(0, 6) < character_var.get_luck_attribute():
@@ -229,15 +230,21 @@ def battle_state(character_var, enemy_var, surprise):
                             print("You managed to get two hits")
                             hit = ((character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
                                    * 2)
+                            print("=================================== hit =", hit)
                             print("You have ", use_ammo(character_var, 2), " shots remaining", sep='')
                         else:
                             hit = (character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
+                            print("=================================== hit =", hit)
                             print("You have ", use_ammo(character_var, 1), " shots remaining", sep='')
                         if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
                             defend = enemy_var.get_defence()
                         else:
                             defend = (enemy_var.get_defence() + enemy_var.get_equipped_armour().get_item_value())
-                        enemy_var.set_health(enemy_var.get_health() - math.floor(hit / defend))
+                        total_attack = (math.floor(hit / defend))
+                        if enemy_var.get_equipped_armour() is not None:
+                            enemy_var.get_equipped_armour().set_item_value((enemy_var.get_equipped_armour().
+                                                                            get_item_value() - total_attack))
+                        enemy_var.set_health(enemy_var.get_health() - total_attack)
                         if enemy_var.get_health() > 0:
                             enemy_attack(character_var, enemy_var, "yes")
                         else:
