@@ -204,7 +204,7 @@ to and from the island.\nHe mentioned that he stopped getting ferry jobs about a
     })
     captain.set_equipped_gun(items.large_revolver())
     captain.set_equipped_armour(items.medium_body_armour())
-    captain.set_inventory([items.medium_med_pack(), items.cologne()])
+    captain.set_inventory([items.medium_med_pack(), items.cologne(), items.med_ammo_box()])
     captain.set_name("Boat Captain")
     return captain
 
@@ -234,5 +234,5 @@ def light_house_keeper():
                             items.advanced_med_pack(), items.advanced_med_pack(), items.advanced_med_pack(),
                             items.medium_pistol(), items.advanced_pistol(), items.medium_knife(),
                             items.large_knife(), items.basic_body_armour(), items.medium_body_armour(),
-                            items.advanced_body_armour(), items.cologne(), items.charm()])
+                            items.advanced_body_armour(), items.cologne(), items.charm(), items.large_ammo_box()])
     light_hk.set_name("Lighthouse Keeper")
