@@ -101,31 +101,31 @@ class Hero:
         return self.defence_points
 
     def set_defence_points(self, dp):
-        self.defence_points = dp
+        self.defence_points = min(dp, 7)
 
     def get_strength_attribute(self):
         return self.strength_attribute
 
     def set_strength_attribute(self, strength):
-        self.strength_attribute = strength
+        self.strength_attribute = min(strength, 35)
 
     def get_gun_skill(self):
         return self.gun_skill_attribute
 
     def set_gun_skill(self, gun_skill):
-        self.gun_skill_attribute = gun_skill
+        self.gun_skill_attribute = min(gun_skill, 35)
 
     def get_luck_attribute(self):
         return self.luck_attribute
 
     def set_luck_attribute(self, luck):
-        self.luck_attribute = luck
+        self.luck_attribute = min(luck, 7)
 
     def get_charm_attribute(self):
         return self.charm_attribute
 
     def set_charm_attribute(self, charm):
-        self.charm_attribute = charm
+        self.charm_attribute = min(charm, 7)
 
     def get_location(self):
         return self.location

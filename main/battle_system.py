@@ -108,13 +108,13 @@ def level_up(character_var):
             upgrade_character(character_var, 1, 5)
     elif 1 <= character_var.get_lvl() <= 2:
         if 50 <= character_var.get_exp():
-            character_var.up_lvl()
+            upgrade_character(character_var, 0, 5)
     elif 2 <= character_var.get_lvl() <= 3:
         if 100 <= character_var.get_exp():
-            character_var.up_lvl()
+            upgrade_character(character_var, 1, 5)
     elif 3 <= character_var.get_lvl() <= 4:
         if 175 <= character_var.get_exp():
-            character_var.up_lvl()
+            upgrade_character(character_var, 0, 5)
     elif 4 <= character_var.get_lvl() <= 5:
         if 275 <= character_var.get_exp():
             character_var.up_lvl()
@@ -132,8 +132,12 @@ def level_up(character_var):
 def upgrade_character(character_var, dp, hp):
     option = input("You have leveled up.\nChoose which attribute you would like to improve.\n"
                    "1. Melee Attack\n2. Gun Skill\n3. Luck\n4. Charm\nHelp\n> ")
-    if option == "1":
-        character_var.set_strength_attribute(character_var.get_strength_attribute() + 1)
+    if option == "1" or "melee" in option.lower():
+        if character_var.get_strength_attribute() < 35:
+            character_var.set_strength_attribute(character_var.get_strength_attribute() + 1)
+        else:
+            print("You have reached the limit of your Strength / Melee Attack attribute. Make another selection.")
+            upgrade_character(character_var, dp, hp)
     elif option == "2":
         character_var.set_gun_skill(character_var.get_gun_skill() + 1)
     elif option == "3":
@@ -168,7 +172,7 @@ def upgrade_character(character_var, dp, hp):
         upgrade_character(character_var, dp, hp)
     character_var.up_lvl()
     character_var.set_hp_limit(character_var.get_hp_limit() + hp)
-    character_var.set_health_points(character_var.get_health_points() + hp)
+    character_var.set_health_points(character_var.get_hp_limit())
     character_var.set_defence_points(character_var.get_defence_points() + dp)
     print("Alex is now Level ", character_var.get_lvl(), "\nYou've gained ", hp,
           " health points & ", dp, " defence point", sep='')
