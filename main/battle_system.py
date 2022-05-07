@@ -34,10 +34,6 @@ def game_over(character_var):
 
 
 def enemy_attack(character_var, enemy_var, hit_enemy):
-    hit = 0
-    defend = 0
-    bonus = 0
-    print("----------------------------------Enemy Luck = ", enemy_var.get_luck(), sep='')
     if hit_enemy == "yes":
         print(enemy_var.get_name(), "'s health is now ", enemy_var.get_health(), ".", sep='')
     elif hit_enemy == "no":
