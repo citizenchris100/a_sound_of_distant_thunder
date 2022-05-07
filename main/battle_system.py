@@ -55,17 +55,14 @@ def enemy_attack(character_var, enemy_var, hit_enemy):
                 hit = (enemy_var.get_gun_skill() + enemy_var.get_equipped_gun().get_item_value())
                 use_ammo(enemy_var, 1)
             else:
-                print("They missed.")
+                print("Fortunately they missed.")
                 use_ammo(enemy_var, 1)
                 hit = 0
             if character_var.get_equipped_armour() is not None:
                 defend = character_var.get_equipped_armour()
             else:
-                defend = 0
-            if defend == 0:
-                total_attack = hit
-            else:
-                total_attack = hit / defend
+                defend = 1
+            total_attack = math.floor(hit / defend)
         else:
             total_attack = enemy_melee_attack(character_var, enemy_var, hit_enemy)
     if character_var.get_equipped_armour() is not None:
@@ -74,7 +71,7 @@ def enemy_attack(character_var, enemy_var, hit_enemy):
         if character_var.get_equipped_armour.get_item_value() > 0:
             print("Your armour has been damaged. \n")
         else:
-            print("Your armour is no longer effective.\n Equip new armour.")
+            print("Your armour is no longer effective.\nYou should probably equip new armour ASAP.")
     character_var.set_health_points(character_var.get_health_points() - total_attack)
     if character_var.hp > 0:
         print("Your health is now ", character_var.get_health_points(), ".", sep='')
@@ -92,7 +89,7 @@ def enemy_melee_attack(character_var, enemy_var, hit_enemy):
     else:
         hit = (enemy_var.get_strength() + enemy_var.get_equipped_melee().get_item_value())
     defend = character_var.get_defence_points()
-    return hit / defend
+    return math.floor(hit / defend)
 
 
 def vowel_start(word):
@@ -250,13 +247,10 @@ def battle_state(character_var, enemy_var, surprise):
                             hit = (character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
                             print("You have ", use_ammo(character_var, 1), " shots remaining", sep='')
                         if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
-                            defend = 0
+                            defend = 1
                         else:
-                            defend = (enemy_var.get_equipped_armour().get_item_value())
-                        if defend == 0:
-                            total_attack = hit
-                        else:
-                            total_attack = (math.floor(hit / defend))
+                            defend = enemy_var.get_equipped_armour().get_item_value()
+                        total_attack = (math.floor(hit / defend))
                         if enemy_var.get_equipped_armour() is not None:
                             enemy_var.get_equipped_armour().set_item_value((enemy_var.get_equipped_armour().
                                                                             get_item_value() - total_attack))
