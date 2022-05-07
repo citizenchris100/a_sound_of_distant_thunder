@@ -56,6 +56,7 @@ def enemy_attack(character_var, enemy_var, hit_enemy):
                 use_ammo(enemy_var, 1)
             else:
                 print("They missed.")
+                use_ammo(enemy_var, 1)
                 hit = 0
             if character_var.get_equipped_armour() is not None:
                 defend = character_var.get_equipped_armour()
@@ -237,9 +238,9 @@ def battle_state(character_var, enemy_var, surprise):
         elif option == "2":
             if character_var.get_equipped_gun() is not None:
                 if check_ammo(character_var)[0].get_item_value() > 0:
+                    print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
+                          enemy_var.name, ".", sep='')
                     if random.randint(0, 6) < character_var.get_luck_attribute():
-                        print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
-                              enemy_var.name, ".", sep='')
                         if random.randint(0, 12) < character_var.get_luck_attribute():
                             print("You managed to get two hits")
                             hit = ((character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
@@ -268,6 +269,8 @@ def battle_state(character_var, enemy_var, surprise):
                                 loot_add(character_var, enemy_var)
                             break
                     else:
+                        print("Unfortunately you missed")
+                        print("You have ", use_ammo(character_var, 1), " shots remaining", sep='')
                         enemy_attack(character_var, enemy_var, "no")
                 else:
                     print("You are out of ammo.")
