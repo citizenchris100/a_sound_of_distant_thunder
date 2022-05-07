@@ -103,8 +103,7 @@ Your mission if you choose to accept it. You'd better accept it. For this kind o
 crazy not to. In any case the ask is simple. Restore communications to the island and return with 
 information as to what the hell is going on.""",
             "surroundings": """This boat or ship rather is pretty beat up. I'm guessing this was all we could get with
-such short notice. There is a case near by. Probably the supplies prepared for me. Might
-be a good idea to take a look. They could help."""
+such short notice."""
             }
     boat_characters = [enemy.boat_captain(), enemy.deck_hand01(), enemy.deck_hand02()]
     boat_item = [items.basic_pistol(), items.basic_knife(), items.basic_med_pack(), items.small_ammo_box()]
