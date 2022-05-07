@@ -269,7 +269,6 @@ def battle_state(character_var, enemy_var, surprise):
                                 loot_add(character_var, enemy_var)
                             break
                     else:
-                        print("Unfortunately you missed")
                         print("You have ", use_ammo(character_var, 1), " shots remaining", sep='')
                         enemy_attack(character_var, enemy_var, "no")
                 else:
