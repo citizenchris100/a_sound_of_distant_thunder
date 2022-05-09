@@ -24,6 +24,25 @@ class Item:
         self.attribute = new_item_attribute
 
 
+class Firearm(Item):
+    def __init__(self, item_name, item_value, item_attribute, rounds, cap):
+        super.__init__(item_name, item_value, item_attribute)
+        self.ammo = rounds
+        self.limit = cap
+
+    def get_ammo(self):
+        return self.ammo
+
+    def set_ammo(self, add):
+        self.ammo = min(add, self.limit)
+
+    def get_limit(self):
+        return self.limit
+
+    def set_limit(self, up):
+        self.limit = up
+
+
 def basic_med_pack():
     return Item("Basic Med Pack", 20, "hp")
 
@@ -49,23 +68,23 @@ def large_ammo_box():
 
 
 def pop_gun():
-    return Item("Pop Gun", 1, "gun")
+    return Firearm("Pop Gun", 1, "gun", 1, 1)
 
 
 def basic_pistol():
-    return Item("Basic Pistol", 5, "gun")
+    return Firearm("Basic Pistol", 5, "gun", 6, 6)
 
 
 def medium_pistol():
-    return Item("Medium Pistol", 7, "gun")
+    return Firearm("Medium Pistol", 7, "gun", 6, 6)
 
 
 def advanced_pistol():
-    return Item("Advanced Pistol", 10, "gun")
+    return Firearm("Advanced Pistol", 10, "gun", 16, 16)
 
 
 def large_revolver():
-    return Item("Large Revolver", 15, "gun")
+    return Firearm("Large Revolver", 15, "gun", 6, 6)
 
 
 def basic_knife():

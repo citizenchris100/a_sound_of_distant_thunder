@@ -392,6 +392,10 @@ def inventory(character_var):
                 else:
                     print('Invalid Option. Please choose to either Equip or Discard the item.\n> ')
                     inventory(character_var)
+            elif character_var.get_inventory()[nn].get_item_attribute() == "ammo":
+                print('------------------------------')
+                print("There are ", character_var.get_inventory()[nn].get_item_name(), "?", sep='')
+                print('------------------------------')
         elif n.lower() == "exit":
             break
         else:
