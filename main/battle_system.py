@@ -265,12 +265,12 @@ def battle_state(character_var, enemy_var, surprise):
                             print("You managed to get two hits")
                             hit = ((character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
                                    * 2)
-                            print("You have ", character_var.get_equipped_gun().
-                                  set_ammo(character_var.get_equipped_gun().get_ammo() - 2), " shots remaining", sep='')
+                            character_var.get_equipped_gun().set_ammo(character_var.get_equipped_gun().get_ammo() - 2)
+                            print("You have ", character_var.get_equipped_gun().get_ammo(), " shots remaining", sep='')
                         else:
                             hit = (character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
-                            print("You have ", character_var.get_equipped_gun().
-                                  set_ammo(character_var.get_equipped_gun().get_ammo() - 1), " shots remaining", sep='')
+                            character_var.get_equipped_gun().set_ammo(character_var.get_equipped_gun().get_ammo() - 1)
+                            print("You have ", character_var.get_equipped_gun().get_ammo(), " shots remaining", sep='')
                         if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
                             defend = 1
                         else:
@@ -288,8 +288,8 @@ def battle_state(character_var, enemy_var, surprise):
                                 loot_add(character_var, enemy_var)
                             break
                     else:
-                        print("You have ", character_var.get_equipped_gun().
-                              set_ammo(character_var.get_equipped_gun().get_ammo() - 1), " shots remaining", sep='')
+                        character_var.get_equipped_gun().set_ammo(character_var.get_equipped_gun().get_ammo() - 1)
+                        print("You have ", character_var.get_equipped_gun().get_ammo(), " shots remaining", sep='')
                         enemy_attack(character_var, enemy_var, "no")
                 else:
                     print("You are out of ammo.")
