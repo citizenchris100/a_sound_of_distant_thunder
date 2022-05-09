@@ -296,6 +296,7 @@ def battle_state(character_var, enemy_var, surprise):
             else:
                 print("You do not have a gun equipped.\nCheck your Inventory for any available guns to equip.")
 
+        # TODO: update the flee option
         elif option == "4":
             if random.randint(0, 6) + character_var.get_luck_attribute() > 12:
                 print("You escape battle with the ", enemy_var.name, ".", sep='')
@@ -311,6 +312,7 @@ def battle_state(character_var, enemy_var, surprise):
                     game_over(character_var)
         elif option == "3":
             inventory(character_var)
+            enemy_attack(character_var, enemy_var, "no")
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
     print("Your current Score is ", character_var.get_exp(), sep='')
@@ -335,6 +337,7 @@ def inventory(character_var):
         if n.isdigit() and int(n) <= len(character_var.get_inventory()):
             nn = int(n) - 1
             start = vowel_start(character_var.get_inventory()[nn].get_item_name())
+            # TODO add gibberish option catches for every category
             if character_var.get_inventory()[nn].get_item_attribute() == "hp":
                 print('------------------------------')
                 print("Would you like to Use this ", character_var.get_inventory()[nn].get_item_name(), "?", sep='')
@@ -397,8 +400,42 @@ def inventory(character_var):
                     inventory(character_var)
             elif character_var.get_inventory()[nn].get_item_attribute() == "ammo":
                 print('------------------------------')
-                print("There are ", character_var.get_inventory()[nn].get_item_name(), "?", sep='')
+                print("There are ", character_var.get_inventory()[nn].get_item_attribute(),
+                      " rounds remaining within this", character_var.get_inventory()[nn].get_item_name(), ".", sep='')
                 print('------------------------------')
+                if character_var.get_equipped_gun().get_ammo() < character_var.get_equipped_gun().get_limit() \
+                        and character_var.get_inventory()[nn].get_item_attribute() > 0:
+
+                    print('------------------------------')
+                    print("Would you like to reload ?", character_var.get_inventory()[nn].get_item_name(), "?",
+                          sep='')
+                    print('------------------------------')
+                    d = input("1. Yes.\n2. No.\n> ")
+                    if "yes" in d.lower() or d == "1":
+                        ammo_needed = character_var.get_equipped_gun().get_limit() - \
+                                      character_var.get_equipped_gun().get_ammo()
+                        if ammo_needed < character_var.get_inventory()[nn].get_item_attribute():
+                            character_var.get_equipped_gun().set_ammo(character_var.get_equipped_gun().get_ammo()
+                                                                      + ammo_needed)
+                            character_var.get_inventory()[nn].set_item_attribute(character_var.get_inventory()[nn].
+                                                                                 get_item_attribute() - ammo_needed)
+                            print("There are now", character_var.get_inventory()[nn].get_item_attribute(),
+                                  " rounds remaining within this", character_var.get_inventory()[nn].get_item_name(),
+                                  ".", sep='')
+                            print('------------------------------')
+                            break
+                        else:
+                            character_var.get_equipped_gun().set_ammo(character_var.get_equipped_gun().get_ammo()
+                                                                      + character_var.get_inventory()[nn].
+                                                                      get_item_attribute())
+                            character_var.get_inventory()[nn].set_item_attribute(0)
+                            print("There are now", character_var.get_inventory()[nn].get_item_attribute(),
+                                  " rounds remaining within this", character_var.get_inventory()[nn].get_item_name(),
+                                  ".", sep='')
+                            print("You were not able to fully reload your weapon.")
+                            print('------------------------------')
+                            break
+
         elif n.lower() == "exit":
             break
         else:
