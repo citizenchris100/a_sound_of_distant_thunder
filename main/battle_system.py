@@ -135,15 +135,31 @@ def upgrade_character(character_var, dp, hp):
     if option == "1" or "melee" in option.lower():
         if character_var.get_strength_attribute() < 35:
             character_var.set_strength_attribute(character_var.get_strength_attribute() + 1)
+            print("Your Strength / Melee Attack is now ", character_var.get_strength_attribute(), sep='')
         else:
             print("You have reached the limit of your Strength / Melee Attack attribute. Make another selection.")
             upgrade_character(character_var, dp, hp)
     elif option == "2":
-        character_var.set_gun_skill(character_var.get_gun_skill() + 1)
+        if character_var.get_strength_attribute() < 35:
+            character_var.set_gun_skill(character_var.get_gun_skill() + 1)
+            print("Your Gun Skill is now ", character_var.get_gun_skill(), sep='')
+        else:
+            print("You have reached the limit of your Gun Skill attribute. Make another selection.")
+            upgrade_character(character_var, dp, hp)
     elif option == "3":
-        character_var.set_luck_attribute(character_var.get_luck_attribute() + 1)
+        if character_var.get_luck_attribute() < 7:
+            character_var.set_luck_attribute(character_var.get_luck_attribute() + 1)
+            print("Your Luck is now ", character_var.get_gun_skill(), sep='')
+        else:
+            print("You have reached the limit of your Luck attribute. Make another selection.")
+            upgrade_character(character_var, dp, hp)
     elif option == "4":
-        character_var.set_charm_attribute(character_var.get_charm_attribute() + 1)
+        if character_var.get_charm_attribute() < 7:
+            character_var.set_charm_attribute(character_var.get_charm_attribute() + 1)
+            print("Your Charm is now ", character_var.get_gun_skill(), sep='')
+        else:
+            print("You have reached the limit of your Charm attribute. Make another selection.")
+            upgrade_character(character_var, dp, hp)
     elif option.lower() == "help":
         print('------------------------------')
         print('-About the Character         -')
@@ -174,7 +190,7 @@ def upgrade_character(character_var, dp, hp):
     character_var.set_hp_limit(character_var.get_hp_limit() + hp)
     character_var.set_health_points(character_var.get_hp_limit())
     character_var.set_defence_points(character_var.get_defence_points() + dp)
-    print("Alex is now Level ", character_var.get_lvl(), "\nYou've gained ", hp,
+    print("You are now Level ", character_var.get_lvl(), "\nYou've gained ", hp,
           " health points & ", dp, " defence point", sep='')
 
 
