@@ -26,7 +26,7 @@ class Item:
 
 class Firearm(Item):
     def __init__(self, item_name, item_value, item_attribute, rounds, cap):
-        super.__init__(item_name, item_value, item_attribute)
+        super().__init__(item_name, item_value, item_attribute)
         self.ammo = rounds
         self.limit = cap
 
