@@ -101,7 +101,6 @@ def vowel_start(word):
     return start
 
 
-# TODO: complete level up
 def level_up(character_var):
     if 0 <= character_var.get_lvl() <= 1:
         if 25 <= character_var.get_exp():
