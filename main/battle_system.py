@@ -130,62 +130,65 @@ def level_up(character_var):
 
 
 def upgrade_character(character_var, dp, hp):
-    option = input("You have leveled up.\nChoose which attribute you would like to improve.\n"
-                   "1. Melee Attack\n2. Gun Skill\n3. Luck\n4. Charm\nHelp\n> ")
-    if option == "1" or "melee" in option.lower():
-        if character_var.get_strength_attribute() < 35:
-            character_var.set_strength_attribute(character_var.get_strength_attribute() + 1)
-            print("Your Strength / Melee Attack is now ", character_var.get_strength_attribute(), sep='')
-        else:
-            print("You have reached the limit of your Strength / Melee Attack attribute. Make another selection.")
+    total = (character_var.get_strength_attribute() + character_var.get_gun_skill() + character_var.get_luck_attribute()
+             + character_var.get_charm_attribute())
+    if total < 84:
+        option = input("You have leveled up.\nChoose which attribute you would like to improve.\n"
+                       "1. Melee Attack\n2. Gun Skill\n3. Luck\n4. Charm\nHelp\n> ")
+        if option == "1" or "melee" in option.lower():
+            if character_var.get_strength_attribute() < 35:
+                character_var.set_strength_attribute(character_var.get_strength_attribute() + 1)
+                print("Your Strength / Melee Attack is now ", character_var.get_strength_attribute(), sep='')
+            else:
+                print("You have reached the limit of your Strength / Melee Attack attribute. Make another selection.")
+                upgrade_character(character_var, dp, hp)
+        elif option == "2":
+            if character_var.get_strength_attribute() < 35:
+                character_var.set_gun_skill(character_var.get_gun_skill() + 1)
+                print("Your Gun Skill is now ", character_var.get_gun_skill(), sep='')
+            else:
+                print("You have reached the limit of your Gun Skill attribute. Make another selection.")
+                upgrade_character(character_var, dp, hp)
+        elif option == "3":
+            if character_var.get_luck_attribute() < 7:
+                character_var.set_luck_attribute(character_var.get_luck_attribute() + 1)
+                print("Your Luck is now ", character_var.get_gun_skill(), sep='')
+            else:
+                print("You have reached the limit of your Luck attribute. Make another selection.")
+                upgrade_character(character_var, dp, hp)
+        elif option == "4":
+            if character_var.get_charm_attribute() < 7:
+                character_var.set_charm_attribute(character_var.get_charm_attribute() + 1)
+                print("Your Charm is now ", character_var.get_gun_skill(), sep='')
+            else:
+                print("You have reached the limit of your Charm attribute. Make another selection.")
+                upgrade_character(character_var, dp, hp)
+        elif option.lower() == "help":
+            print('------------------------------')
+            print('-About the Character         -')
+            print('-Attributes                  -')
+            print('------------------------------')
+            print('------------------------------')
+            print('-Melee Attack: affects how   -')
+            print('-you use hand help weapons   -')
+            print('-such as knives.             -')
+            print('------------------------------')
+            print('-Gun Skill: affects your     -')
+            print('-ability to use hand guns    -')
+            print('-and rifles.                 -')
+            print('------------------------------')
+            print('-Luck: can greatly affect    -')
+            print('-the outcome of battles and  -')
+            print('-your chance of getting loot.-')
+            print('------------------------------')
+            print('-Charm: affects how well     -')
+            print('-you can persuade others     -')
+            print('------------------------------')
             upgrade_character(character_var, dp, hp)
-    elif option == "2":
-        if character_var.get_strength_attribute() < 35:
-            character_var.set_gun_skill(character_var.get_gun_skill() + 1)
-            print("Your Gun Skill is now ", character_var.get_gun_skill(), sep='')
         else:
-            print("You have reached the limit of your Gun Skill attribute. Make another selection.")
+            print("Invalid Input, please select an Attribute you wish to upgrade. \nIf you need more information "
+                  "about the Class Attributes type \'Help\'")
             upgrade_character(character_var, dp, hp)
-    elif option == "3":
-        if character_var.get_luck_attribute() < 7:
-            character_var.set_luck_attribute(character_var.get_luck_attribute() + 1)
-            print("Your Luck is now ", character_var.get_gun_skill(), sep='')
-        else:
-            print("You have reached the limit of your Luck attribute. Make another selection.")
-            upgrade_character(character_var, dp, hp)
-    elif option == "4":
-        if character_var.get_charm_attribute() < 7:
-            character_var.set_charm_attribute(character_var.get_charm_attribute() + 1)
-            print("Your Charm is now ", character_var.get_gun_skill(), sep='')
-        else:
-            print("You have reached the limit of your Charm attribute. Make another selection.")
-            upgrade_character(character_var, dp, hp)
-    elif option.lower() == "help":
-        print('------------------------------')
-        print('-About the Character         -')
-        print('-Attributes                  -')
-        print('------------------------------')
-        print('------------------------------')
-        print('-Melee Attack: affects how   -')
-        print('-you use hand help weapons   -')
-        print('-such as knives.             -')
-        print('------------------------------')
-        print('-Gun Skill: affects your     -')
-        print('-ability to use hand guns    -')
-        print('-and rifles.                 -')
-        print('------------------------------')
-        print('-Luck: can greatly affect    -')
-        print('-the outcome of battles and  -')
-        print('-your chance of getting loot.-')
-        print('------------------------------')
-        print('-Charm: affects how well     -')
-        print('-you can persuade others     -')
-        print('------------------------------')
-        upgrade_character(character_var, dp, hp)
-    else:
-        print("Invalid Input, please select an Attribute you wish to upgrade. \nIf you need more information "
-              "about the Class Attributes type \'Help\'")
-        upgrade_character(character_var, dp, hp)
     character_var.up_lvl()
     character_var.set_hp_limit(character_var.get_hp_limit() + hp)
     character_var.set_health_points(character_var.get_hp_limit())
