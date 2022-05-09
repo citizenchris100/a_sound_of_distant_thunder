@@ -55,7 +55,7 @@ class Hero:
         if len(self.inventory) < self.inventory_limit:
             self.inventory.append(item)
         else:
-            print("Your Inventory is Full. You can drop Items to make room if you so choose")
+            print("Your Inventory is Full. You can discard Items to make room if you so choose")
 
     def del_inventory(self, item):
         del self.inventory[item]
@@ -63,7 +63,6 @@ class Hero:
     def get_inventory_limit(self):
         return self.inventory_limit
 
-# TODO: system to upgrade inventory limit
     def set_inventory_limit(self, new_limit):
         self.inventory_limit = self.inventory_limit + new_limit
 

@@ -192,8 +192,9 @@ def upgrade_character(character_var, dp, hp):
     character_var.set_hp_limit(character_var.get_hp_limit() + hp)
     character_var.set_health_points(character_var.get_hp_limit())
     character_var.set_defence_points(character_var.get_defence_points() + dp)
+    character_var.set_inventory_limit((character_var.get_inventory_limit() + 1))
     print("You are now Level ", character_var.get_lvl(), "\nYou've gained ", hp,
-          " health points & ", dp, " defence points", sep='')
+          " health points & ", dp, " defence points.\nAdditionally you've gained 1 inventory slot.", sep='')
 
 
 def enemy_defeat(character_var, enemy_var):
