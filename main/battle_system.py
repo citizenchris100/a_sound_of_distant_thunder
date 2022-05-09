@@ -110,23 +110,23 @@ def level_up(character_var):
         if 50 <= character_var.get_exp():
             upgrade_character(character_var, 0, 5)
     elif 2 <= character_var.get_lvl() <= 3:
-        if 100 <= character_var.get_exp():
+        if 125 <= character_var.get_exp():
             upgrade_character(character_var, 1, 5)
     elif 3 <= character_var.get_lvl() <= 4:
-        if 175 <= character_var.get_exp():
+        if 275 <= character_var.get_exp():
             upgrade_character(character_var, 0, 5)
     elif 4 <= character_var.get_lvl() <= 5:
-        if 275 <= character_var.get_exp():
-            character_var.up_lvl()
+        if 375 <= character_var.get_exp():
+            upgrade_character(character_var, 1, 5)
     elif 5 <= character_var.get_lvl() <= 6:
-        if 475 <= character_var.get_exp():
-            character_var.up_lvl()
+        if 575 <= character_var.get_exp():
+            upgrade_character(character_var, 0, 5)
     elif 6 <= character_var.get_lvl() <= 7:
-        if 775 <= character_var.get_exp():
-            character_var.up_lvl()
+        if 875 <= character_var.get_exp():
+            upgrade_character(character_var, 1, 5)
     elif 7 <= character_var.get_lvl() <= 7:
         if 1775 <= character_var.get_exp():
-            character_var.up_lvl()
+            upgrade_character(character_var, 0, 5)
 
 
 def upgrade_character(character_var, dp, hp):
@@ -194,7 +194,7 @@ def upgrade_character(character_var, dp, hp):
     character_var.set_health_points(character_var.get_hp_limit())
     character_var.set_defence_points(character_var.get_defence_points() + dp)
     print("You are now Level ", character_var.get_lvl(), "\nYou've gained ", hp,
-          " health points & ", dp, " defence point", sep='')
+          " health points & ", dp, " defence points", sep='')
 
 
 def enemy_defeat(character_var, enemy_var):
