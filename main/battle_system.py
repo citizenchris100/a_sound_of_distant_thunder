@@ -148,8 +148,7 @@ def battle_state(character_var, enemy_var, surprise):
                 enemy_attack(character_var, enemy_var, "yes")
             else:
                 enemy_defeat(character_var, enemy_var)
-                if random.randint(0, 6) < character_var.get_luck_attribute():
-                    loot_add(character_var, enemy_var)
+                loot_add(character_var, enemy_var)
                 break
         elif option == "2":
             if character_var.get_equipped_gun() is not None:
@@ -180,8 +179,7 @@ def battle_state(character_var, enemy_var, surprise):
                             enemy_attack(character_var, enemy_var, "yes")
                         else:
                             enemy_defeat(character_var, enemy_var)
-                            if random.randint(0, 6) < character_var.get_luck_attribute():
-                                loot_add(character_var, enemy_var)
+                            loot_add(character_var, enemy_var)
                             break
                     else:
                         character_var.get_equipped_gun().set_ammo(character_var.get_equipped_gun().get_ammo() - 1)

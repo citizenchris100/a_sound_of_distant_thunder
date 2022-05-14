@@ -143,9 +143,11 @@ def loot_add(character_var, enemy_var):
         "Supplies are scarce or expensive on this damned Island. Probably a good idea to search the body for anything"
         "useful",
         "As fucked up as it might seem. They are dead and I need whatever they have more than they do.",
-        "I won, they lost. What did they leave me?"
-        "Maybe they left me something that would make this worth it?"
+        "I won, they lost. What did they leave me?",
+        "Maybe they left me something that would make this worth it?",
     ]
+    print('------------------------------')
+    print('------------------------------')
     print(d_options[random.randint(0, 3)], sep='')
     enemy_inventory(character_var, enemy_var)
 

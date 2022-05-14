@@ -206,6 +206,8 @@ to and from the island.\nHe mentioned that he stopped getting ferry jobs about a
     captain.set_equipped_armour(items.medium_body_armour())
     captain.set_inventory([items.medium_med_pack(), items.cologne(), items.med_ammo_box()])
     captain.set_name("Boat Captain")
+    # TODO debug health.
+    captain.set_health(5)
     return captain
 
 
