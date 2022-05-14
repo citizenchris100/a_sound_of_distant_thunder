@@ -1,5 +1,7 @@
 import random
 import math
+from inventory import inventory
+from Util import vowel_start
 from operator import attrgetter
 from itertools import groupby
 
@@ -90,15 +92,6 @@ def enemy_melee_attack(character_var, enemy_var, hit_enemy):
         hit = (enemy_var.get_strength() + enemy_var.get_equipped_melee().get_item_value())
     defend = character_var.get_defence_points()
     return math.floor(hit / defend)
-
-
-def vowel_start(word):
-    vowel = 'aeiou'
-    if word[0].lower() in vowel:
-        start = "An "
-    else:
-        start = "A "
-    return start
 
 
 def level_up(character_var):
