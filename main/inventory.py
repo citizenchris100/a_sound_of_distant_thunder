@@ -1,3 +1,5 @@
+import random
+
 from Util import vowel_start
 
 
@@ -134,3 +136,26 @@ def inventory(character_var):
                 print('Invalid Option. Please Enter the number of the corresponding '
                       'Inventory item you would like to use.\n> ')
                 inventory(character_var)
+
+
+def loot_add(character_var, enemy_var):
+    d_options = [
+        "Supplies are scarce or expensive on this damned Island. Probably a good idea to search the body for anything"
+        "useful",
+        "As fucked up as it might seem. They are dead and I need whatever they have more than they do.",
+        "I won, they lost. What did they leave me?"
+        "Maybe they left me something that would make this worth it?"
+    ]
+    loot_drop = enemy_var.get_inventory()
+    print('------------------------------')
+    print(d_options[random.randint(0, 3)], sep='')
+    print('------------------------------')
+    option = input("Yes \nNo\n> ")
+    if option.lower() == "yes":
+        character_var.add_inventory(loot_drop)
+        print(loot_drop.get_item_name(), " was added to your inventory.", sep='')
+    elif option.lower() == "no":
+        print("The ", loot_drop.get_item_name(), " is left behind.", sep='')
+    else:
+        print("Invalid Input, please choose either \'Yes\' or \'No\'.")
+        loot_add(character_var, enemy_var)

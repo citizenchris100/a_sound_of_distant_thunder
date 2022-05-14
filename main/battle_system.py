@@ -1,6 +1,7 @@
 import random
 import math
 from inventory import inventory
+from inventory import loot_add
 from lvl_system import level_up
 
 
@@ -90,9 +91,6 @@ def enemy_melee_attack(character_var, enemy_var, hit_enemy):
         hit = (enemy_var.get_strength() + enemy_var.get_equipped_melee().get_item_value())
     defend = character_var.get_defence_points()
     return math.floor(hit / defend)
-
-
-
 
 
 def enemy_defeat(character_var, enemy_var):
@@ -216,16 +214,4 @@ def battle_state(character_var, enemy_var, surprise):
     print("Your current Score is ", character_var.get_exp(), sep='')
 
 
-def loot_add(character_var, enemy_var):
-    loot_drop = enemy_var.get_inventory()[0]
-    print("It appears to have dropped a ", loot_drop.get_item_name(), ".", sep='')
-    print("Would you like to add ", loot_drop.get_item_name(), " to your Inventory?", sep='')
-    option = input("Yes \nNo\n> ")
-    if option.lower() == "yes":
-        character_var.add_inventory(loot_drop)
-        print(loot_drop.get_item_name(), " was added to your inventory.", sep='')
-    elif option.lower() == "no":
-        print("The ", loot_drop.get_item_name(), " is left behind.", sep='')
-    else:
-        print("Invalid Input, please choose either \'Yes\' or \'No\'.")
-        loot_add(character_var, enemy_var)
+
