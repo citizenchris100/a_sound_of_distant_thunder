@@ -85,7 +85,6 @@ def inventory(character_var):
                         break
                     else:
                         print('Invalid Option. Please choose to either Equip or Discard the item.\n> ')
-                        inventory(character_var)
                 elif character_var.get_inventory()[nn].get_item_attribute() == "ammo":
                     print('------------------------------')
                     print("There are ", character_var.get_inventory()[nn].get_item_value(),
@@ -129,14 +128,17 @@ def inventory(character_var):
                                     break
                             if "no" in d.lower() or d == "2":
                                 discard(character_var, nn)
+                        else:
+                            discard(character_var, nn)
+                            break
                     else:
                         discard(character_var, nn)
-            elif n.lower() == "exit":
+                        break
+            elif "exit" in n.lower():
                 break
             else:
                 print('Invalid Option. Please Enter the number of the corresponding '
                       'Inventory item you would like to use.\n> ')
-                inventory(character_var)
 
 
 def discard(character_var, nn):
@@ -144,16 +146,17 @@ def discard(character_var, nn):
     print("Would you like to discard this ",
           character_var.get_inventory()[nn].get_item_name(),
           "?", sep='')
-    print('------------------------------')
-    e = input("1. Yes.\n2. No.\n> ")
-    if "yes" in e.lower() or e == "1":
-        character_var.del_inventory(nn)
-        inventory(character_var)
-    elif "no" in e.lower() or e == "2":
-        inventory(character_var)
-    else:
-        print("Invalid Option.")
-        inventory(character_var)
+    while True:
+        print('------------------------------')
+        e = input("1. Yes.\n2. No.\n> ")
+        if "yes" in e.lower() or e == "1":
+            character_var.del_inventory(nn)
+        elif "no" in e.lower() or e == "2":
+            break
+        else:
+            print("Invalid Option.")
+            break
+
 
 
 def loot_add(character_var, enemy_var):
