@@ -146,16 +146,31 @@ def loot_add(character_var, enemy_var):
         "I won, they lost. What did they leave me?"
         "Maybe they left me something that would make this worth it?"
     ]
-    loot_drop = enemy_var.get_inventory()
     print('------------------------------')
     print(d_options[random.randint(0, 3)], sep='')
     print('------------------------------')
+    print("Would you like to examine the body for potential loot?")
+    print('------------------------------')
     option = input("Yes \nNo\n> ")
     if option.lower() == "yes":
-        character_var.add_inventory(loot_drop)
-        print(loot_drop.get_item_name(), " was added to your inventory.", sep='')
+        print('------------------------------')
+        print('-      Enemy Inventory       -')
+        print('------------------------------')
+        print('------------------------------')
+        if len(enemy_var.get_inventory()) < 1:
+            print('-           Empty            -')
+            print('------------------------------')
+            print('------------------------------')
+        else:
+            for i in range(len(enemy_var.get_inventory())):
+                num = i + 1
+                print(num, ": ", enemy_var.get_inventory()[i].get_item_name(), sep='')
+            print('------------------------------')
+            print('------------------------------')
     elif option.lower() == "no":
-        print("The ", loot_drop.get_item_name(), " is left behind.", sep='')
+        print('------------------------------')
+        print("Would you like to examine the body for potential loot?")
+        print('------------------------------')
     else:
         print("Invalid Input, please choose either \'Yes\' or \'No\'.")
         loot_add(character_var, enemy_var)
