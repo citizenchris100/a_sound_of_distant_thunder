@@ -134,6 +134,7 @@ def battle_state(character_var, enemy_var, surprise):
         enemy_attack(character_var, enemy_var, "surprise")
     while enemy_var.get_health() > 0:
         option = input("1. Melee Attack \n2. Gun Attack\n3. Inventory\n4. Flee\n> ")
+        # TODO: update melee combat
         if option == "1":
             if character_var.get_equipped_melee() is not None:
                 print("You swing your ", character_var.get_equipped_melee.get_item_name(), " attacking the ",
