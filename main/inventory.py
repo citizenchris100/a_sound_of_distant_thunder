@@ -1,10 +1,6 @@
-import random
-
 from Util import vowel_start
 
 
-# TODO: system to add ammo to box
-# TODO: move to its own file
 def inventory(character_var):
     print('------------------------------')
     print('-         Inventory          -')
@@ -130,10 +126,8 @@ def inventory(character_var):
                                 discard(character_var, nn)
                         else:
                             discard(character_var, nn)
-                            break
                     else:
                         discard(character_var, nn)
-                        break
             elif "exit" in n.lower():
                 break
             else:
@@ -158,22 +152,7 @@ def discard(character_var, nn):
             break
 
 
-
 def loot_add(character_var, enemy_var):
-    d_options = [
-        "Supplies are scarce or expensive on this damned Island. Probably a good idea to search the body for anything"
-        "useful",
-        "As fucked up as it might seem. They are dead and I need whatever they have more than they do.",
-        "I won, they lost. What did they leave me?",
-        "Maybe they left me something that would make this worth it?",
-    ]
-    print('------------------------------')
-    print('------------------------------')
-    print(d_options[random.randint(0, 3)], sep='')
-    enemy_inventory(character_var, enemy_var)
-
-
-def enemy_inventory(character_var, enemy_var):
     print('------------------------------')
     print('------------------------------')
     print('-      Enemy Inventory       -')
@@ -199,13 +178,11 @@ def enemy_inventory(character_var, enemy_var):
             if n.isdigit() and int(n) <= len(enemy_var.get_inventory()):
                 nn = int(n) - 1
                 character_var.add_inventory(enemy_var.get_inventory()[nn])
-                enemy_inventory(character_var, enemy_var)
             elif "all" in n.lower():
                 if (len(character_var.get_inventory()) + len(enemy_var.get_inventory())) > character_var. \
                         get_inventory_limit():
                     print('------------------------------')
                     print("You do not have enough room in your Inventory for all of these Items.")
-                    enemy_inventory(character_var, enemy_var)
                 else:
                     for i in enemy_var.get_inventory():
                         character_var.get_inventory().append(i)
@@ -214,4 +191,3 @@ def enemy_inventory(character_var, enemy_var):
                 break
             elif "inventory" in n.lower():
                 inventory(character_var)
-                enemy_inventory(character_var, enemy_var)
