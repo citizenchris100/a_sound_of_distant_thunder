@@ -11,12 +11,14 @@ def inventory(character_var):
         print('------------------------------')
         print('------------------------------')
     else:
-        for i in range(len(character_var.get_inventory())):
-            num = i + 1
-            print(num, ": ", character_var.get_inventory()[i].get_item_name(), sep='')
-        print('------------------------------')
-        print('------------------------------')
         while True:
+            print('------------------------------')
+            print('------------------------------')
+            for i in range(len(character_var.get_inventory())):
+                num = i + 1
+                print(num, ": ", character_var.get_inventory()[i].get_item_name(), sep='')
+            print('------------------------------')
+            print('------------------------------')
             n = input(
                 "Enter the number of the corresponding Inventory item\nyou would like to Use / Equip or Discard.\n"
                 "Additionally you can type \'Exit\' to return to the previous Menu.\n> ")
