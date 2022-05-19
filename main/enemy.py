@@ -151,28 +151,32 @@ def item_loot():
     return [items.charm1(), items.charm2(), items.cologne1(), items.cologne2(), items.charm3(), items.cologne3()]
 
 
+def add_loot(enemy):
+    if random.randint(0, 10) < enemy.get_luck():
+        enemy.add_inventory(med_pack_loot()[random.randint(0, 2)])
+    if random.randint(0, 6) < enemy.get_luck():
+        enemy.add_inventory(night_shadow_loot()[random.randint(0, 2)])
+    if random.randint(0, 24) < enemy.get_luck():
+        enemy.add_inventory(item_loot()[random.randint(0, 5)])
+
+
 def basic_goblin():
     goblin = Enemy("Goblin", random.randint(15, 30), random.randint(1, 3), random.randint(5, 10), random.randint(0, 5))
-    if random.randint(0, 10) < goblin.get_luck():
-        goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
-    if random.randint(0, 6) < goblin.get_luck():
-        goblin.add_inventory(night_shadow_loot()[random.randint(0, 2)])
-    if random.randint(0, 24) < goblin.get_luck():
-        goblin.add_inventory(item_loot()[random.randint(0, 5)])
+    add_loot(goblin)
     return goblin
 
 
 def beta_goblin():
     goblin = Enemy("Beta Goblin", random.randint(35, 65), random.randint(4, 6), random.randint(10, 17),
                    random.randint(2, 7))
-    goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
+    add_loot(goblin)
     return goblin
 
 
 def alpha_goblin():
     goblin = Enemy("Alpha Goblin", random.randint(75, 100), random.randint(6, 8), random.randint(17, 25),
                    random.randint(4, 7))
-    goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
+    add_loot(goblin)
     return goblin
 
 
