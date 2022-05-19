@@ -149,8 +149,11 @@ def disembark(boat, character):
         light_house(character, True)
     elif "dock" in option.lower() or option == "1":
         os.system('cls' if os.name == 'nt' else 'clear')
+        print('------------------------------')
+        print('-         Chapter 2          -')
+        print('------------------------------')
         use_textwrap(zone.dock().get_description()["initial"])
-        dock(character)
+        dock(character, True)
     elif "return" in option.lower() or option == "3":
         speak_to_captain(character, boat)
     elif "help" in option.lower() or option == "4":
@@ -173,6 +176,7 @@ def light_house(character, first):
 def dock(character, first):
     if first:
         use_textwrap(boat_broke)
+        use_textwrap(zone.lighthouse().get_description()["initial"])
 
 
 def title_screen_selections():

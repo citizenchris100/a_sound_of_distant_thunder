@@ -43,6 +43,10 @@ class Firearm(Item):
         self.limit = up
 
 
+def small_coin():
+    return Item("Small Coin", 1, "coin")
+
+
 def basic_med_pack():
     return Item("Basic Med Pack", 20, "hp")
 
