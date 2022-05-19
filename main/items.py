@@ -43,8 +43,16 @@ class Firearm(Item):
         self.limit = up
 
 
-def small_coin():
-    return Item("Small Coin", 1, "coin")
+def small_ns_pack():
+    return Item("Small Pack of Night Shadow", 1, "ns")
+
+
+def medium_ns_pack():
+    return Item("Medium Pack of Night Shadow", 5, "ns")
+
+
+def large_ns_pack():
+    return Item("Large Pack of Night Shadow", 25, "ns")
 
 
 def basic_med_pack():
@@ -107,12 +115,28 @@ def machete():
     return Item("Machete", 15, "melee")
 
 
-def cologne():
-    return Item("Cologne", 2, "charm")
+def cologne1():
+    return Item("Cologne", 1, "charm")
 
 
-def charm():
-    return Item("Charm", 2, "luck")
+def cologne2():
+    return Item("Fancy Cologne", 2, "charm")
+
+
+def cologne3():
+    return Item("Very Fancy Cologne", 3, "charm")
+
+
+def charm1():
+    return Item("rabbits foot", 1, "luck")
+
+
+def charm2():
+    return Item("four leaf clover", 2, "luck")
+
+
+def charm3():
+    return Item("horseshoe", 3, "luck")
 
 
 def basic_body_armour():

@@ -143,9 +143,22 @@ def med_pack_loot():
     return [items.medium_med_pack(), items.basic_med_pack(), items.advanced_med_pack()]
 
 
+def night_shadow_loot():
+    return [items.small_ns_pack(), items.medium_ns_pack(), items.large_ns_pack()]
+
+
+def item_loot():
+    return [items.charm1(), items.charm2(), items.cologne1(), items.cologne2(), items.charm3(), items.cologne3()]
+
+
 def basic_goblin():
     goblin = Enemy("Goblin", random.randint(15, 30), random.randint(1, 3), random.randint(5, 10), random.randint(0, 5))
-    goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
+    if random.randint(0, 10) < goblin.get_luck():
+        goblin.add_inventory(med_pack_loot()[random.randint(0, 2)])
+    if random.randint(0, 6) < goblin.get_luck():
+        goblin.add_inventory(night_shadow_loot()[random.randint(0, 2)])
+    if random.randint(0, 24) < goblin.get_luck():
+        goblin.add_inventory(item_loot()[random.randint(0, 5)])
     return goblin
 
 
@@ -204,7 +217,7 @@ to and from the island.\nHe mentioned that he stopped getting ferry jobs about a
     })
     captain.set_equipped_gun(items.large_revolver())
     captain.set_equipped_armour(items.medium_body_armour())
-    captain.set_inventory([items.medium_med_pack(), items.cologne(), items.med_ammo_box()])
+    captain.set_inventory([items.medium_med_pack(), items.cologne1(), items.med_ammo_box()])
     captain.set_name("Boat Captain")
     # TODO debug health.
     captain.set_health(5)
@@ -236,5 +249,5 @@ def light_house_keeper():
                             items.advanced_med_pack(), items.advanced_med_pack(), items.advanced_med_pack(),
                             items.medium_pistol(), items.advanced_pistol(), items.medium_knife(),
                             items.large_knife(), items.basic_body_armour(), items.medium_body_armour(),
-                            items.advanced_body_armour(), items.cologne(), items.charm(), items.large_ammo_box()])
+                            items.advanced_body_armour(), items.cologne1(), items.charm1(), items.large_ammo_box()])
     light_hk.set_name("Lighthouse Keeper")
