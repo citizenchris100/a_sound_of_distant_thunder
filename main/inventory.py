@@ -1,6 +1,7 @@
 from Util import vowel_start
 
 
+# TODO: keep loop from breaking after you equip and item
 def inventory(character_var):
     print('------------------------------')
     print('-         Inventory          -')

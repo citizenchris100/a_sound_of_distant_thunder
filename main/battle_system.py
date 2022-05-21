@@ -137,14 +137,14 @@ def battle_state(character_var, enemy_var, surprise):
         # TODO: update melee combat
         if option == "1":
             if character_var.get_equipped_melee() is not None:
-                print("You swing your ", character_var.get_equipped_melee.get_item_name(), " attacking the ",
+                print("You swing your ", character_var.get_equipped_melee().get_item_name(), " attacking the ",
                       enemy_var.get_name(), ".", sep='')
-                hit = (character_var.get_strength_attribute() + character_var.get_equipped_melee.get_item_value())
+                hit = (character_var.get_strength_attribute() + character_var.get_equipped_melee().get_item_value())
             else:
                 print("You punch the ", enemy_var.get_name(), ".", sep='')
                 hit = character_var.get_strength_attribute()
             defend = enemy_var.get_defence()
-            enemy_var.set_health(enemy_var.get_health - (math.floor(hit / defend)))
+            enemy_var.set_health(enemy_var.get_health() - (math.floor(hit / defend)))
             if enemy_var.get_health() > 0:
                 enemy_attack(character_var, enemy_var, "yes")
             else:
@@ -172,9 +172,10 @@ def battle_state(character_var, enemy_var, surprise):
                         else:
                             defend = enemy_var.get_equipped_armour().get_item_value()
                         total_attack = (math.floor(hit / defend))
-                        if "Goblin" not in enemy_var.get_name() or enemy_var.get_equipped_armour() is not None:
-                            enemy_var.get_equipped_armour().set_item_value((enemy_var.get_equipped_armour().
-                                                                            get_item_value() - total_attack))
+                        if "Goblin" not in enemy_var.get_name():
+                            if enemy_var.get_equipped_armour() is not None:
+                                enemy_var.get_equipped_armour().set_item_value((enemy_var.get_equipped_armour().
+                                                                                get_item_value() - total_attack))
                         enemy_var.set_health(enemy_var.get_health() - total_attack)
                         if enemy_var.get_health() > 0:
                             enemy_attack(character_var, enemy_var, "yes")
