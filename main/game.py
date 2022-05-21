@@ -145,10 +145,8 @@ def disembark(boat, character):
         print('------------------------------')
         print('-         Chapter 2          -')
         print('------------------------------')
-        use_textwrap(zone.lighthouse().get_description()["initial"])
         light_house(character, True)
     elif "dock" in option.lower() or option == "1":
-        os.system('cls' if os.name == 'nt' else 'clear')
         print('------------------------------')
         print('-         Chapter 2          -')
         print('------------------------------')
@@ -171,6 +169,24 @@ Wonderful. This gig is already starting off well."""
 def light_house(character, first):
     if first:
         use_textwrap(boat_broke)
+        use_textwrap("""The light house was sitting atop a tiny peninsula about 100 feet or so above the shore.
+I walked the shoreline around the peninsula until I found a stair case built into the side of the cliff wall. A couple
+minutes later I'm up the stairs. Up close this place wasn't exactly the most inviting looking spot I've ever seen. 
+However that hasn't ever stopped me before. 
+The air is thick with humidity and a slight mist from the beach below. Moonlight is about all I have to light my way. 
+It suddenly occurred to me how oddly quiet it was. I seemed to be the only living thing out and about on this island. 
+Every step pierced the silence and I'd be lying if I said I didn't feel a little vulnerable out here. Everything about 
+this place screams spooky vibes.
+As I near what appears to be the main entrance of The Lighthouse two figures approach from left. I ready my weapon.
+Alex: Hello(?) Who goes there?
+I got nothing in response and as they crept nearer I decided to raise my weapon.
+Alex: I'm not looking for trouble ok. My boat engine is in need of repair and...
+Just that moment I got a good look at these....things. They might have been human at one point however that seems to 
+have been a while ago. They were incredibly emaciated walked with a peculiar hunched posture. 
+I'm not sure if it was the moonlight or what but there skin was wrinkly and almost purple. No hair to speak of.
+The most disturbing quality was what appeared to be an elongated snout or jaw. It was hard to make out before the attack
+came.""")
+
     
     
 def dock(character, first):
