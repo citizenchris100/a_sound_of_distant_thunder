@@ -177,6 +177,7 @@ def alpha_goblin():
     goblin = Enemy("Alpha Goblin", random.randint(75, 100), random.randint(6, 8), random.randint(17, 25),
                    random.randint(4, 7))
     add_loot(goblin)
+    add_loot(goblin)
     return goblin
 
 
@@ -231,7 +232,7 @@ to and from the island.\nHe mentioned that he stopped getting ferry jobs about a
 def deck_hand01():
     deck_hand = npc(True)
     deck_hand.set_equipped_melee(items.basic_knife())
-    deck_hand.set_inventory([items.basic_med_pack()])
+    add_loot(deck_hand)
     deck_hand.set_name("Deck Hand")
     return deck_hand
 
@@ -239,7 +240,7 @@ def deck_hand01():
 def deck_hand02():
     deck_hand = npc(True)
     deck_hand.set_equipped_melee(items.basic_knife())
-    deck_hand.set_inventory([items.basic_med_pack()])
+    add_loot(deck_hand)
     deck_hand.set_name("Deck Hand")
     return deck_hand
 

@@ -177,6 +177,7 @@ def dock(character, first):
     if first:
         use_textwrap(boat_broke)
         use_textwrap(zone.lighthouse().get_description()["initial"])
+        use_textwrap("""""")
 
 
 def title_screen_selections():
