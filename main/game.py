@@ -1,12 +1,14 @@
 # a sound of distant thunder
 # by christopher manning
 
+# TODO refactor to NOT use zone objects
 import sys
 import os
 import textwrap
 import hero
 import zone
 import battle_system
+import enemy
 
 
 def use_textwrap(value):
@@ -178,14 +180,20 @@ It suddenly occurred to me how oddly quiet it was. I seemed to be the only livin
 Every step pierced the silence and I'd be lying if I said I didn't feel a little vulnerable out here. Everything about 
 this place screams spooky vibes.
 As I near what appears to be the main entrance of The Lighthouse two figures approach from left. I ready my weapon.
+
 Alex: Hello(?) Who goes there?
+
 I got nothing in response and as they crept nearer I decided to raise my weapon.
+
 Alex: I'm not looking for trouble ok. My boat engine is in need of repair and...
+
 Just that moment I got a good look at these....things. They might have been human at one point however that seems to 
 have been a while ago. They were incredibly emaciated walked with a peculiar hunched posture. 
 I'm not sure if it was the moonlight or what but there skin was wrinkly and almost purple. No hair to speak of.
 The most disturbing quality was what appeared to be an elongated snout or jaw. It was hard to make out before the attack
 came.""")
+        battle_system.battle_state(character, enemy.basic_goblin(), True)
+        battle_system.battle_state(character, enemy.basic_goblin(), True)
 
     
     

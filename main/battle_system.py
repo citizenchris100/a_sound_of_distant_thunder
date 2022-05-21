@@ -172,7 +172,7 @@ def battle_state(character_var, enemy_var, surprise):
                         else:
                             defend = enemy_var.get_equipped_armour().get_item_value()
                         total_attack = (math.floor(hit / defend))
-                        if enemy_var.get_equipped_armour() is not None:
+                        if "Goblin" not in enemy_var.get_name() or enemy_var.get_equipped_armour() is not None:
                             enemy_var.get_equipped_armour().set_item_value((enemy_var.get_equipped_armour().
                                                                             get_item_value() - total_attack))
                         enemy_var.set_health(enemy_var.get_health() - total_attack)

@@ -114,7 +114,9 @@ def lighthouse():
     desc = {
         "initial": ""
     }
-    lighthouse_characters = [enemy.light_house_keeper(), enemy.basic_goblin()]
+    lighthouse_characters = [enemy.light_house_keeper(), enemy.basic_goblin(), enemy.basic_goblin()]
+    items = []
+    return Zone("Lighthouse", desc, lighthouse_characters, items)
 
 
 def dock():
