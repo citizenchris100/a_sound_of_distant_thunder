@@ -156,41 +156,44 @@ def discard(character_var, nn):
 
 
 def loot_add(character_var, enemy_var):
-    print('------------------------------')
-    print('------------------------------')
-    print('-      Enemy Inventory       -')
-    print('------------------------------')
-    print('------------------------------')
-    if len(enemy_var.get_inventory()) < 1:
-        print('-           Empty            -')
+    while True:
         print('------------------------------')
         print('------------------------------')
-    else:
-        for i in range(len(enemy_var.get_inventory())):
-            num = i + 1
-            print(num, ": ", enemy_var.get_inventory()[i].get_item_name(), sep='')
+        print('-      Enemy Inventory       -')
         print('------------------------------')
         print('------------------------------')
-        while True:
-            n = input(
-                "Enter the number of the corresponding Inventory item\nyou would like to Add to your "
-                "current inventory.\n"
-                "Additionally you can type \'All\' to Add all of the items to your Inventory.\n"
-                "Enter \'Inventory\' to view your current inventory."
-                "\nYou can also enter\'Exit\' to return to the previous Menu.\n> ")
-            if n.isdigit() and int(n) <= len(enemy_var.get_inventory()):
-                nn = int(n) - 1
-                character_var.add_inventory(enemy_var.get_inventory()[nn])
-            elif "all" in n.lower():
-                if (len(character_var.get_inventory()) + len(enemy_var.get_inventory())) > character_var. \
-                        get_inventory_limit():
-                    print('------------------------------')
-                    print("You do not have enough room in your Inventory for all of these Items.")
-                else:
-                    for i in enemy_var.get_inventory():
-                        character_var.get_inventory().append(i)
-                        break
-            elif "exit" in n.lower():
-                break
-            elif "inventory" in n.lower():
-                inventory(character_var)
+        if len(enemy_var.get_inventory()) < 1:
+            print('-           Empty            -')
+            print('------------------------------')
+            print('------------------------------')
+            break
+        else:
+            for i in range(len(enemy_var.get_inventory())):
+                num = i + 1
+                print(num, ": ", enemy_var.get_inventory()[i].get_item_name(), sep='')
+                print('------------------------------')
+                print('------------------------------')
+                n = input("Enter the number of the corresponding Inventory item\nyou would like to Add to your "
+                          "current inventory.\n"
+                          "Additionally you can type \'All\' to Add all of the items to your Inventory.\n"
+                          "Enter \'Inventory\' to view your current inventory."
+                          "\nYou can also enter\'Exit\' to return to the previous Menu.\n> ")
+                if n.isdigit() and int(n) <= len(enemy_var.get_inventory()):
+                    nn = int(n) - 1
+                    character_var.add_inventory(enemy_var.get_inventory()[nn])
+                elif "all" in n.lower():
+                    if (len(character_var.get_inventory()) + len(enemy_var.get_inventory())) > character_var. \
+                            get_inventory_limit():
+                        print('------------------------------')
+                        print("You do not have enough room in your Inventory for all of these Items.")
+                    else:
+                        for i in enemy_var.get_inventory():
+                            character_var.get_inventory().append(i)
+                            enemy_var.del_inventory(i)
+                            break
+                elif "exit" in n.lower():
+                    break
+                elif "inventory" in n.lower():
+                    print("food")
+
+
