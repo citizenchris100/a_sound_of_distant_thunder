@@ -1,7 +1,6 @@
 from Util import vowel_start
 
 
-# TODO: keep loop from breaking after you equip and item
 def inventory(character_var):
     print('------------------------------')
     print('-         Inventory          -')
@@ -181,6 +180,9 @@ def loot_add(character_var, enemy_var):
                 if n.isdigit() and int(n) <= len(enemy_var.get_inventory()):
                     nn = int(n) - 1
                     character_var.add_inventory(enemy_var.get_inventory()[nn])
+                    enemy_var.del_inventory(enemy_var.get_inventory()[nn])
+                    if len(enemy_var.get_inventory()) < 1:
+                        break
                 elif "all" in n.lower():
                     if (len(character_var.get_inventory()) + len(enemy_var.get_inventory())) > character_var. \
                             get_inventory_limit():
