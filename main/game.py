@@ -8,6 +8,7 @@ import textwrap
 import hero
 import zone
 import battle_system
+import inventory
 import enemy
 
 
@@ -85,7 +86,7 @@ choosing the 'Inventory' prompt.""")
         else:
             boat_zone(character)
     elif "inventory" in prompt.lower() or prompt == "4":
-        battle_system.inventory(character)
+        inventory.inventory(character)
         boat_zone(character)
     elif "help" in prompt.lower() or prompt == "5":
         help_menu()
@@ -189,11 +190,31 @@ Alex: I'm not looking for trouble ok. My boat engine is in need of repair and...
 
 Just that moment I got a good look at these....things. They might have been human at one point however that seems to 
 have been a while ago. They were incredibly emaciated walked with a peculiar hunched posture. 
-I'm not sure if it was the moonlight or what but there skin was wrinkly and almost purple. No hair to speak of.
-The most disturbing quality was what appeared to be an elongated snout or jaw. It was hard to make out before the attack
-came.""")
+I'm not sure if it was the moonlight or what but their skin was wrinkly and almost purple. No hair to speak of.
+The most disturbing quality was what appeared to be an elongated snout or jaw. Though admittedly tt was hard to make out
+ before the attack came.""")
         battle_system.battle_state(character, enemy.basic_goblin(), True)
         battle_system.battle_state(character, enemy.basic_goblin(), True)
+        use_textwrap("""After I catch my breath and calm down a bit I'm able to get a better look at these...things.
+Whatever they are they aren't human. Taking this job is starting to seem like a very bad idea. Regardless of how good
+the money is. No amount of money is worth getting your head ripped off by some purple goblin. I continue around the
+the Lighthouse until I come to what has to be the entrance.""")
+    else:
+        use_textwrap("""Outside the Lighthouse. Just as ominous and creepy as it ever was.""")
+    while True:
+        option = input("1. Enter Light House\n2. Explore\n3. Inventory\n4. Help\n> ")
+        if "enter" in option.lower() or option == "1":
+            print("foo")
+        elif "explore" in option.lower() or option == "2":
+            print("bar")
+        elif "inventory" in option.lower() or option == "3":
+            inventory.inventory(character)
+        elif "help" in option.lower() or option == "4":
+            help_menu()
+        else:
+            use_textwrap("""Not a valid entry. Please choose from the following options by entering the command
+or entering the corresponding number.""")
+
 
     
     
