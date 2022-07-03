@@ -54,6 +54,7 @@ class Hero:
     def add_inventory(self, item):
         if len(self.inventory) < self.inventory_limit:
             self.inventory.append(item)
+            print(item, " added to your inventory.", sep='')
         else:
             print("Your Inventory is Full. You can discard Items to make room if you so choose")
 
@@ -114,7 +115,7 @@ class Hero:
     def set_gun_skill(self, gun_skill):
         self.gun_skill_attribute = min(gun_skill, 35)
 
-    def get_luck_attribute(self):
+    def get_luck(self):
         return self.luck_attribute
 
     def set_luck_attribute(self, luck):
@@ -186,7 +187,7 @@ def class_selection():
     print('-Defence: ', character.get_defence_points())
     print('-Melee Attack: ', character.get_strength_attribute())
     print('-Gun Skill: ', character.get_gun_skill())
-    print('-Luck: ', character.get_luck_attribute())
+    print('-Luck: ', character.get_luck())
     print('-Charm: ', character.get_charm_attribute())
     print('------------------------------')
     print('------------------------------')

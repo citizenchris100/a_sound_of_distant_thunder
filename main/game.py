@@ -220,12 +220,12 @@ the Lighthouse until I come to what has to be the entrance.""")
     while True:
         option = input("1. Enter Lighthouse\n2. Explore\n3. Inventory\n4. Help\n> ")
         if "enter" in option.lower() or option == "1":
-            print("foo")
+            lighthouse_inside(character, True)
         elif "explore" in option.lower() or option == "2":
             use_textwrap("""There is a path nearby that most likely leads to the dock.""")
             option2 = input("1. Take Path to Dock\n2. Enter Lighthouse\n3. Inventory\n4. Help\n> ")
             if "enter" in option2.lower() or option2 == "2":
-                print("foo")
+                lighthouse_inside(character, True)
             elif "take" in option2.lower() or option2 == "1":
                 use_textwrap("""The path to the dock is about as dark and dreary as the rest of this place. It's just
 as inviting as well.""")
@@ -253,23 +253,48 @@ or entering the corresponding number.""")
 
 def lighthouse_inside(character, first):
     if first:
+        explore = False
         print('------------------------------')
         use_textwrap("""I attempt to turn the handle to the lighthouse door. It's locked. Of course it is.
 I'm a crafty sort so picking this lock shouldn't be an issue. However I do not have anything to pick it with. So that's 
 not really an option. Just left of the door is a small intercom box. I press the button which makes a kind of buzzing 
 sound as I press it.
-    Lighthouse Keeper: Who is it? What do you want? Go away!
-    Alex: Look I just got here. My name is Alex. I was sent by the people 
+Lighthouse Keeper: Who is it? What do you want? Go away!
+Alex: Look I just got here. My name is Alex. I was sent by the people 
 that fund this facility. I'm kind of in need of some assistance. 
-    Lighthouse Keeper: A company man eh?
-    Alex: Not exactly. They hired me to...see what was happening here. Or rather they opened a contract with my 
-agency and my agency gave me the gig. Could you let me in. I was just attacked by I don't know what...a couple things
-and...
-    Lighthouse Keeper: Attacked? Oh why didn't you say so. Come on in.
-    The door buzzes. I open it and enter into the foyer. Whoever the voice was on the other end of that intercom wasn't
+Lighthouse Keeper: A company man eh?
+Alex: Not exactly. They hired me to...see what was happening here. Or rather they opened a contract with my 
+agency and my agency gave me the gig. Could you let me in. I was just attacked by some...I don't know what...a couple 
+things and...
+Lighthouse Keeper: Attacked? Oh why didn't you say so. Come on in.
+The door buzzes. I open it and enter into the foyer. Whoever the voice was on the other end of that intercom wasn't
 the tidiest of fellows. It's a mess in here. Junk is everywhere. Though some of it does appear like it could be useful.
 The rest is just trash. In the center of the foyer is a spiral staircase. That must be where he's lurking. From the 
 looks of it he just discards his trash down here. One giant trash can.""")
+        while True:
+            print('------------------------------')
+            option = input("1. Ascend Staircase\n2. Explore\n3. Inventory\n4. Help\n> ")
+            if "ascend" in option.lower() or option == "1":
+                print('------------------------------')
+                print("foo")
+            elif "explore" in option.lower() or option == "2":
+                print('------------------------------')
+                if not explore:
+                    use_textwrap("""In hopes of finding something useful amongst all this junk I begin to dig around. I 
+carefully sift through the trash that seems to cover the entire floor of the foyer.""")
+                    if random.randint(0, 12) < character.get_luck():
+                        use_textwrap("""Wouldn't you know it. This wasn't such a bad idea after all. I found
+something.""")
+                        enemy.add_loot(character)
+                    else:
+                        use_textwrap("""Of course there isn't anything to be found in this garbage. Normally I'd 
+console myself by saying 'It can't hurt to look'. However in this case I'm pretty certain I could have caught a 
+disease from that crap. Probably a good idea to just move on.""")
+                    explore = True
+                else:
+                    use_textwrap("I've already rummaged through this crap enough. Doubtful I'll find anything.")
+
+
 
 
 def dock(character, first):
