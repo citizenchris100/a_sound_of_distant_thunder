@@ -224,9 +224,9 @@ the Lighthouse until I come to what has to be the entrance.""")
         elif "explore" in option.lower() or option == "2":
             use_textwrap("""There is a path nearby that most likely leads to the dock.""")
             option2 = input("1. Take Path to Dock\n2. Enter Lighthouse\n3. Inventory\n4. Help\n> ")
-            if "enter" in option.lower() or option == "2":
+            if "enter" in option2.lower() or option2 == "2":
                 print("foo")
-            elif "take" in option.lower() or option == "1":
+            elif "take" in option2.lower() or option2 == "1":
                 use_textwrap("""The path to the dock is about as dark and dreary as the rest of this place. It's just
 as inviting as well.""")
                 if random.randint(0, 12) < character.get_luck():
@@ -249,6 +249,27 @@ as inviting as well.""")
         else:
             use_textwrap("""Not a valid entry. Please choose from the following options by entering the command
 or entering the corresponding number.""")
+
+
+def lighthouse_inside(character, first):
+    if first:
+        print('------------------------------')
+        use_textwrap("""I attempt to turn the handle to the lighthouse door. It's locked. Of course it is.
+I'm a crafty sort so picking this lock shouldn't be an issue. However I do not have anything to pick it with. So that's 
+not really an option. Just left of the door is a small intercom box. I press the button which makes a kind of buzzing 
+sound as I press it.
+    Lighthouse Keeper: Who is it? What do you want? Go away!
+    Alex: Look I just got here. My name is Alex. I was sent by the people 
+that fund this facility. I'm kind of in need of some assistance. 
+    Lighthouse Keeper: A company man eh?
+    Alex: Not exactly. They hired me to...see what was happening here. Or rather they opened a contract with my 
+agency and my agency gave me the gig. Could you let me in. I was just attacked by I don't know what...a couple things
+and...
+    Lighthouse Keeper: Attacked? Oh why didn't you say so. Come on in.
+    The door buzzes. I open it and enter into the foyer. Whoever the voice was on the other end of that intercom wasn't
+the tidiest of fellows. It's a mess in here. Junk is everywhere. Though some of it does appear like it could be useful.
+The rest is just trash. In the center of the foyer is a spiral staircase. That must be where he's lurking. From the 
+looks of it he just discards his trash down here. One giant trash can.""")
 
 
 def dock(character, first):
