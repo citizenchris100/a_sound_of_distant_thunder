@@ -10,6 +10,7 @@ import zone
 import battle_system
 import inventory
 import enemy
+import random
 
 
 def use_textwrap(value):
@@ -228,6 +229,11 @@ the Lighthouse until I come to what has to be the entrance.""")
             elif "take" in option.lower() or option == "1":
                 use_textwrap("""The path to the dock is about as dark and dreary as the rest of this place. It's just
 as inviting as well.""")
+                if random.randint(0, 12) < character.get_luck():
+                    print('------------------------------')
+                    battle_system.battle_state(character, enemy.basic_goblin(), True)
+                    print('------------------------------')
+                    battle_system.battle_state(character, enemy.basic_goblin(), True)
                 dock(character, False)
             elif "inventory" in option.lower() or option == "3":
                 inventory.inventory(character)
