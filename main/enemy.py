@@ -1,5 +1,5 @@
 import random
-##import names
+import random_name_generator as rng
 import items
 
 
@@ -183,7 +183,7 @@ def alpha_goblin():
 
 def npc(gender):
     if gender:
-        npc_name = names.get_full_name(gender='male')
+        npc_name = rng.generate_one(rng.Descent.ENGLISH, sex=rng.Sex.MALE)
         npc_health = random.randint(60, 100)
         npc_defence = random.randint(5, 8)
         npc_strength = random.randint(5, 25)
@@ -194,7 +194,7 @@ def npc(gender):
         npc_luck = random.randint(1, 7)
         return Human(npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck)
     else:
-        npc_name = names.get_full_name(gender='female')
+        npc_name = rng.generate_one(rng.Descent.ENGLISH, sex=rng.Sex.FEMALE)
         npc_health = random.randint(60, 100)
         npc_defence = random.randint(3, 6)
         npc_strength = random.randint(2, 17)
