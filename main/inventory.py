@@ -32,15 +32,21 @@ def inventory(character_var):
                     print('------------------------------')
                     d = input("1. Use.\n2. Discard.\n> ")
                     if d.lower() == "use" or d == "1":
-                        character_var.set_health_points((character_var.get_health_points() +
+                        if character_var.get_health_points() < character_var.get_hp_limit():
+                            character_var.set_health_points((character_var.get_health_points() +
                                                          character_var.get_inventory()[nn].get_item_value()))
-                        print('------------------------------')
-                        print("You used ", start, character_var.get_inventory()[nn].get_item_name(), sep='')
-                        print(character_var.get_inventory()[nn].get_item_value(), " was added to your Health.", sep='')
-                        print("Your Health is now ", character_var.get_health_points(), sep='')
-                        print('------------------------------')
-                        character_var.del_inventory(nn)
-                        break
+                            print('------------------------------')
+                            print("You used ", start, character_var.get_inventory()[nn].get_item_name(), sep='')
+                            print(character_var.get_inventory()[nn].get_item_value(), " was added to your Health.", sep='')
+                            print("Your Health is now ", character_var.get_health_points(), sep='')
+                            print('------------------------------')
+                            character_var.del_inventory(nn)
+                            break
+                        else:
+                            print('------------------------------')
+                            print('------------------------------')
+                            print("Your Health is already Max")
+
                     elif d.lower() == "discard" or d == "2":
                         discard(character_var, nn)
                         break
