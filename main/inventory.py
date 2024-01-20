@@ -3,7 +3,7 @@ from Util import vowel_start
 
 def inventory(character_var):
     print('------------------------------')
-    print('-         Inventory          -')
+    print('-         Inventory         -- -')
     print('------------------------------')
     print('------------------------------')
     if len(character_var.get_inventory()) < 1:
