@@ -6,7 +6,6 @@ from lvl_system import level_up
 
 
 # TODO: improve combat verbiage
-# TODO: add concept of range to combat
 
 def display_score():
     file = open("../score.txt", "r")
@@ -36,7 +35,7 @@ def game_over(character_var):
         display_score()
 
 
-def enemy_attack(character_var, enemy_var, hit_enemy):
+def enemy_attack(character_var, enemy_var, hit_enemy, range):
     if hit_enemy == "yes":
         print('------------------------------')
         print(enemy_var.get_name(), "'s health is now ", enemy_var.get_health(), ".", sep='')
@@ -53,16 +52,17 @@ def enemy_attack(character_var, enemy_var, hit_enemy):
         total_attack = enemy_melee_attack(character_var, enemy_var, hit_enemy)
     else:
         if enemy_var.get_equipped_gun().get_ammo() > 0:
+            if range:
+                bonus = 0
+            else:
+                bonus = 3
             if hit_enemy == "yes":
                 print('------------------------------')
-                print("They were able to strike back with their fire arm")
+                print("They return fire.")
             else:
                 print('------------------------------')
                 print("They fire at you with their gun.")
-            if random.randint(0, 12) < enemy_var.get_luck():
-                hit = ((enemy_var.get_gun_skill() + enemy_var.get_equipped_gun().get_item_value()) * 2)
-                enemy_var.get_equipped_gun().set_ammo(enemy_var.get_equipped_gun().get_ammo() - 2)
-            elif random.randint(0, 6) < enemy_var.get_luck():
+            if random.randint(0, 6) - bonus < enemy_var.get_luck():
                 hit = (enemy_var.get_gun_skill() + enemy_var.get_equipped_gun().get_item_value())
                 enemy_var.get_equipped_gun().set_ammo(enemy_var.get_equipped_gun().get_ammo() - 1)
             else:
@@ -147,7 +147,7 @@ def use_ammo(character_var, shots):
             return character_var.get_inventory()[i].get_item_value()
 
 
-def battle_state(character_var, enemy_var, surprise):
+def battle_state(character_var, enemy_var, surprise, range):
     if surprise:
         enemy_attack(character_var, enemy_var, "surprise")
     while enemy_var.get_health() > 0:
@@ -172,14 +172,18 @@ def battle_state(character_var, enemy_var, surprise):
                 enemy_defeat(character_var, enemy_var)
                 loot_add(character_var, enemy_var)
                 break
-        elif option == "2":
+        elif "gun" in option.lower() or option == "2":
             if character_var.get_equipped_gun() is not None:
+                if range:
+                    bonus = 0
+                else:
+                    bonus = 5
                 if character_var.get_equipped_gun().get_ammo() > 0:
                     print('------------------------------')
                     print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
                           enemy_var.name, ".", sep='')
-                    if random.randint(0, 6) < character_var.get_luck():
-                        if random.randint(0, 12) < character_var.get_luck():
+                    if random.randint(0, 6) - bonus < character_var.get_luck():
+                        if random.randint(0, 12) - bonus < character_var.get_luck():
                             print("You managed to get two hits")
                             hit = ((character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
                                    * 2)
@@ -213,6 +217,7 @@ def battle_state(character_var, enemy_var, surprise):
                     print('------------------------------')
                     print("You are out of ammo.")
             else:
+                print('------------------------------')
                 print("You do not have a gun equipped.\nCheck your Inventory for any available guns to equip.")
 
         # TODO: update the flee option

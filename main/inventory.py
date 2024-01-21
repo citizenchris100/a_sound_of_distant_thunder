@@ -1,5 +1,6 @@
 from Util import vowel_start
 
+## TODO: improve loot system to include access to inventory as well as ability to skip entirely
 
 def inventory(character_var):
     print('------------------------------')

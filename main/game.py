@@ -132,11 +132,11 @@ In any case, I have a decision to make. Head to the dock or check out this omino
         elif "island" in speak.lower() or speak == "3":
             print(captain.get_dialog()["Island"])
         elif "attack" in speak.lower() or speak == "4":
-            battle_system.battle_state(character, captain, False)
+            battle_system.battle_state(character, captain, False, False)
             print('------------------------------')
-            battle_system.battle_state(character, deck_hand_01, True)
+            battle_system.battle_state(character, deck_hand_01, True, False)
             print('------------------------------')
-            battle_system.battle_state(character, deck_hand_02, True)
+            battle_system.battle_state(character, deck_hand_02, True, False)
             print('------------------------------')
             disembark(boat, character)
         elif "return" in speak.lower() or speak == "5":
