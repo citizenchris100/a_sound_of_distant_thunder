@@ -96,19 +96,19 @@ def enemy_melee_attack(character_var, enemy_var, hit_enemy):
 def enemy_defeat(character_var, enemy_var):
     chance = random.randint(0, 10)
     if "Goblin" in enemy_var.get_name():
-        if chance < character_var.get_luck_attribute():
+        if chance < character_var.get_luck():
             exp = math.ceil(enemy_var.get_strength() + random.randint(0, 10))
         else:
             exp = enemy_var.get_strength()
         print("You killed the ", enemy_var.name, ".", sep='')
     else:
         if enemy_var.get_gun_skill() < enemy_var.get_strength():
-            if chance < character_var.get_luck_attribute():
+            if chance < character_var.get_luck():
                 exp = math.ceil(enemy_var.get_strength() + random.randint(0, 10))
             else:
                 exp = enemy_var.get_strength()
         else:
-            if chance < character_var.get_luck_attribute():
+            if chance < character_var.get_luck():
                 exp = math.ceil(enemy_var.get_gun_skill() + random.randint(0, 10))
             else:
                 exp = enemy_var.get_gun_skill()
@@ -156,8 +156,8 @@ def battle_state(character_var, enemy_var, surprise):
                 if character_var.get_equipped_gun().get_ammo() > 0:
                     print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
                           enemy_var.name, ".", sep='')
-                    if random.randint(0, 6) < character_var.get_luck_attribute():
-                        if random.randint(0, 12) < character_var.get_luck_attribute():
+                    if random.randint(0, 6) < character_var.get_luck():
+                        if random.randint(0, 12) < character_var.get_luck():
                             print("You managed to get two hits")
                             hit = ((character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
                                    * 2)
@@ -194,7 +194,7 @@ def battle_state(character_var, enemy_var, surprise):
 
         # TODO: update the flee option
         elif option == "4":
-            if random.randint(0, 6) + character_var.get_luck_attribute() > 12:
+            if random.randint(0, 6) + character_var.get_luck() > 12:
                 print("You escape battle with the ", enemy_var.name, ".", sep='')
                 break
             else:

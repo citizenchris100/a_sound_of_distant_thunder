@@ -27,7 +27,7 @@ def level_up(character_var):
 
 
 def upgrade_character(character_var, dp, hp):
-    total = (character_var.get_strength_attribute() + character_var.get_gun_skill() + character_var.get_luck_attribute()
+    total = (character_var.get_strength_attribute() + character_var.get_gun_skill() + character_var.get_luck()
              + character_var.get_charm_attribute())
     if total < 84:
         option = input("You have leveled up.\nChoose which attribute you would like to improve.\n"
@@ -47,8 +47,8 @@ def upgrade_character(character_var, dp, hp):
                 print("You have reached the limit of your Gun Skill attribute. Make another selection.")
                 upgrade_character(character_var, dp, hp)
         elif option == "3":
-            if character_var.get_luck_attribute() < 7:
-                character_var.set_luck_attribute(character_var.get_luck_attribute() + 1)
+            if character_var.get_luck() < 7:
+                character_var.set_luck_attribute(character_var.get_luck() + 1)
                 print("Your Luck is now ", character_var.get_gun_skill(), sep='')
             else:
                 print("You have reached the limit of your Luck attribute. Make another selection.")
