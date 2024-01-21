@@ -6,6 +6,8 @@ from lvl_system import level_up
 
 
 # TODO: improve combat verbiage
+# TODO: add concept of range to combat
+
 def display_score():
     file = open("../score.txt", "r")
     for line in file:
@@ -36,18 +38,26 @@ def game_over(character_var):
 
 def enemy_attack(character_var, enemy_var, hit_enemy):
     if hit_enemy == "yes":
+        print('------------------------------')
         print(enemy_var.get_name(), "'s health is now ", enemy_var.get_health(), ".", sep='')
+        print("Your current Health is ", character_var.get_health_points(), "/", character_var.get_hp_limit(), sep='')
     elif hit_enemy == "no":
+        print('------------------------------')
         print("You did not hit the ", enemy_var.get_name(), ".", sep='')
+        print('------------------------------')
+        print("Your current Health is ", character_var.get_health_points(), "/", character_var.get_hp_limit(), sep='')
     elif hit_enemy == "surprise":
+        print('------------------------------')
         print("Out of nowhere you were blindsided by an attack.")
     if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_gun() is None:
         total_attack = enemy_melee_attack(character_var, enemy_var, hit_enemy)
     else:
         if enemy_var.get_equipped_gun().get_ammo() > 0:
             if hit_enemy == "yes":
+                print('------------------------------')
                 print("They were able to strike back with their fire arm")
             else:
+                print('------------------------------')
                 print("They fire at you with their gun.")
             if random.randint(0, 12) < enemy_var.get_luck():
                 hit = ((enemy_var.get_gun_skill() + enemy_var.get_equipped_gun().get_item_value()) * 2)
@@ -70,20 +80,25 @@ def enemy_attack(character_var, enemy_var, hit_enemy):
         character_var.get_equipped_armour.set_item_value(character_var.get_equipped_armour.get_item_value()
                                                          - total_attack)
         if character_var.get_equipped_armour.get_item_value() > 0:
+            print('------------------------------')
             print("Your armour has been damaged. \n")
         else:
+            print('------------------------------')
             print("Your armour is no longer effective.\nYou should probably equip new armour ASAP.")
     character_var.set_health_points(character_var.get_health_points() - total_attack)
     if character_var.hp > 0:
-        print("Your health is now ", character_var.get_health_points(), ".", sep='')
+        print('------------------------------')
+        print("Your current Health is now ", character_var.get_health_points(), "/", character_var.get_hp_limit(), sep='')
     else:
         game_over(character_var)
 
 
 def enemy_melee_attack(character_var, enemy_var, hit_enemy):
     if hit_enemy == "yes":
+        print('------------------------------')
         print("They were able to strike back with a melee attack")
     else:
+        print('------------------------------')
         print("They hit you with a melee attack")
     if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_melee() is None:
         hit = enemy_var.get_strength()
@@ -100,6 +115,7 @@ def enemy_defeat(character_var, enemy_var):
             exp = math.ceil(enemy_var.get_strength() + random.randint(0, 10))
         else:
             exp = enemy_var.get_strength()
+        print('------------------------------')
         print("You killed the ", enemy_var.name, ".", sep='')
     else:
         if enemy_var.get_gun_skill() < enemy_var.get_strength():
@@ -112,7 +128,9 @@ def enemy_defeat(character_var, enemy_var):
                 exp = math.ceil(enemy_var.get_gun_skill() + random.randint(0, 10))
             else:
                 exp = enemy_var.get_gun_skill()
+        print('------------------------------')
         print("You killed ", enemy_var.name, ".", sep='')
+    print('------------------------------')
     print("You gained ", exp, " experience points.", sep='')
     character_var.set_exp(character_var.get_exp() + exp)
     level_up(character_var)
@@ -133,14 +151,17 @@ def battle_state(character_var, enemy_var, surprise):
     if surprise:
         enemy_attack(character_var, enemy_var, "surprise")
     while enemy_var.get_health() > 0:
+        print('------------------------------')
         option = input("1. Melee Attack \n2. Gun Attack\n3. Inventory\n4. Flee\n> ")
         # TODO: update melee combat
         if option == "1":
             if character_var.get_equipped_melee() is not None:
+                print('------------------------------')
                 print("You swing your ", character_var.get_equipped_melee().get_item_name(), " attacking the ",
                       enemy_var.get_name(), ".", sep='')
                 hit = (character_var.get_strength_attribute() + character_var.get_equipped_melee().get_item_value())
             else:
+                print('------------------------------')
                 print("You punch the ", enemy_var.get_name(), ".", sep='')
                 hit = character_var.get_strength_attribute()
             defend = enemy_var.get_defence()
@@ -154,6 +175,7 @@ def battle_state(character_var, enemy_var, surprise):
         elif option == "2":
             if character_var.get_equipped_gun() is not None:
                 if character_var.get_equipped_gun().get_ammo() > 0:
+                    print('------------------------------')
                     print("You fired your ", character_var.get_equipped_gun().get_item_name(), " attacking the ",
                           enemy_var.name, ".", sep='')
                     if random.randint(0, 6) < character_var.get_luck():
@@ -188,6 +210,7 @@ def battle_state(character_var, enemy_var, surprise):
                         print("You have ", character_var.get_equipped_gun().get_ammo(), " shots remaining", sep='')
                         enemy_attack(character_var, enemy_var, "no")
                 else:
+                    print('------------------------------')
                     print("You are out of ammo.")
             else:
                 print("You do not have a gun equipped.\nCheck your Inventory for any available guns to equip.")
@@ -203,7 +226,7 @@ def battle_state(character_var, enemy_var, surprise):
                 print("You were unable to escape battle. \nHowever the ", enemy_var.name,
                       " was able to strike you.", sep='')
                 if character_var.get_health_points() > 0:
-                    print("Your health is now ", character_var.get_health_points(), ".", sep='')
+                    print("Your current Health is ", character_var.get_health_points(), "/", character_var.get_hp_limit(), sep='')
                 else:
                     game_over(character_var)
         elif option == "3":
@@ -212,6 +235,7 @@ def battle_state(character_var, enemy_var, surprise):
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
     print("Your current Score is ", character_var.get_exp(), sep='')
+    print("Your current Health is ", character_var.get_health_points(), "/", character_var.get_hp_limit(), sep='')
 
 
 
