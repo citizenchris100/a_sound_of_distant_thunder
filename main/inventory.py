@@ -186,15 +186,16 @@ def loot_add(character_var, enemy_var):
                       "\nYou can also enter\'Exit\' to return to the previous Menu.\n> ")
             if n.isdigit() and int(n) <= len(enemy_var.get_inventory()):
                 nn = int(n) - 1
-                character_var.add_inventory(enemy_var.get_inventory()[nn])
-                enemy_var.del_inventory(enemy_var.get_inventory()[nn])
-                if len(enemy_var.get_inventory()) < 1:
+
+                if (len(character_var.get_inventory()) + len(enemy_var.get_inventory())) > character_var. \
+                        get_inventory_limit():
                     print('------------------------------')
                     print('------------------------------')
-                    print('Your Inventory is Full1')
+                    print("You do not have enough room in your Inventory for this Item.")
                     break
-                elif len(character_var.get_inventory) == len(character_var.get_inventory_limit):
-                    break
+                else:
+                    character_var.add_inventory(enemy_var.get_inventory()[nn])
+                    enemy_var.del_inventory(enemy_var.get_inventory()[nn])
             elif "all" in n.lower():
                 if (len(character_var.get_inventory()) + len(enemy_var.get_inventory())) > character_var. \
                         get_inventory_limit():
