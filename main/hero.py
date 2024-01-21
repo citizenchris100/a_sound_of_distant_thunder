@@ -54,7 +54,7 @@ class Hero:
     def add_inventory(self, item):
         if len(self.inventory) < self.inventory_limit:
             self.inventory.append(item)
-            print(item, " added to your inventory.", sep='')
+            print(item.get_item_name(), " added to your inventory.", sep='')
         else:
             print("Your Inventory is Full. You can discard Items to make room if you so choose")
 
