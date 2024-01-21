@@ -8,6 +8,7 @@ class Enemy:
         self.name = en_name
         self.description = None
         self.hp = health
+        self.hp_limit = health
         self.dp = defence
         self.strength_attribute = strength
         self.luck_attribute = luck
@@ -30,6 +31,12 @@ class Enemy:
 
     def set_health(self, new_hp):
         self.hp = new_hp
+
+    def get_hp_limit(self):
+        return self.hp_limit
+
+    def set_hp_limit(self, new_limit):
+        self.hp_limit = new_limit
 
     def get_defence(self):
         return self.dp
