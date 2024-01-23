@@ -185,14 +185,9 @@ def battle_state(character_var, enemy_var, surprise, range):
                     if random.randint(0, 6) - bonus < character_var.get_luck():
                         if random.randint(0, 12) - bonus < character_var.get_luck():
                             print("You managed to get two hits")
-                            hit = ((character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
-                                   * 2)
-                            character_var.get_equipped_gun().set_ammo(character_var.get_equipped_gun().get_ammo() - 2)
-                            print("You have ", character_var.get_equipped_gun().get_ammo(), " shots remaining", sep='')
+                            hit = use_firearm(character_var, 2)
                         else:
-                            hit = (character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
-                            character_var.get_equipped_gun().set_ammo(character_var.get_equipped_gun().get_ammo() - 1)
-                            print("You have ", character_var.get_equipped_gun().get_ammo(), " shots remaining", sep='')
+                            hit = use_firearm(character_var, 1)
                         if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
                             defend = 1
                         else:
@@ -241,6 +236,13 @@ def battle_state(character_var, enemy_var, surprise, range):
             print("Option not allowed please choose either 1, 2 or 3.")
     print("Your current Score is ", character_var.get_exp(), sep='')
     print("Your current Health is ", character_var.get_health_points(), "/", character_var.get_hp_limit(), sep='')
+
+
+def use_firearm(character_var, shots):
+    character_var.get_equipped_gun().set_ammo(character_var.get_equipped_gun().get_ammo() - shots)
+    print("You have ", character_var.get_equipped_gun().get_ammo(), " shots remaining", sep='')
+    return ((character_var.get_equipped_gun().get_item_value() + character_var.get_gun_skill())
+           * shots)
 
 
 
