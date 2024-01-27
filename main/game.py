@@ -122,10 +122,10 @@ questions.""")
             use_textwrap(captain.get_dialog()["Disembark"])
             print('------------------------------')
             use_textwrap("""I board the small inflatable craft the Captain prepared for me. It did in fact have a small 4 
-stroke motor. Which should be enough to get me to the Island from here. However in the distance I can see a light house.
-Which had it been functioning would be useful on a pitch black night such as this.Sort of makes you wonder how bad 
-things could have gone on this island for the light house to just be sitting there like that. No light, no nothing. 
-In any case, I have a decision to make. Head to the dock or check out this ominous Light House.""")
+            stroke motor. Which should be enough to get me to the Island dock from here. However in the distance I can see a light house.
+            Which had it been functioning would be useful on a pitch black night such as this.Sort of makes you wonder how bad 
+            things could have gone on this island for the light house to just be sitting there like that. No light, no nothing. 
+            In any case, I have a decision to make. Head to the dock or check out this ominous Light House.""")
             disembark(boat, character)
         elif "storm" in speak.lower() or speak == "2":
             print(captain.get_dialog()["Storm"])
@@ -138,6 +138,13 @@ In any case, I have a decision to make. Head to the dock or check out this omino
             print('------------------------------')
             battle_system.battle_state(character, deck_hand_02, True, False)
             print('------------------------------')
+            use_textwrap("""Confidentiality is always of paramount concern on these assignments. Though The Captain seemed
+            to know very little about the client's facility. It was enough. He and the crew had to go. 
+            I board the small inflatable craft the Captain prepared for me. It did in fact have a small 4 
+            stroke motor. Which should be enough to get me to the Island dock from here. However in the distance I can see a light house.
+            Which had it been functioning would be useful on a pitch black night such as this.Sort of makes you wonder how bad 
+            things could have gone on this island for the light house to just be sitting there like that. No light, no nothing. 
+            In any case, I have a decision to make. Head to the dock or check out this ominous Light House.""")
             disembark(boat, character)
         elif "return" in speak.lower() or speak == "5":
             boat_zone(character)
