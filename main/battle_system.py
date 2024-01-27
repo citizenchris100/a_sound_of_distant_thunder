@@ -149,7 +149,7 @@ def use_ammo(character_var, shots):
 
 def battle_state(character_var, enemy_var, surprise, range):
     if surprise:
-        enemy_attack(character_var, enemy_var, "surprise")
+        enemy_attack(character_var, enemy_var, "surprise", range)
     while enemy_var.get_health() > 0:
         print('------------------------------')
         option = input("1. Melee Attack \n2. Gun Attack\n3. Inventory\n4. Flee\n> ")
