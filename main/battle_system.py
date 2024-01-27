@@ -199,7 +199,7 @@ def battle_state(character_var, enemy_var, surprise, range):
                                                                                 get_item_value() - total_attack))
                         enemy_var.set_health(enemy_var.get_health() - total_attack)
                         if enemy_var.get_health() > 0:
-                            enemy_attack(character_var, enemy_var, "yes")
+                            enemy_attack(character_var, enemy_var, "yes", range)
                         else:
                             enemy_defeat(character_var, enemy_var)
                             loot_add(character_var, enemy_var)
@@ -231,7 +231,7 @@ def battle_state(character_var, enemy_var, surprise, range):
                     game_over(character_var)
         elif option == "3":
             inventory(character_var)
-            enemy_attack(character_var, enemy_var, "no")
+            enemy_attack(character_var, enemy_var, "no", range)
         else:
             print("Option not allowed please choose either 1, 2 or 3.")
     print("Your current Score is ", character_var.get_exp(), sep='')
