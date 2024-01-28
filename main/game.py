@@ -3,6 +3,7 @@
 
 # TODO add option to get description of character classes
 # TODO consequence of killing the captain will be bad ending  no way back.
+from Util import use_textwrap
 import sys
 import os
 import textwrap
@@ -12,12 +13,6 @@ import battle_system
 import inventory
 import enemy
 import random
-
-
-def use_textwrap(value):
-    dedented_text = textwrap.dedent(value).strip()
-    print(dedented_text)
-
 
 def start(character):
     boat = zone.boat_start()
