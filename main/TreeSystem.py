@@ -20,8 +20,25 @@ class Tree:
     def traverse_inorder(self, root):
         if root is not None:
             self.traverse_inorder(root.left)
-            print(root.data)
+            print(root.data, end='')
             self.traverse_inorder(root.right)
+
+    def traverse_preorder(self, root):
+        if root is not None:
+            print(root.data, end='')
+            self.traverse_preorder(root.left)
+            self.traverse_preorder(root.right)
+
+    def traverse_postorder(self, root):
+        if root is not None:
+            self.traverse_postorder(root.left)
+            self.traverse_postorder(root.right)
+            print(root.data, end='')
+
+    def height(self, root):
+        if root is None:
+            return -1
+        return max(self.height(root.left), self.height(root.right)) + 1
 
 ## example
 tree = Tree()
@@ -36,5 +53,10 @@ tree.insert(root,20)
 tree.insert(root,30)
 tree.insert(root,6)
 tree.insert(root,8)
-print('in order --------->')
+print('\nin order --------->')
 tree.traverse_inorder(root)
+print('\nin pre order --------->')
+tree.traverse_preorder(root)
+print('\nin post order --------->')
+tree.traverse_postorder(root)
+print('\nheight(',tree.height(root),')')
