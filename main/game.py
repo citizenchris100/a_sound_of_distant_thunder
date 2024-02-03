@@ -6,7 +6,6 @@
 from Util import use_textwrap
 import sys
 import os
-import textwrap
 import hero
 import zone
 import battle_system
