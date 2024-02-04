@@ -263,3 +263,4 @@ def light_house_keeper():
                             items.large_knife(), items.basic_body_armour(), items.medium_body_armour(),
                             items.advanced_body_armour(), items.cologne1(), items.charm1(), items.large_ammo_box()])
     light_hk.set_name("Lighthouse Keeper")
+    return light_hk

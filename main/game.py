@@ -316,12 +316,12 @@ disease from that crap. Probably a good idea to just move on.""")
         
 def lighthouse_den(character, first):
     hd1 = [dialog.HeroDialog(False,"I need help.", """Like I said earlier I was just attacked by some 
-    kind of ...thing. My boats motor is on the fritz. Maybe you have some parts that could help me fix it?""",2),
+    kind of ...thing. My boats motor is on the fritz. Maybe you have some parts that could help me fix it?""",0),
            dialog.HeroDialog(False, "Let me in now!", """Come on old timer let me in now! 
            This isn't a game I was just attacked and in need of some assistance.""", 1),
            dialog.HeroDialog(False, "Let me in or I'll bust this door down!",
                              """This is stupid. I just told you I was attacked. Open up now or I might just 
-                             have to bust this door down""", -2)
+                             have to bust this door down""", 2)
            ]
     res1 = dialog.responses(
         dialog.ResponseDialog(False, "Come on in", """Alright I'll let you in. But no funny business.""",
@@ -331,12 +331,12 @@ def lighthouse_den(character, first):
         better work on your manners. Because you're not doing it without my help I'll tell you that.""",
                               [dialog.HeroDialog(False, "I'm sorry", """Look, you're right.
                               I do need you're help ok. I'm sorry. I've been through a lot. What with getting 
-                              attacked by that...purple goblin thing. I guess you could say I'm a tad rattled.""", 2),
+                              attacked by that...purple goblin thing. I guess you could say I'm a tad rattled.""", 0),
                                dialog.HeroDialog(False, "Give me a break.", """Come on man. Look
                                I get it. You're in a position to fuck with me. I need you more than you need me 
-                               yadda yadda yadda. Would you just let me in for gods sakes.""", 0),
+                               yadda yadda yadda. Would you just let me in for gods sakes.""", 1),
                                dialog.HeroDialog(False,"Fuck You!", """Fuck me? Fuck you Old Man!
-                               You're dead.""",-2)])
+                               You're dead.""",2)])
     )
     res2 = dialog.responses(
         dialog.ResponseDialog(False, "Come on in", """Alright I'll let you in. But no funny business.""",
@@ -366,7 +366,7 @@ Obviously the door was stirdy and those things not strong enough to bust it down
                     print("You have successfully made it in")
                 else:
                     print('------------------------------')
-                    s2 = dialog_system.dialog_system(character, lhk, s1["hero_responses"],res2, 4)
+                    s2 = dialog_system.dialog_system(character, lhk, s1["hero_responses"],res2, s1["score"])
                     if s2["succeed"]:
                         print("You have successfully made it in")
                     else:

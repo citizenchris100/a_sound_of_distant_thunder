@@ -29,7 +29,7 @@ def dialog_system(character, npc, hero, responses, start):
             print('------------------------------')
             hero[m].set_dialog_used(True)
             print(character.get_name() , ": " , hero[m].get_dialog_text(), sep='')
-            if random.randint(0, 12) - character.get_charm_attribute() < value + hero[m].get_dialog_agro():
+            if random.randint(0, 12) - (character.get_charm_attribute() / 2) < value - hero[m].get_dialog_agro():
                 print('------------------------------')
                 print(npc.get_name() , ": " , responses["good"].get_dialog_text(), sep='')
                 return next_response(responses["good"].get_responses(), start - (character.get_charm_attribute() / 2),
