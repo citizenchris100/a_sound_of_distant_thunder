@@ -240,7 +240,7 @@ def deck_hand01():
     deck_hand = npc(True)
     deck_hand.set_equipped_melee(items.basic_knife())
     add_loot(deck_hand)
-    deck_hand.set_name("Deck Hand")
+    deck_hand.set_name("Deck Hand 1")
     return deck_hand
 
 
@@ -248,7 +248,7 @@ def deck_hand02():
     deck_hand = npc(True)
     deck_hand.set_equipped_melee(items.basic_knife())
     add_loot(deck_hand)
-    deck_hand.set_name("Deck Hand")
+    deck_hand.set_name("Deck Hand 2")
     return deck_hand
 
 

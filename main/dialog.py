@@ -38,22 +38,16 @@ class HeroDialog(Dialog):
         self.agro = agro
 
 class ResponseDialog(Dialog):
-    def __init__(self,used, sum, text, good, bad):
+    def __init__(self, used, sum, text, resp):
         super().__init__(used,sum,text)
-        self.good = good
-        self.bad = bad
+        self.resp = resp
 
-    def get_good_responses(self):
-        return self.good
+    def get_responses(self):
+        return self.resp
 
-    def set_good_responses(self, good):
-        self.good = good
+    def set__responses(self, resp):
+        self.resp = resp
 
-    def get_bad_responses(self):
-        return self.bad
-
-    def set_bad_responses(self, bad):
-        self.bad = bad
 
 def responses(good,bad):
     return dict (

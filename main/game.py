@@ -3,6 +3,7 @@
 
 # TODO add option to get description of character classes
 # TODO consequence of killing the captain will be bad ending  no way back.
+# TODO refactor to not use zones
 from Util import use_textwrap
 import sys
 import os
@@ -10,8 +11,10 @@ import hero
 import zone
 import battle_system
 import inventory
-import enemy
+import NPC
 import random
+import dialog
+import dialog_system
 
 def start(character):
     boat = zone.boat_start()
@@ -26,6 +29,7 @@ def start(character):
 
 def boat_zone(character):
     while True:
+        print('------------------------------')
         prompt = input("1. Read Dossier\n2. Speak to the Captain\n3. Look Around the Ship\n4. Inventory\n5. Help\n> ")
         boat = zone.boat_start()
         print('------------------------------')
@@ -114,6 +118,7 @@ questions.""")
         print('------------------------------')
         speak = input("1. Disembark\n2. The Storm\n3. The Island\n4. Attack\n5. Return\n6. Help\n> ")
         if "disembark" in speak.lower() or speak == "1":
+            print('------------------------------')
             use_textwrap(captain.get_dialog()["Disembark"])
             print('------------------------------')
             use_textwrap("""I board the small inflatable craft the Captain prepared for me. It did in fact have a small 4 
@@ -208,9 +213,9 @@ I'm not sure if it was the moonlight or what but their skin was wrinkly and almo
 The most disturbing quality was what appeared to be an elongated snout or jaw. Though admittedly tt was hard to make out
 before the attack came.""")
         print('------------------------------')
-        battle_system.battle_state(character, enemy.basic_goblin(), True)
+        battle_system.battle_state(character, NPC.basic_goblin(), True,False)
         print('------------------------------')
-        battle_system.battle_state(character, enemy.basic_goblin(), True)
+        battle_system.battle_state(character, NPC.basic_goblin(), True,False)
         print('------------------------------')
         use_textwrap("""After I catch my breath and calm down a bit I'm able to get a better look at these...things.
 Whatever they are they aren't human. Taking this job is starting to seem like a very bad idea. Regardless of how good
@@ -224,7 +229,9 @@ the Lighthouse until I come to what has to be the entrance.""")
         if "enter" in option.lower() or option == "1":
             lighthouse_inside(character, True)
         elif "explore" in option.lower() or option == "2":
+            print('------------------------------')
             use_textwrap("""There is a path nearby that most likely leads to the dock.""")
+            print('------------------------------')
             option2 = input("1. Take Path to Dock\n2. Enter Lighthouse\n3. Inventory\n4. Help\n> ")
             if "enter" in option2.lower() or option2 == "2":
                 lighthouse_inside(character, True)
@@ -233,9 +240,9 @@ the Lighthouse until I come to what has to be the entrance.""")
 as inviting as well.""")
                 if random.randint(0, 12) < character.get_luck():
                     print('------------------------------')
-                    battle_system.battle_state(character, enemy.basic_goblin(), True)
+                    battle_system.battle_state(character, NPC.basic_goblin(), True,False)
                     print('------------------------------')
-                    battle_system.battle_state(character, enemy.basic_goblin(), True)
+                    battle_system.battle_state(character, NPC.basic_goblin(), True,False)
                 dock(character, False)
             elif "inventory" in option.lower() or option == "3":
                 inventory.inventory(character)
@@ -275,10 +282,10 @@ The rest is just trash. In the center of the foyer is a spiral staircase. That m
 looks of it he just discards his trash down here. One giant trash can.""")
         while True:
             print('------------------------------')
-            option = input("1. Ascend Staircase\n2. Explore\n3. Inventory\n4. Help\n> ")
+            option = input("1. Ascend Staircase\n2. Explore\n3. Inventory\n4. Return\n5. Help\n> ")
             if "ascend" in option.lower() or option == "1":
                 print('------------------------------')
-                print("foo")
+                lighthouse_den(character,True)
             elif "explore" in option.lower() or option == "2":
                 print('------------------------------')
                 if not explore:
@@ -287,7 +294,7 @@ carefully sift through the trash that seems to cover the entire floor of the foy
                     if random.randint(0, 12) < character.get_luck():
                         use_textwrap("""Wouldn't you know it. This wasn't such a bad idea after all. I found
 something.""")
-                        enemy.add_loot(character)
+                        NPC.add_loot(character)
                     else:
                         use_textwrap("""Of course there isn't anything to be found in this garbage. Normally I'd 
 console myself by saying 'It can't hurt to look'. However in this case I'm pretty certain I could have caught a 
@@ -295,6 +302,109 @@ disease from that crap. Probably a good idea to just move on.""")
                     explore = True
                 else:
                     use_textwrap("I've already rummaged through this crap enough. Doubtful I'll find anything.")
+            elif "inventory" in option.lower() or option == "3":
+                inventory.inventory(character)
+            elif "help" in option.lower() or option == "5":
+                help_menu()
+            elif "return" in option.lower() or option == "4":
+                lighthouse_exterior(character, False)
+            else:
+                use_textwrap("""Not a valid entry. Please choose from the following options by entering the command
+                            or entering the corresponding number.""")
+    else:
+        print("not ready yet")
+        
+def lighthouse_den(character, first):
+    hd1 = [dialog.HeroDialog(False,"I need help.", """Like I said earlier I was just attacked by some 
+    kind of ...thing. My boats motor is on the fritz. Maybe you have some parts that could help me fix it?""",2),
+           dialog.HeroDialog(False, "Let me in now!", """Come on old timer let me in now! 
+           This isn't a game I was just attacked and in need of some assistance.""", 1),
+           dialog.HeroDialog(False, "Let me in or I'll bust this door down!",
+                             """This is stupid. I just told you I was attacked. Open up now or I might just 
+                             have to bust this door down""", -2)
+           ]
+    res1 = dialog.responses(
+        dialog.ResponseDialog(False, "Come on in", """Alright I'll let you in. But no funny business.""",
+                              None),
+        dialog.ResponseDialog(False,"Fuck you", """Hah! Fuck you. I look out for one person. Me!. Also
+        let me tell you something right now. If you have any intentions of making it off this island alive you had 
+        better work on your manners. Because you're not doing it without my help I'll tell you that.""",
+                              [dialog.HeroDialog(False, "I'm sorry", """Look, you're right.
+                              I do need you're help ok. I'm sorry. I've been through a lot. What with getting 
+                              attacked by that...purple goblin thing. I guess you could say I'm a tad rattled.""", 2),
+                               dialog.HeroDialog(False, "Give me a break.", """Come on man. Look
+                               I get it. You're in a position to fuck with me. I need you more than you need me 
+                               yadda yadda yadda. Would you just let me in for gods sakes.""", 0),
+                               dialog.HeroDialog(False,"Fuck You!", """Fuck me? Fuck you Old Man!
+                               You're dead.""",-2)])
+    )
+    res2 = dialog.responses(
+        dialog.ResponseDialog(False, "Come on in", """Alright I'll let you in. But no funny business.""",
+                              None),
+        dialog.ResponseDialog(False, "Come on in", """Well Sonny Boy I guess I'm just going ot have to 
+        come out there and kill you..""",
+                              None),
+    )
+    lhk = NPC.light_house_keeper()
+    if first:
+        explore = False
+        print('------------------------------')
+        use_textwrap("""With each step up that creaky old spiral stair case I questioned my judgement more and more. 
+What the hell was I doing here? No amount of money is worth this. Is it? At the top of the stairs was a small 
+landing filled with, you guessed it, more trash. A single door sat in the middle of the far wall of the landing.
+It looked to be a pretty heavy duty wooden door. With all manor of what could only be described as claw marks
+all along the surface. As if some animal or maybe those purple goblins had been trying desperately to get in.
+Obviously the door was stirdy and those things not strong enough to bust it down. I aproach""")
+        while True:
+            print('------------------------------')
+            option = input("1. Knock on door\n2. Explore\n3. Inventory\n4. Return\n5. Help\n> ")
+            if "knock" in option.lower() or option == "1":
+                print('------------------------------')
+                s1 =dialog_system.dialog_system(character, lhk, hd1, res1, 6)
+                if s1["succeed"]:
+                    print('------------------------------')
+                    print("You have successfully made it in")
+                else:
+                    print('------------------------------')
+                    s2 = dialog_system.dialog_system(character, lhk, s1["hero_responses"],res2, 4)
+                    if s2["succeed"]:
+                        print("You have successfully made it in")
+                    else:
+                        print('------------------------------')
+                        battle_system.battle_state(character, lhk, True, False)
+                        print('------------------------------')
+                        print('------------------------------')
+                        print("Game Over")
+                        print('------------------------------')
+                        print('------------------------------')
+            elif "explore" in option.lower() or option == "2":
+                print('------------------------------')
+                if not explore:
+                    use_textwrap("""In hopes of finding something useful amongst all this junk I begin to dig around. I 
+        carefully sift through the trash that seems to cover the entire floor of the landing.""")
+                    if random.randint(0, 12) < character.get_luck():
+                        use_textwrap("""Wouldn't you know it. This wasn't such a bad idea after all. I found
+        something.""")
+                        NPC.add_loot(character)
+                    else:
+                        use_textwrap("""Of course there isn't anything to be found in this garbage. Normally I'd 
+        console myself by saying 'It can't hurt to look'. However in this case I'm pretty certain I could have caught a 
+        disease from that crap. Probably a good idea to just move on.""")
+                    explore = True
+                else:
+                    use_textwrap("I've already rummaged through this crap enough. Doubtful I'll find anything.")
+            elif "inventory" in option.lower() or option == "3":
+                inventory.inventory(character)
+            elif "help" in option.lower() or option == "5":
+                help_menu()
+            elif "return" in option.lower() or option == "4":
+                lighthouse_inside(character, False)
+            else:
+                use_textwrap("""Not a valid entry. Please choose from the following options by entering the command
+            or entering the corresponding number.""")
+
+
+
 
 
 
@@ -326,6 +436,7 @@ def title_screen_selections():
 
 def title_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
+    print('------------------------------')
     print('------------------------------')
     print('- A Sound of Distant Thunder -')
     print('------------------------------')
