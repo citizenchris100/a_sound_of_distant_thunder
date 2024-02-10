@@ -316,33 +316,33 @@ disease from that crap. Probably a good idea to just move on.""")
         
 def lighthouse_den(character, first):
     hd1 = [dialog.HeroDialog(False,"I need help.", """Like I said earlier I was just attacked by some 
-    kind of ...thing. My boats motor is on the fritz. Maybe you have some parts that could help me fix it?""",0),
+kind of ...thing. My boats motor is on the fritz. Maybe you have some parts that could help me fix it?""",0),
            dialog.HeroDialog(False, "Let me in now!", """Come on old timer let me in now! 
-           This isn't a game I was just attacked and in need of some assistance.""", 1),
+This isn't a game I was just attacked and in need of some assistance.""", 1),
            dialog.HeroDialog(False, "Let me in or I'll bust this door down!",
                              """This is stupid. I just told you I was attacked. Open up now or I might just 
-                             have to bust this door down""", 2)
+ have to bust this door down""", 2)
            ]
     res1 = dialog.responses(
         dialog.ResponseDialog(False, "Come on in", """Alright I'll let you in. But no funny business.""",
                               None),
         dialog.ResponseDialog(False,"Fuck you", """Hah! Fuck you. I look out for one person. Me!. Also
-        let me tell you something right now. If you have any intentions of making it off this island alive you had 
-        better work on your manners. Because you're not doing it without my help I'll tell you that.""",
+let me tell you something right now. If you have any intentions of making it off this island alive you had 
+better work on your manners. Because you're not doing it without my help I'll tell you that.""",
                               [dialog.HeroDialog(False, "I'm sorry", """Look, you're right.
-                              I do need you're help ok. I'm sorry. I've been through a lot. What with getting 
-                              attacked by that...purple goblin thing. I guess you could say I'm a tad rattled.""", 0),
+I do need you're help ok. I'm sorry. I've been through a lot. What with getting 
+attacked by that...purple goblin thing. I guess you could say I'm a tad rattled.""", 0),
                                dialog.HeroDialog(False, "Give me a break.", """Come on man. Look
-                               I get it. You're in a position to fuck with me. I need you more than you need me 
-                               yadda yadda yadda. Would you just let me in for gods sakes.""", 1),
+I get it. You're in a position to fuck with me. I need you more than you need me 
+yadda yadda yadda. Would you just let me in for gods sakes.""", 1),
                                dialog.HeroDialog(False,"Fuck You!", """Fuck me? Fuck you Old Man!
-                               You're dead.""",2)])
+You're dead.""",2)])
     )
     res2 = dialog.responses(
         dialog.ResponseDialog(False, "Come on in", """Alright I'll let you in. But no funny business.""",
                               None),
         dialog.ResponseDialog(False, "Come on in", """Well Sonny Boy I guess I'm just going ot have to 
-        come out there and kill you..""",
+come out there and kill you..""",
                               None),
     )
     lhk = NPC.light_house_keeper()
@@ -360,8 +360,12 @@ Obviously the door was stirdy and those things not strong enough to bust it down
             option = input("1. Knock on door\n2. Explore\n3. Inventory\n4. Return\n5. Help\n> ")
             if "knock" in option.lower() or option == "1":
                 print('------------------------------')
+                use_textwrap("""I'm guessing whoever I spoke to on that intercom downstairs has to be behind this door.
+I approach causiously amd lightly knock on the door.""")
                 s1 =dialog_system.dialog_system(character, lhk, hd1, res1, 6)
-                if s1["succeed"]:
+                if s1 is None:
+                    break
+                elif s1["succeed"]:
                     print('------------------------------')
                     print("You have successfully made it in")
                 else:
@@ -381,15 +385,15 @@ Obviously the door was stirdy and those things not strong enough to bust it down
                 print('------------------------------')
                 if not explore:
                     use_textwrap("""In hopes of finding something useful amongst all this junk I begin to dig around. I 
-        carefully sift through the trash that seems to cover the entire floor of the landing.""")
+carefully sift through the trash that seems to cover the entire floor of the landing.""")
                     if random.randint(0, 12) < character.get_luck():
                         use_textwrap("""Wouldn't you know it. This wasn't such a bad idea after all. I found
-        something.""")
+something.""")
                         NPC.add_loot(character)
                     else:
                         use_textwrap("""Of course there isn't anything to be found in this garbage. Normally I'd 
-        console myself by saying 'It can't hurt to look'. However in this case I'm pretty certain I could have caught a 
-        disease from that crap. Probably a good idea to just move on.""")
+console myself by saying 'It can't hurt to look'. However in this case I'm pretty certain I could have caught a 
+disease from that crap. Probably a good idea to just move on.""")
                     explore = True
                 else:
                     use_textwrap("I've already rummaged through this crap enough. Doubtful I'll find anything.")
@@ -401,7 +405,7 @@ Obviously the door was stirdy and those things not strong enough to bust it down
                 lighthouse_inside(character, False)
             else:
                 use_textwrap("""Not a valid entry. Please choose from the following options by entering the command
-            or entering the corresponding number.""")
+or entering the corresponding number.""")
 
 
 
