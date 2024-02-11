@@ -360,9 +360,9 @@ Obviously the door was stirdy and those things not strong enough to bust it down
             option = input("1. Knock on door\n2. Explore\n3. Inventory\n4. Return\n5. Help\n> ")
             if "knock" in option.lower() or option == "1":
                 print('------------------------------')
-                use_textwrap("""I'm guessing whoever I spoke to on that intercom downstairs has to be behind this door.
+                use_textwrap("""I'm guessing whomever I spoke to on that intercom downstairs has to be behind this door.
 I approach causiously amd lightly knock on the door.""")
-                s1 =dialog_system.dialog_system(character, lhk, hd1, res1, 6)
+                s1 =dialog_system.persuasion_system(character, lhk, hd1, res1, 6)
                 if s1 is None:
                     break
                 elif s1["succeed"]:
@@ -370,7 +370,7 @@ I approach causiously amd lightly knock on the door.""")
                     print("You have successfully made it in")
                 else:
                     print('------------------------------')
-                    s2 = dialog_system.dialog_system(character, lhk, s1["hero_responses"],res2, s1["score"])
+                    s2 = dialog_system.persuasion_system(character, lhk, s1["hero_responses"], res2, s1["score"])
                     if s2["succeed"]:
                         print("You have successfully made it in")
                     else:
