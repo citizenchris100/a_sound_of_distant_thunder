@@ -55,21 +55,22 @@ def conversation_system(character, npc, hero, responses, event):
         n = input(
             "Enter the number of the dialog option\n"
             "Additionally you can type \'Exit\' to return to the previous Menu.\n> ")
+        print('------------------------------')
         if n.isdigit() and int(n) <= len(hero):
             m = int(n) - 1
-            print('------------------------------')
+            for i in range(len(event)):
+                if event[i]["label"] == hero[m].get_dialog_sum():
+                    print(character.get_name(), ": ", hero[m].get_dialog_text(), sep='')
+                    hero.pop(m)
+                    print(npc.get_name(), ": ", responses[m].get_dialog_text(), sep='')
+                    responses.pop(m)
+                    event[i]["action"](event[i]["op1"], event[i]["op1"], event[i]["op3"])
             print(character.get_name(), ": ", hero[m].get_dialog_text(), sep='')
             hero.pop(m)
-            for i in range(len(responses)):
-                if responses[i].get_dialog_sum() == hero[m].get_dialog_sum() and responses[i].get_dialog_sum() == event:
-                    print(npc.get_name(), ": ", responses[i].get_dialog_text(), sep='')
-                    return True
-                elif responses[i].get_dialog_sum() == hero[m].get_dialog_sum():
-                    print(npc.get_name(), ": ", responses[i].get_dialog_text(), sep='')
+            print(npc.get_name(), ": ", responses[m].get_dialog_text(), sep='')
+            responses.pop(m)
         elif "exit" in n.lower():
             break
         else:
             print('------------------------------')
             print("Invalid option")
-
-

@@ -106,60 +106,66 @@ or entering the corresponding number.""")
 
 
 def speak_to_captain(character, boat):
-    captain = boat.get_characters()[0]
-    deck_hand_01 = boat.get_characters()[1]
-    deck_hand_02 = boat.get_characters()[2]
+    hd1 = [dialog.HeroDialog(False,"Nearly there", """Looks like we\'re nearly there Captain""",None),
+           dialog.HeroDialog(False,"The Storm","""Looks like we have a pretty bas system headed
+our way.""",None),
+           dialog.HeroDialog(False,"The Island?","""What can you tell me
+about this island Captain?""",None),
+           dialog.HeroDialog(False,"Attack","""I'm sorry 
+to have to do this Captain.""",None),
+           dialog.HeroDialog(False,"Disembark","""I think
+I'm ready to head out Captain.""",None)]
+    rsp1 = [dialog.HeroDialog(False,"Nearly there", """Indeed we are. That dock is in no condition for a
+ship of this size. You\'ll have to disembark on one of our small inflatable crafts. Let me know when you\'re ready to 
+head out or if you have any other questions.""",None),
+           dialog.HeroDialog(False,"The Storm","""This system has been heading our way from the east. 
+It's looking to be a bad one. Whatever you have to do on that Island. I'd suggest doing it fast. You won't want to be 
+out here once this torm hits.""",None),
+            dialog.HeroDialog(False,"The Island?","""Don't know much about it. A buddy of mine was 
+making pretty good money ferrying people to and from the island.\nHe mentioned that he stopped getting ferry jobs 
+about a month ago.""",None),
+            dialog.HeroDialog(False,"Attack","""What the hell do you think you're doing?""",None),
+            dialog.HeroDialog(False,"Disembark","""You're ready? Ok. So we're going to get you onto one of our small inflatable crafts. 
+Don't worry it has a motor. I'd suggest you take care of it. We will be back to the precise coordinates we drop 
+you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be 
+back here in 12 hours or find another ride home.""",None)]
+    dialog_system.conversation_system(character,boat.get_characters()[0],hd1,rsp1,[
+        {"label" : "Attack",
+         "action": disembark,
+         "op1": boat,
+         "op2": character,
+         "op3": True},
+        {"label": "Disembark",
+         "action": disembark,
+         "op1": boat,
+         "op2": character,
+         "op3": False}
+    ])
+
+
+def disembark(boat, character, attack):
     print('------------------------------')
-    print('Alex: "Looks like we\'re nearly there Captain"')
-    use_textwrap("""Captain: "Indeed we are. That dock is in no condition for a ship of this size. You\'ll have to 
-disembark on one of our small inflatable crafts. Let me know when you\'re ready to head out or if you have any other 
-questions.""")
-    while True:
+    if attack:
+        battle_system.battle_state(character, boat.get_characters()[0], False, False)
         print('------------------------------')
-        speak = input("1. Disembark\n2. The Storm\n3. The Island\n4. Attack\n5. Return\n6. Help\n> ")
-        if "disembark" in speak.lower() or speak == "1":
-            print('------------------------------')
-            use_textwrap(captain.get_dialog()["Disembark"])
-            print('------------------------------')
-            use_textwrap("""I board the small inflatable craft the Captain prepared for me. It did in fact have a small 4 
-stroke motor. Which should be enough to get me to the Island dock from here. However in the distance I can see a light house.
-Which had it been functioning would be useful on a pitch black night such as this.Sort of makes you wonder how bad 
-things could have gone on this island for the light house to just be sitting there like that. No light, no nothing. 
-In any case, I have a decision to make. Head to the dock or check out this ominous Light House.""")
-            disembark(boat, character)
-        elif "storm" in speak.lower() or speak == "2":
-            print(captain.get_dialog()["Storm"])
-        elif "island" in speak.lower() or speak == "3":
-            print(captain.get_dialog()["Island"])
-        elif "attack" in speak.lower() or speak == "4":
-            battle_system.battle_state(character, captain, False, False)
-            print('------------------------------')
-            battle_system.battle_state(character, deck_hand_01, True, False)
-            print('------------------------------')
-            battle_system.battle_state(character, deck_hand_02, True, False)
-            print('------------------------------')
-            use_textwrap("""Confidentiality is always of paramount concern on these assignments. Though The Captain seemed
+        battle_system.battle_state(character, boat.get_characters()[1], True, False)
+        print('------------------------------')
+        battle_system.battle_state(character, boat.get_characters()[2], True, False)
+        print('------------------------------')
+        use_textwrap("""Confidentiality is always of paramount concern on these assignments. Though The Captain seemed
 to know very little about the client's facility. It was enough. He and the crew had to go. 
 I board the small inflatable craft the Captain prepared for me. It did in fact have a small 4 
 stroke motor. Which should be enough to get me to the Island dock from here. However in the distance I can see a light house.
 Which had it been functioning would be useful on a pitch black night such as this.Sort of makes you wonder how bad 
 things could have gone on this island for the light house to just be sitting there like that. No light, no nothing. 
 In any case, I have a decision to make. Head to the dock or check out this ominous Light House.""")
-            disembark(boat, character)
-        elif "return" in speak.lower() or speak == "5":
-            boat_zone(character)
-        elif "help" in speak.lower() or speak == "6":
-            help_menu()
-        else:
-            print('------------------------------')
-            use_textwrap("""Not a valid entry. Please choose from the following options by entering the command
-or entering the corresponding number.""")
-            print('------------------------------')
-
-
-def disembark(boat, character):
-    print('------------------------------')
-    option = input("1. Light House\n2. Dock\n3. Return\n4. Help\n> ")
+    else:
+        use_textwrap("""I board the small inflatable craft the Captain prepared for me. It did in fact have a small 4 
+stroke motor. Which should be enough to get me to the Island dock from here. However in the distance I can see a light house.
+Which had it been functioning would be useful on a pitch black night such as this.Sort of makes you wonder how bad 
+things could have gone on this island for the light house to just be sitting there like that. No light, no nothing. 
+In any case, I have a decision to make. Head to the dock or check out this ominous Light House.""")
+    option = input("1. Light House\n2. Dock\n3. Help\n> ")
     if "light" in option.lower() or option == "1":
         os.system('cls' if os.name == 'nt' else 'clear')
         print('------------------------------')
@@ -172,8 +178,6 @@ def disembark(boat, character):
         print('------------------------------')
         use_textwrap(zone.dock().get_description()["initial"])
         dock(character, True)
-    elif "return" in option.lower() or option == "3":
-        speak_to_captain(character, boat)
     elif "help" in option.lower() or option == "4":
         help_menu()
         speak_to_captain(character, boat)
