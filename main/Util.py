@@ -1,4 +1,4 @@
-
+import textwrap
 
 def vowel_start(word):
     vowel = 'aeiou'
@@ -7,3 +7,7 @@ def vowel_start(word):
     else:
         start = "A "
     return start
+
+def use_textwrap(value):
+    dedented_text = textwrap.dedent(value).strip()
+    print(dedented_text)

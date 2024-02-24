@@ -1,4 +1,4 @@
-import enemy
+import NPC
 import items
 
 
@@ -105,7 +105,7 @@ information as to what the hell is going on.""",
             "surroundings": """This boat or ship rather is pretty beat up. I'm guessing this was all we could get with
 such short notice."""
             }
-    boat_characters = [enemy.boat_captain(), enemy.deck_hand01(), enemy.deck_hand02()]
+    boat_characters = [NPC.boat_captain(), NPC.deck_hand01(), NPC.deck_hand02()]
     boat_item = [items.basic_pistol(), items.basic_knife(), items.basic_med_pack(), items.small_ammo_box()]
     return Zone("Boat", desc, boat_characters, boat_item)
 
@@ -114,7 +114,7 @@ def lighthouse():
     desc = {
         "initial": ""
     }
-    lighthouse_characters = [enemy.light_house_keeper(), enemy.basic_goblin(), enemy.basic_goblin()]
+    lighthouse_characters = [NPC.light_house_keeper(), NPC.basic_goblin(), NPC.basic_goblin()]
     items = []
     return Zone("Lighthouse", desc, lighthouse_characters, items)
 
