@@ -397,11 +397,6 @@ disease from that crap. Probably a good idea to just move on.""")
 or entering the corresponding number.""")
 
 
-
-
-
-
-
 def dock(character, first):
     if first:
         use_textwrap(boat_broke)
