@@ -8,18 +8,17 @@ from Util import use_textwrap
 import sys
 import os
 import hero
-import zone
 import battle_system
 import inventory
 import NPC
 import random
 import dialog
 import dialog_system
+import items
 def boat_zone(character):
     while True:
         print('------------------------------')
         prompt = input("1. Read Dossier\n2. Speak to the Captain\n3. Look Around the Ship\n4. Inventory\n5. Help\n> ")
-        boat = zone.boat_start()
         print('------------------------------')
         if "read" in prompt.lower() or prompt == "1":
             print('------------------------------')
@@ -61,7 +60,7 @@ med kit and a 9mm pistol and hunting knife.""")
                     option = input(
                         "Would you like to add the items from the case to your Inventory?\n1. Yes \n2. No\n> ")
                     if option.lower() == "yes" or option == "1":
-                        character.get_inventory().extend(boat.get_items())
+                        character.get_inventory().extend([items.basic_pistol(), items.basic_knife(), items.basic_med_pack(), items.small_ammo_box()])
                         print('------------------------------')
                         use_textwrap("""The case items have been added to your inventory. You can view your inventory by 
 choosing the 'Inventory' prompt.""")
@@ -162,7 +161,7 @@ In any case, I have a decision to make. Head to the dock or check out this omino
         print('------------------------------')
         print('-         Chapter 2          -')
         print('------------------------------')
-        use_textwrap(zone.dock().get_description()["initial"])
+        use_textwrap("dock description")
         dock(character, True)
     elif "help" in option.lower() or option == "4":
         help_menu()
@@ -406,7 +405,7 @@ or entering the corresponding number.""")
 def dock(character, first):
     if first:
         use_textwrap(boat_broke)
-        use_textwrap(zone.lighthouse().get_description()["initial"])
+        use_textwrap("dock text")
         use_textwrap("""""")
 
 
