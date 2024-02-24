@@ -3,35 +3,22 @@
 
 # TODO add option to get description of character classes
 # TODO consequence of killing the captain will be bad ending  no way back.
-# TODO refactor to not use zones
+
 from Util import use_textwrap
 import sys
 import os
 import hero
-import zone
 import battle_system
 import inventory
 import NPC
 import random
 import dialog
 import dialog_system
-
-def start(character):
-    boat = zone.boat_start()
-    print('------------------------------')
-    print('-         Chapter 1          -')
-    print('------------------------------')
-    use_textwrap(boat.get_description()["initial"])
-    print('------------------------------')
-    print('------------------------------')
-    boat_zone(character)
-
-
+import items
 def boat_zone(character):
     while True:
         print('------------------------------')
         prompt = input("1. Read Dossier\n2. Speak to the Captain\n3. Look Around the Ship\n4. Inventory\n5. Help\n> ")
-        boat = zone.boat_start()
         print('------------------------------')
         if "read" in prompt.lower() or prompt == "1":
             print('------------------------------')
@@ -49,7 +36,7 @@ crazy not to. In any case the ask is simple. Restore communications to the islan
 information as to what the hell is going on.""")
             print('------------------------------')
         elif "speak" in prompt.lower() or prompt == "2":
-            speak_to_captain(character, boat)
+            speak_to_captain(character)
         elif "look" in prompt.lower() or prompt == "3":
             print('------------------------------')
             use_textwrap("""This boat or ship rather is pretty beat up. I'm guessing this was all we could get with
@@ -73,7 +60,7 @@ med kit and a 9mm pistol and hunting knife.""")
                     option = input(
                         "Would you like to add the items from the case to your Inventory?\n1. Yes \n2. No\n> ")
                     if option.lower() == "yes" or option == "1":
-                        character.get_inventory().extend(boat.get_items())
+                        character.get_inventory().extend([items.basic_pistol(), items.basic_knife(), items.basic_med_pack(), items.small_ammo_box()])
                         print('------------------------------')
                         use_textwrap("""The case items have been added to your inventory. You can view your inventory by 
 choosing the 'Inventory' prompt.""")
@@ -105,7 +92,7 @@ or entering the corresponding number.""")
             print('------------------------------')
 
 
-def speak_to_captain(character, boat):
+def speak_to_captain(character):
     hd1 = [dialog.HeroDialog(False,"Nearly there", """Looks like we\'re nearly there Captain""",None),
            dialog.HeroDialog(False,"The Storm","""Looks like we have a pretty bas system headed
 our way.""",None),
@@ -129,28 +116,26 @@ about a month ago.""",None),
 Don't worry it has a motor. I'd suggest you take care of it. We will be back to the precise coordinates we drop 
 you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be 
 back here in 12 hours or find another ride home.""",None)]
-    dialog_system.conversation_system(character,boat.get_characters()[0],hd1,rsp1,[
+    dialog_system.conversation_system(character,NPC.boat_captain(),hd1,rsp1,[
         {"label" : "Attack",
          "action": disembark,
-         "op1": boat,
-         "op2": character,
-         "op3": True},
+         "op1": True,
+         },
         {"label": "Disembark",
          "action": disembark,
-         "op1": boat,
-         "op2": character,
-         "op3": False}
+         "op1": False,
+         }
     ])
 
 
-def disembark(boat, character, attack):
+def disembark(character, attack):
     print('------------------------------')
     if attack:
-        battle_system.battle_state(character, boat.get_characters()[0], False, False)
+        battle_system.battle_state(character, NPC.boat_captain(), False, False)
         print('------------------------------')
-        battle_system.battle_state(character, boat.get_characters()[1], True, False)
+        battle_system.battle_state(character, NPC.deck_hand01(), True, False)
         print('------------------------------')
-        battle_system.battle_state(character, boat.get_characters()[2], True, False)
+        battle_system.battle_state(character, NPC.deck_hand02(), True, False)
         print('------------------------------')
         use_textwrap("""Confidentiality is always of paramount concern on these assignments. Though The Captain seemed
 to know very little about the client's facility. It was enough. He and the crew had to go. 
@@ -176,11 +161,11 @@ In any case, I have a decision to make. Head to the dock or check out this omino
         print('------------------------------')
         print('-         Chapter 2          -')
         print('------------------------------')
-        use_textwrap(zone.dock().get_description()["initial"])
+        use_textwrap("dock description")
         dock(character, True)
     elif "help" in option.lower() or option == "4":
         help_menu()
-        speak_to_captain(character, boat)
+        speak_to_captain(character)
     else:
         print("Invalid Option")
 
@@ -420,7 +405,7 @@ or entering the corresponding number.""")
 def dock(character, first):
     if first:
         use_textwrap(boat_broke)
-        use_textwrap(zone.lighthouse().get_description()["initial"])
+        use_textwrap("dock text")
         use_textwrap("""""")
 
 
@@ -444,7 +429,21 @@ def title_screen():
         if option.lower() == "play" or option == "1":
             hero.create_class_screen()
             character = hero.class_selection()
-            start(character)
+            print('------------------------------')
+            print('-         Chapter 1          -')
+            print('------------------------------')
+            use_textwrap("""That sound of distant thunder was low and ominous. Like some kind of a warning. It was clearly 
+telling me to turn back. Was I going to listen? Hell no. The money was speaking louder than the thunder. Money 
+can make you do stupid things. Like board a creaky dirty old ship at 9pm on a Thursday evening. A Thursday 
+evening that seemed intent on levying some kind of storm upon all of us. I should be home drinking. Instead I’m 
+here on the deck of a ship heading toward the thunder. Suffice is to say this gig came up last minute and the 
+paycheck is insane. Some money people want me to get control of this  island. Some kind of manufacturing 
+facility. The dossier here has the details. For this kind of money, I'm more than willing to oblige. Seems easy 
+enough. However I'm a firm believer that  if its too good to be true it probably is. It's looking like  we're 
+getting pretty close. The captain is approaching. Looks like its time to disembark.""")
+            print('------------------------------')
+            print('------------------------------')
+            boat_zone(character)
         elif option.lower() == "help" or option == "2":
             help_menu()
         elif option.lower() == "quit" or option == "3":
