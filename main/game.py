@@ -424,24 +424,6 @@ def dock(character, first):
         use_textwrap("""""")
 
 
-def title_screen_selections():
-    option = input("> ")
-    if option.lower() == "play" or option == "1":
-        hero.create_class_screen()
-        character = hero.class_selection()
-        start(character)
-    elif option.lower() == "help" or option == "2":
-        help_menu()
-        title_screen_selections()
-    elif option.lower() == "quit" or option == "3":
-        sys.exit()
-    else:
-        print("Type '1' or 'Play' to play the game. "
-              "\n You can type '2' or 'Help' for assistance."
-              "\n '3' or 'Quit' to exit")
-        title_screen_selections()
-
-
 def title_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
@@ -457,7 +439,20 @@ def title_screen():
     print('-          3. Quit           -')
     print('------------------------------')
     print('------------------------------')
-    title_screen_selections()
+    while True:
+        option = input("> ")
+        if option.lower() == "play" or option == "1":
+            hero.create_class_screen()
+            character = hero.class_selection()
+            start(character)
+        elif option.lower() == "help" or option == "2":
+            help_menu()
+        elif option.lower() == "quit" or option == "3":
+            sys.exit()
+        else:
+            print("Type '1' or 'Play' to play the game. "
+                  "\n You can type '2' or 'Help' for assistance."
+                  "\n '3' or 'Quit' to exit")
 
 
 def help_menu():
