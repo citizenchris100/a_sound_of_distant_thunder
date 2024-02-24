@@ -15,18 +15,6 @@ import NPC
 import random
 import dialog
 import dialog_system
-
-def start(character):
-    boat = zone.boat_start()
-    print('------------------------------')
-    print('-         Chapter 1          -')
-    print('------------------------------')
-    use_textwrap(boat.get_description()["initial"])
-    print('------------------------------')
-    print('------------------------------')
-    boat_zone(character)
-
-
 def boat_zone(character):
     while True:
         print('------------------------------')
@@ -444,7 +432,21 @@ def title_screen():
         if option.lower() == "play" or option == "1":
             hero.create_class_screen()
             character = hero.class_selection()
-            start(character)
+            print('------------------------------')
+            print('-         Chapter 1          -')
+            print('------------------------------')
+            use_textwrap("""That sound of distant thunder was low and ominous. Like some kind of a warning. It was clearly 
+telling me to turn back. Was I going to listen? Hell no. The money was speaking louder than the thunder. Money 
+can make you do stupid things. Like board a creaky dirty old ship at 9pm on a Thursday evening. A Thursday 
+evening that seemed intent on levying some kind of storm upon all of us. I should be home drinking. Instead I’m 
+here on the deck of a ship heading toward the thunder. Suffice is to say this gig came up last minute and the 
+paycheck is insane. Some money people want me to get control of this  island. Some kind of manufacturing 
+facility. The dossier here has the details. For this kind of money, I'm more than willing to oblige. Seems easy 
+enough. However I'm a firm believer that  if its too good to be true it probably is. It's looking like  we're 
+getting pretty close. The captain is approaching. Looks like its time to disembark.""")
+            print('------------------------------')
+            print('------------------------------')
+            boat_zone(character)
         elif option.lower() == "help" or option == "2":
             help_menu()
         elif option.lower() == "quit" or option == "3":
