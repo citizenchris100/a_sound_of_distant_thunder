@@ -1,2 +1,2 @@
-# a_sound_of_distant_thunder
+# A Sound of Distant Thunder
 text based adventure / rpg
