@@ -37,7 +37,7 @@ crazy not to. In any case the ask is simple. Restore communications to the islan
 information as to what the hell is going on.""")
             print('------------------------------')
         elif "speak" in prompt.lower() or prompt == "2":
-            speak_to_captain(character, boat)
+            speak_to_captain(character)
         elif "look" in prompt.lower() or prompt == "3":
             print('------------------------------')
             use_textwrap("""This boat or ship rather is pretty beat up. I'm guessing this was all we could get with
@@ -93,7 +93,7 @@ or entering the corresponding number.""")
             print('------------------------------')
 
 
-def speak_to_captain(character, boat):
+def speak_to_captain(character):
     hd1 = [dialog.HeroDialog(False,"Nearly there", """Looks like we\'re nearly there Captain""",None),
            dialog.HeroDialog(False,"The Storm","""Looks like we have a pretty bas system headed
 our way.""",None),
@@ -117,28 +117,26 @@ about a month ago.""",None),
 Don't worry it has a motor. I'd suggest you take care of it. We will be back to the precise coordinates we drop 
 you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be 
 back here in 12 hours or find another ride home.""",None)]
-    dialog_system.conversation_system(character,boat.get_characters()[0],hd1,rsp1,[
+    dialog_system.conversation_system(character,NPC.boat_captain(),hd1,rsp1,[
         {"label" : "Attack",
          "action": disembark,
-         "op1": boat,
-         "op2": character,
-         "op3": True},
+         "op1": True,
+         },
         {"label": "Disembark",
          "action": disembark,
-         "op1": boat,
-         "op2": character,
-         "op3": False}
+         "op1": False,
+         }
     ])
 
 
-def disembark(boat, character, attack):
+def disembark(character, attack):
     print('------------------------------')
     if attack:
-        battle_system.battle_state(character, boat.get_characters()[0], False, False)
+        battle_system.battle_state(character, NPC.boat_captain(), False, False)
         print('------------------------------')
-        battle_system.battle_state(character, boat.get_characters()[1], True, False)
+        battle_system.battle_state(character, NPC.deck_hand01(), True, False)
         print('------------------------------')
-        battle_system.battle_state(character, boat.get_characters()[2], True, False)
+        battle_system.battle_state(character, NPC.deck_hand02(), True, False)
         print('------------------------------')
         use_textwrap("""Confidentiality is always of paramount concern on these assignments. Though The Captain seemed
 to know very little about the client's facility. It was enough. He and the crew had to go. 
@@ -168,7 +166,7 @@ In any case, I have a decision to make. Head to the dock or check out this omino
         dock(character, True)
     elif "help" in option.lower() or option == "4":
         help_menu()
-        speak_to_captain(character, boat)
+        speak_to_captain(character)
     else:
         print("Invalid Option")
 

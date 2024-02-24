@@ -64,7 +64,7 @@ def conversation_system(character, npc, hero, responses, event):
                     hero.pop(m)
                     print(npc.get_name(), ": ", responses[m].get_dialog_text(), sep='')
                     responses.pop(m)
-                    event[i]["action"](event[i]["op1"], event[i]["op1"], event[i]["op3"])
+                    event[i]["action"](character, event[i]["op1"])
             print(character.get_name(), ": ", hero[m].get_dialog_text(), sep='')
             hero.pop(m)
             print(npc.get_name(), ": ", responses[m].get_dialog_text(), sep='')
