@@ -3,7 +3,7 @@
 
 # TODO add option to get description of character classes
 # TODO consequence of killing the captain will be bad ending  no way back.
-# TODO refactor to not use zones
+
 from Util import use_textwrap
 import sys
 import os
