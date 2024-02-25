@@ -98,8 +98,7 @@ def speak_to_captain(character):
 our way.""",None),
            dialog.HeroDialog(False,"The Island?","""What can you tell me
 about this island Captain?""",None),
-           dialog.HeroDialog(False,"Attack","""I'm sorry 
-to have to do this Captain.""",None),
+           dialog.HeroDialog(False,"Attack","""I'm sorry to have to do this Captain.""",None),
            dialog.HeroDialog(False,"Disembark","""I think
 I'm ready to head out Captain.""",None)]
     rsp1 = [dialog.HeroDialog(False,"Nearly there", """Indeed we are. That dock is in no condition for a

@@ -153,7 +153,6 @@ def battle_state(character_var, enemy_var, surprise, range):
     while enemy_var.get_health() > 0:
         print('------------------------------')
         option = input("1. Melee Attack \n2. Gun Attack\n3. Inventory\n4. Flee\n> ")
-        # TODO: update melee combat
         if option == "1":
             if character_var.get_equipped_melee() is not None:
                 print('------------------------------')
@@ -167,7 +166,7 @@ def battle_state(character_var, enemy_var, surprise, range):
             defend = enemy_var.get_defence()
             enemy_var.set_health(enemy_var.get_health() - (math.floor(hit / defend)))
             if enemy_var.get_health() > 0:
-                enemy_attack(character_var, enemy_var, "yes")
+                enemy_attack(character_var, enemy_var, "yes", False)
             else:
                 enemy_defeat(character_var, enemy_var)
                 loot_add(character_var, enemy_var)
