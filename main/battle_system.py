@@ -154,6 +154,9 @@ def battle_state(character_var, enemy_var, surprise, range):
         print('------------------------------')
         option = input("1. Melee Attack \n2. Gun Attack\n3. Inventory\n4. Flee\n> ")
         if option == "1":
+            if range:
+                if random.randint(0, 6) - bonus < character_var.get_luck():
+                    print("You have")
             if character_var.get_equipped_melee() is not None:
                 print('------------------------------')
                 print("You swing your ", character_var.get_equipped_melee().get_item_name(), " attacking the ",

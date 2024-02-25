@@ -1,7 +1,6 @@
 # a sound of distant thunder
 # by christopher manning
 
-# TODO add option to get description of character classes
 # TODO consequence of killing the captain will be bad ending  no way back.
 
 from Util import use_textwrap

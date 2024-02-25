@@ -5,7 +5,7 @@ import items
 
 
 class Hero:
-    def __init__(self, dp, strength, gun_skill, luck, charm):
+    def __init__(self, dp, strength, gun_skill, luck, charm, stealth):
         self.name = 'Alex'
         self.exp = 0
         self.lvl = 0
@@ -22,6 +22,7 @@ class Hero:
         self.gun_skill_attribute = gun_skill
         self.luck_attribute = luck
         self.charm_attribute = charm
+        self.stealth_attribute = stealth
         self.location = None
 
     def get_name(self):
@@ -129,6 +130,12 @@ class Hero:
     def set_charm_attribute(self, charm):
         self.charm_attribute = min(charm, 7)
 
+    def get_stealth_attribute(self):
+        return self.stealth_attribute
+
+    def set_stealth_attribute(self, stealth):
+        self.charm_attribute = min(stealth, 7)
+
     def get_location(self):
         return self.location
 
@@ -159,19 +166,19 @@ def class_selection():
     a = input("> ")
     if a.lower() == "merc" or a == "1":
         character = Hero(random.randint(3, 6), random.randint(2, 5), random.randint(20, 25), random.randint(2, 4),
-                         random.randint(1, 3))
+                         random.randint(1, 3), random.randint(5,7))
     elif a.lower() == "soldier" or a == "2":
         character = Hero(random.randint(5, 8), random.randint(10, 15), random.randint(10, 15), random.randint(2, 4),
-                         random.randint(1, 5))
+                         random.randint(1, 5), random.randint(1,5))
     elif a.lower() == "ranger" or a == "3":
         character = Hero(random.randint(4, 7), random.randint(20, 25), random.randint(4, 7), random.randint(2, 4),
-                         random.randint(1, 5))
+                         random.randint(1, 5), random.randint(3,6))
     elif a.lower() == "spy" or a == "4":
         character = Hero(random.randint(1, 4), random.randint(4, 7), random.randint(4, 7), random.randint(5, 7),
-                         random.randint(5, 7))
+                         random.randint(5, 7), random.randint(4,7))
     elif a.lower() == "random" or a == "5":
         character = Hero(random.randint(1, 7), random.randint(4, 20), random.randint(4, 20), random.randint(1, 7),
-                         random.randint(1, 7))
+                         random.randint(1, 7),random.randint(1,7))
     elif a.lower() == "help" or a == "6":
         help_menu()
         class_selection()
@@ -191,6 +198,7 @@ def class_selection():
     print('-Gun Skill: ', character.get_gun_skill())
     print('-Luck: ', character.get_luck())
     print('-Charm: ', character.get_charm_attribute())
+    print('-Stealth: ', character.get_stealth_attribute())
     print('------------------------------')
     print('------------------------------')
     return character
