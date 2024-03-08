@@ -100,19 +100,19 @@ def large_revolver():
 
 
 def basic_knife():
-    return Item("Basic Knife", 5, "melee")
+    return Item("Basic Knife", 10, "melee")
 
 
 def medium_knife():
-    return Item("Basic Knife", 7, "melee")
+    return Item("Basic Knife", 14, "melee")
 
 
 def large_knife():
-    return Item("large Knife", 10, "melee")
+    return Item("large Knife", 20, "melee")
 
 
 def machete():
-    return Item("Machete", 15, "melee")
+    return Item("Machete", 30, "melee")
 
 
 def cologne1():

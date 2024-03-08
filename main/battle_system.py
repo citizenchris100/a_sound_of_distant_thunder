@@ -5,7 +5,7 @@ from inventory import loot_add
 from lvl_system import level_up
 
 
-# TODO: improve combat verbiage
+# TODO: improve combat verbiage by implementing some kind of random library
 
 def display_score():
     file = open("../score.txt", "r")
@@ -154,18 +154,30 @@ def battle_state(character_var, enemy_var, surprise, range):
         print('------------------------------')
         option = input("1. Melee Attack \n2. Gun Attack\n3. Inventory\n4. Flee\n> ")
         if "melee" in option.lower() or option == "1":
+            bonus = 0
+            sa = False
             if range:
-                if random.randint(0, 6) + character_var.get_stealth_attribute() < character_var.get_luck():
-                    print("You have")
+                if (random.randint(0, 12) - character_var.get_stealth_attribute() < random.randint(0, 6) +
+                        enemy_var.get_awareness()):
+                    bonus = random.randint(0, 6) + character_var.get_stealth_attribute()
+                    sa = True
             if character_var.get_equipped_melee() is not None:
                 print('------------------------------')
-                print("You swing your ", character_var.get_equipped_melee().get_item_name(), " attacking the ",
-                      enemy_var.get_name(), ".", sep='')
-                hit = (character_var.get_strength_attribute() + character_var.get_equipped_melee().get_item_value())
+                if sa:
+                    print('You managed to approach and attack the enemy without being detected.')
+                else:
+                    print("You swing your ", character_var.get_equipped_melee().get_item_name(), " attacking the ",
+                          enemy_var.get_name(), ".", sep='')
+
+                hit = (character_var.get_strength_attribute() + character_var.get_equipped_melee().get_item_value()
+                       + bonus)
             else:
                 print('------------------------------')
-                print("You punch the ", enemy_var.get_name(), ".", sep='')
-                hit = character_var.get_strength_attribute()
+                if sa:
+                    print('You managed to approach and attack the enemy without being detected.')
+                else:
+                    print("You punch the ", enemy_var.get_name(), ".", sep='')
+                hit = character_var.get_strength_attribute() + bonus
             defend = enemy_var.get_defence()
             enemy_var.set_health(enemy_var.get_health() - (math.floor(hit / defend)))
             if enemy_var.get_health() > 0:
