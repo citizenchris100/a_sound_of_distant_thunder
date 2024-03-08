@@ -4,7 +4,7 @@ import items
 
 
 class Enemy:
-    def __init__(self, en_name, health, defence, strength, luck):
+    def __init__(self, en_name, health, defence, strength, luck, awareness):
         self.name = en_name
         self.description = None
         self.hp = health
@@ -13,6 +13,7 @@ class Enemy:
         self.strength_attribute = strength
         self.luck_attribute = luck
         self.inventory = []
+        self.awareness_attribute = awareness
 
     def get_name(self):
         return self.name
@@ -25,6 +26,12 @@ class Enemy:
 
     def set_description(self, new_description):
         self.description = new_description
+
+    def set_awareness(self, new_awareness):
+        self.awareness_attribute = new_awareness
+
+    def get_awareness(self):
+        return self.awareness_attribute
 
     def get_health(self):
         return self.hp
@@ -70,8 +77,8 @@ class Enemy:
 
 
 class Human(Enemy):
-    def __init__(self, en_name, health, defence, strength, luck, gun_skill):
-        super().__init__(en_name, health, defence, strength, luck)
+    def __init__(self, en_name, health, defence, strength, luck, awareness, gun_skill):
+        super().__init__(en_name, health, defence, strength, luck, awareness)
 
         self.gun_skill_attribute = gun_skill
         self.equipped_gun = None
@@ -121,8 +128,8 @@ class Human(Enemy):
 
 
 class BossHuman(Human):
-    def __init__(self, en_name, health, defence, strength, luck, gun_skill, move):
-        super().__init__(en_name, health, defence, strength, luck, gun_skill)
+    def __init__(self, en_name, health, defence, strength, luck, awareness, gun_skill, move):
+        super().__init__(en_name, health, defence, strength, luck, awareness, gun_skill)
 
         self.super_move = move
 
@@ -134,8 +141,8 @@ class BossHuman(Human):
 
 
 class BossEnemy(Enemy):
-    def __init__(self, en_name, health, defence, strength, luck, move):
-        super().__init__(en_name, health, defence, strength, luck)
+    def __init__(self, en_name, health, defence, strength, luck, awareness, move):
+        super().__init__(en_name, health, defence, strength, luck, awareness)
 
         self.super_move = move
 
@@ -168,21 +175,22 @@ def add_loot(enemy):
 
 
 def basic_goblin():
-    goblin = Enemy("Goblin", random.randint(15, 30), random.randint(1, 3), random.randint(5, 10), random.randint(0, 5))
+    goblin = Enemy("Goblin", random.randint(15, 30), random.randint(1, 3), random.randint(5, 10),
+                   random.randint(0, 5),random.randint(1,5))
     add_loot(goblin)
     return goblin
 
 
 def beta_goblin():
     goblin = Enemy("Beta Goblin", random.randint(35, 65), random.randint(4, 6), random.randint(10, 17),
-                   random.randint(2, 7))
+                   random.randint(2, 7),random.randint(3,5))
     add_loot(goblin)
     return goblin
 
 
 def alpha_goblin():
     goblin = Enemy("Alpha Goblin", random.randint(75, 100), random.randint(6, 8), random.randint(17, 25),
-                   random.randint(4, 7))
+                   random.randint(4, 7),random.randint(5,7))
     add_loot(goblin)
     add_loot(goblin)
     return goblin
@@ -199,7 +207,7 @@ def npc(gender):
         else:
             npc_gun_skill = random.randint(4, 18)
         npc_luck = random.randint(1, 7)
-        return Human(npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck)
+        return Human(npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck,random.randint(1,7))
     else:
         npc_name = rng.generate_one(rng.Descent.ENGLISH, sex=rng.Sex.FEMALE)
         npc_health = random.randint(60, 100)
@@ -210,7 +218,7 @@ def npc(gender):
         else:
             npc_gun_skill = random.randint(4, 18)
         npc_luck = random.randint(1, 7)
-        return Human(npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck)
+        return Human(npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck,random.randint(1,7))
 
 
 def boat_captain():
