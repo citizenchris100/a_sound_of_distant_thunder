@@ -84,19 +84,19 @@ def pop_gun():
 
 
 def basic_pistol():
-    return Firearm("Basic Pistol", 5, "gun", 6, 6)
+    return Firearm("Basic Pistol", 15, "gun", 6, 6)
 
 
 def medium_pistol():
-    return Firearm("Medium Pistol", 7, "gun", 6, 6)
+    return Firearm("Medium Pistol", 17, "gun", 6, 6)
 
 
 def advanced_pistol():
-    return Firearm("Advanced Pistol", 10, "gun", 16, 16)
+    return Firearm("Advanced Pistol", 20, "gun", 16, 16)
 
 
 def large_revolver():
-    return Firearm("Large Revolver", 15, "gun", 6, 6)
+    return Firearm("Large Revolver", 25, "gun", 6, 6)
 
 
 def basic_knife():

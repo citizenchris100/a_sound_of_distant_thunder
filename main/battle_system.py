@@ -69,10 +69,7 @@ def enemy_attack(character_var, enemy_var, hit_enemy, range):
                 print("Fortunately they missed.")
                 enemy_var.get_equipped_gun().set_ammo(enemy_var.get_equipped_gun().get_ammo() - 1)
                 hit = 0
-            if character_var.get_equipped_armour() is not None:
-                defend = character_var.get_equipped_armour()
-            else:
-                defend = 1
+            defend = character_defence(character_var)
             total_attack = math.floor(hit / defend)
         else:
             total_attack = enemy_melee_attack(character_var, enemy_var, hit_enemy)
@@ -93,6 +90,14 @@ def enemy_attack(character_var, enemy_var, hit_enemy, range):
         game_over(character_var)
 
 
+def character_defence(character_var):
+    if character_var.get_equipped_armour() is not None:
+        defend = character_var.get_equipped_armour().get_item_value() + character_var.get_defence_points()
+    else:
+        defend = character_var.get_defence_points()
+    return defend
+
+
 def enemy_melee_attack(character_var, enemy_var, hit_enemy):
     if hit_enemy == "yes":
         print('------------------------------')
@@ -104,7 +109,7 @@ def enemy_melee_attack(character_var, enemy_var, hit_enemy):
         hit = enemy_var.get_strength()
     else:
         hit = (enemy_var.get_strength() + enemy_var.get_equipped_melee().get_item_value())
-    defend = character_var.get_defence_points()
+    defend = character_defence(character_var)
     return math.floor(hit / defend)
 
 
@@ -159,7 +164,7 @@ def battle_state(character_var, enemy_var, surprise, range):
             if range:
                 if (random.randint(0, 12) - character_var.get_stealth_attribute() < random.randint(0, 6) +
                         enemy_var.get_awareness()):
-                    bonus = random.randint(0, 6) + character_var.get_stealth_attribute()
+                    bonus = random.randint(0, 6) + character_var.get_strength_attribute()
                     sa = True
             if character_var.get_equipped_melee() is not None:
                 print('------------------------------')
@@ -178,8 +183,7 @@ def battle_state(character_var, enemy_var, surprise, range):
                 else:
                     print("You punch the ", enemy_var.get_name(), ".", sep='')
                 hit = character_var.get_strength_attribute() + bonus
-            defend = enemy_var.get_defence()
-            enemy_var.set_health(enemy_var.get_health() - (math.floor(hit / defend)))
+            npc_attack_damage(enemy_var, (math.floor(hit - npc_defence(enemy_var))))
             if enemy_var.get_health() > 0:
                 enemy_attack(character_var, enemy_var, "yes", False)
             else:
@@ -202,16 +206,7 @@ def battle_state(character_var, enemy_var, surprise, range):
                             hit = use_firearm(character_var, 2)
                         else:
                             hit = use_firearm(character_var, 1)
-                        if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
-                            defend = 1
-                        else:
-                            defend = 1 + enemy_var.get_equipped_armour().get_item_value()
-                        total_attack = (math.floor(hit / defend))
-                        if "Goblin" not in enemy_var.get_name():
-                            if enemy_var.get_equipped_armour() is not None:
-                                enemy_var.get_equipped_armour().set_item_value((enemy_var.get_equipped_armour().
-                                                                                get_item_value() - total_attack))
-                        enemy_var.set_health(enemy_var.get_health() - total_attack)
+                        npc_attack_damage(enemy_var, (math.floor(hit - npc_defence(enemy_var))))
                         if enemy_var.get_health() > 0:
                             enemy_attack(character_var, enemy_var, "yes", range)
                         else:
@@ -250,6 +245,23 @@ def battle_state(character_var, enemy_var, surprise, range):
             print("Option not allowed please choose either 1, 2 or 3.")
     print("Your current Score is ", character_var.get_exp(), sep='')
     print("Your current Health is ", character_var.get_health_points(), "/", character_var.get_hp_limit(), sep='')
+
+
+def npc_attack_damage(enemy_var, total_attack):
+    if ("Goblin" not in enemy_var.get_name()
+            and enemy_var.get_equipped_armour() is not None
+            and enemy_var.get_equipped_armour().get_item_value() > 0):
+        enemy_var.get_equipped_armour().set_item_value((enemy_var.get_equipped_armour().
+                                                        get_item_value() - total_attack))
+    enemy_var.set_health(enemy_var.get_health() - total_attack)
+
+
+def npc_defence(enemy_var):
+    if "Goblin" in enemy_var.get_name() or enemy_var.get_equipped_armour() is None:
+        defend = enemy_var.get_defence()
+    else:
+        defend = enemy_var.get_defence() + enemy_var.get_equipped_armour().get_item_value()
+    return defend
 
 
 def use_firearm(character_var, shots):
