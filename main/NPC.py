@@ -199,7 +199,7 @@ def alpha_goblin():
 def npc(gender):
     if gender:
         npc_name = rng.generate_one(rng.Descent.ENGLISH, sex=rng.Sex.MALE)
-        npc_health = random.randint(60, 100)
+        npc_health = random.randint(50, 100)
         npc_defence = random.randint(5, 8)
         npc_strength = random.randint(5, 25)
         if npc_strength > 16:
@@ -210,7 +210,7 @@ def npc(gender):
         return Human(npc_name, npc_health, npc_defence, npc_strength, npc_gun_skill, npc_luck,random.randint(1,7))
     else:
         npc_name = rng.generate_one(rng.Descent.ENGLISH, sex=rng.Sex.FEMALE)
-        npc_health = random.randint(60, 100)
+        npc_health = random.randint(40, 80)
         npc_defence = random.randint(3, 6)
         npc_strength = random.randint(2, 17)
         if npc_strength > 13:
@@ -240,7 +240,7 @@ to and from the island.\nHe mentioned that he stopped getting ferry jobs about a
     captain.set_inventory([items.medium_med_pack(), items.cologne1(), items.med_ammo_box()])
     captain.set_name("Boat Captain")
     # TODO debug health.
-    captain.set_health(5)
+    captain.set_health(75)
     return captain
 
 
