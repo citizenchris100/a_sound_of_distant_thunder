@@ -140,16 +140,16 @@ def charm3():
 
 
 def basic_body_armour():
-    return Item("Basic Body Armour", 1, "armour")
+    return Item("Basic Body Armour", 3, "armour")
 
 
 def medium_body_armour():
-    return Item("Medium Body Armour", 2, "armour")
+    return Item("Medium Body Armour", 5, "armour")
 
 
 def advanced_body_armour():
-    return Item("Advanced Body Armour", 3, "armour")
+    return Item("Advanced Body Armour", 7, "armour")
 
 
 def epic_body_armour():
-    return Item("Epic Body Armour", 5, "armour")
+    return Item("Epic Body Armour", 10, "armour")
