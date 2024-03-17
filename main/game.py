@@ -1,7 +1,6 @@
 # a sound of distant thunder
 # by christopher manning
 
-# TODO add option to get description of character classes
 # TODO consequence of killing the captain will be bad ending  no way back.
 
 from Util import use_textwrap
@@ -98,8 +97,7 @@ def speak_to_captain(character):
 our way.""",None),
            dialog.HeroDialog(False,"The Island?","""What can you tell me
 about this island Captain?""",None),
-           dialog.HeroDialog(False,"Attack","""I'm sorry 
-to have to do this Captain.""",None),
+           dialog.HeroDialog(False,"Attack","""I'm sorry to have to do this Captain.""",None),
            dialog.HeroDialog(False,"Disembark","""I think
 I'm ready to head out Captain.""",None)]
     rsp1 = [dialog.HeroDialog(False,"Nearly there", """Indeed we are. That dock is in no condition for a
@@ -422,10 +420,21 @@ def title_screen():
     while True:
         option = input("> ")
         if option.lower() == "play" or option == "1":
-            hero.create_class_screen()
             character = hero.class_selection()
             print('------------------------------')
+            print('------------------------------')
+            print('--Your Character\'s Stats-----')
+            print('-Health: ', character.get_health_points())
+            print('-Defence: ', character.get_defence_points())
+            print('-Melee Attack: ', character.get_strength_attribute())
+            print('-Gun Skill: ', character.get_gun_skill())
+            print('-Luck: ', character.get_luck())
+            print('-Charm: ', character.get_charm_attribute())
+            print('-Stealth: ', character.get_stealth_attribute())
+            print('------------------------------')
+            print('------------------------------')
             print('-         Chapter 1          -')
+            print('------------------------------')
             print('------------------------------')
             use_textwrap("""That sound of distant thunder was low and ominous. Like some kind of a warning. It was clearly 
 telling me to turn back. Was I going to listen? Hell no. The money was speaking louder than the thunder. Money 
