@@ -1,0 +1,67 @@
+{
+    "type": "object",
+    "properties": {
+      "item_id": {
+        "type": "string",
+        "description": "Unique identifier for the item."
+      },
+      "name": {
+        "type": "string",
+        "description": "Display name of the item."
+      },
+      "description": {
+        "type": "string",
+        "description": "In-game description of the item."
+      },
+      "item_type": {
+        "type": "string",
+        "enum": ["weapon", "armor", "consumable", "ammo", "misc"],
+        "description": "Category of the item."
+      },
+      "attributes": {
+        "type": "object",
+        "description": "Type-specific attributes.",
+        "properties": {
+          // Type-specific attributes will be defined here
+        },
+        "additionalProperties": true
+      },
+      "value": {
+        "type": "integer",
+        "description": "Base value of the item."
+      },
+      "icon": {
+        "type": "string",
+        "description": "Icon image path (optional).",
+        "default": null
+      },
+      "max_durability": {
+        "type": "integer",
+        "description": "Maximum durability of the item when in perfect condition."
+      },
+      "current_durability": {
+        "type": "integer",
+        "description": "Current durability of the item. Decreases with use/damage."
+      },
+      "durability_loss_per_use": {
+        "type": "integer",
+        "description": "Amount of durability lost per use (for weapons, armor). May be 0 for items that don't degrade with use."
+      },
+      "is_repairable": {
+        "type": "boolean",
+        "description": "Indicates if the item can be repaired."
+      }
+    },
+    "required": [
+      "item_id",
+      "name",
+      "description",
+      "item_type",
+      "attributes",
+      "value",
+      "max_durability",
+      "current_durability",
+      "durability_loss_per_use",
+      "is_repairable"
+    ]
+  }
