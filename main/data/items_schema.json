@@ -22,7 +22,7 @@
         "type": "object",
         "description": "Type-specific attributes.",
         "properties": {
-          // Type-specific attributes will be defined here
+        
         },
         "additionalProperties": true
       },

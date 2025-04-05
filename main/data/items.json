@@ -1,0 +1,68 @@
+[
+    {
+      "item_id": "basic_pistol",
+      "name": "Basic Pistol",
+      "description": "A standard-issue 9mm pistol. Reliable and easy to use, but not very powerful.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 15,
+        "weapon_type": "gun",
+        "ammo_type": "9mm",
+        "clip_size": 6
+      },
+      "value": 100,
+      "icon": null,
+      "max_durability": 100,
+      "current_durability": 100,
+      "durability_loss_per_use": 1,
+      "is_repairable": true
+    },
+    {
+      "item_id": "basic_med_pack",
+      "name": "Basic Med Pack",
+      "description": "A standard medical kit. Restores a small amount of health.",
+      "item_type": "consumable",
+      "attributes": {
+        "heal_amount": 20,
+        "effect_type": "heal"
+      },
+      "value": 50,
+      "icon": null,
+      "max_durability": 1,
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+        "item_id": "small_ns_pack",
+        "name": "Small Pack of Night Shade",
+        "description": "a pack containing a minimum dose or small hit of Night Shade.",
+        "item_type": "consumable",
+        "attributes": {
+          "mutate":5,
+          "effect_type": "mutate"
+        },
+        "value": 50,
+        "icon": null,
+        "max_durability": 1,
+        "current_durability": 1,
+        "durability_loss_per_use": 1,
+        "is_repairable": false
+      },
+    {
+      "item_id": "basic_body_armour",
+      "name": "Basic Body Armour",
+      "description": "Lightweight body armour. Provides basic protection.",
+      "item_type": "armor",
+      "attributes": {
+        "defense": 3,
+        "armor_type": "body"
+      },
+      "value": 80,
+      "icon": null,
+      "max_durability": 80,
+      "current_durability": 80,
+      "durability_loss_per_use": 0, 
+      "is_repairable": true
+    }
+  ]
