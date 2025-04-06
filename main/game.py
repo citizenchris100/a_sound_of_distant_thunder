@@ -13,7 +13,10 @@ import NPC
 import random
 import dialog
 import dialog_system
-import items
+import data_loader
+
+game_items_data = {}
+
 def boat_zone(character):
     while True:
         print('------------------------------')
@@ -403,6 +406,8 @@ def dock(character, first):
 
 
 def title_screen():
+    global game_items_data
+    
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------')
     print('------------------------------')
@@ -417,10 +422,16 @@ def title_screen():
     print('-          3. Quit           -')
     print('------------------------------')
     print('------------------------------')
+    
+    game_items_data = data_loader.load_items_data() 
+    if not game_items_data: 
+        print("Failed to load item data. Game cannot start.")
+        return 
+    
     while True:
         option = input("> ")
         if option.lower() == "play" or option == "1":
-            character = hero.class_selection()
+            character = hero.class_selection(game_items_data=game_items_data)
             print('------------------------------')
             print('------------------------------')
             print('--Your Character\'s Stats-----')

@@ -36,7 +36,6 @@ def load_items_data(schema_path="main/data/schemas/items_schema.json", data_path
 
     try:
         validate(instance=items_data_list, schema=items_schema)
-        print("Item data validated successfully against schema.")  # Success message
     except ValidationError as e:
         print("Error: Item data failed schema validation:")
         print(e)
@@ -51,14 +50,3 @@ def load_items_data(schema_path="main/data/schemas/items_schema.json", data_path
             print("Warning: Item data missing 'item_id'. Skipping item.")
 
     return items_data_dict
-
-# Example usage (for testing - you can remove this later):
-if __name__ == "__main__":
-    item_data = load_items_data()
-    if item_data:
-        print("\nLoaded Item Data (First 3 items):")
-        item_ids = list(item_data.keys())[:3] # Get IDs of first 3 items
-        for item_id in item_ids:
-            print(f"- {item_id}: {item_data[item_id].get('name')}")
-    else:
-        print("Item data loading failed.")

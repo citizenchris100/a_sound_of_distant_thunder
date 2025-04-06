@@ -2,17 +2,18 @@ import random
 import sys
 import os
 import items
+import data_loader
 
 
 class Hero:
-    def __init__(self, dp, strength, gun_skill, luck, charm, stealth):
+    def __init__(self, dp, strength, gun_skill, luck, charm, stealth, game_items_data):
         self.name = 'Alex'
         self.exp = 0
         self.lvl = 0
         self.hp = 65
         self.hp_limit = 65
         self.status_effects = []
-        self.inventory = [items.basic_med_pack()]
+        self.inventory = []
         self.inventory_limit = 5
         self.equipped_gun = None
         self.equipped_melee = None
@@ -24,7 +25,19 @@ class Hero:
         self.charm_attribute = charm
         self.stealth_attribute = stealth
         self.location = None
-
+        
+        
+        basic_med_pack_data = game_items_data.get("basic_med_pack")
+        if basic_med_pack_data:
+            med_pack_item = items.Item(
+                item_name=basic_med_pack_data.get("name"),
+                item_value=basic_med_pack_data.get("value"),
+                item_attribute=basic_med_pack_data.get("attributes", {}).get("effect_type")
+            )
+            self.inventory.append(med_pack_item)
+        else:
+            print("Warning: 'basic_med_pack' data not found in game_items_data. Starting without med pack.")
+        
     def get_name(self):
         return self.name
 
@@ -143,7 +156,7 @@ class Hero:
         self.location = new_location
 
 
-def class_selection():
+def class_selection(game_items_data):
     os.system('cls' if os.name == 'nt' else 'clear')
     while True:
         print('------------------------------')
@@ -164,19 +177,19 @@ def class_selection():
         a = input("> ")
         if a.lower() == "merc" or a == "1":
             return Hero(random.randint(3, 6), random.randint(2, 5), random.randint(20, 25), random.randint(2, 4),
-                             random.randint(1, 3), random.randint(5, 7))
+                             random.randint(1, 3), random.randint(5, 7),game_items_data)
         elif a.lower() == "soldier" or a == "2":
             return Hero(random.randint(5, 8), random.randint(10, 15), random.randint(10, 15), random.randint(2, 4),
-                             random.randint(1, 5), random.randint(1, 5))
+                             random.randint(1, 5), random.randint(1, 5), game_items_data)
         elif a.lower() == "ranger" or a == "3":
             return Hero(random.randint(4, 7), random.randint(20, 25), random.randint(4, 7), random.randint(2, 4),
-                             random.randint(1, 5), random.randint(3, 6))
+                             random.randint(1, 5), random.randint(3, 6), game_items_data)
         elif a.lower() == "spy" or a == "4":
             return Hero(random.randint(1, 4), random.randint(4, 7), random.randint(4, 7), random.randint(5, 7),
-                             random.randint(5, 7), random.randint(4, 7))
+                             random.randint(5, 7), random.randint(4, 7), game_items_data)
         elif a.lower() == "random" or a == "5":
             return Hero(random.randint(1, 7), random.randint(4, 20), random.randint(4, 20), random.randint(1, 7),
-                             random.randint(1, 7), random.randint(1, 7))
+                             random.randint(1, 7), random.randint(1, 7), game_items_data)
         elif a.lower() == "help" or a == "6":
             print('------------------------------')
             print('-About the Character Classes -')
