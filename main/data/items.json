@@ -68,7 +68,7 @@
       "icon": null,
       "max_durability": 130,
       "current_durability": 130,
-      "durability_loss_per_use": 2, // Higher durability loss due to power
+      "durability_loss_per_use": 2, 
       "is_repairable": true
     },
     {
@@ -86,7 +86,7 @@
         "icon": null,
         "max_durability": 110,
         "current_durability": 110,
-        "durability_loss_per_use": 2, // Higher durability loss due to power
+        "durability_loss_per_use": 2, 
         "is_repairable": true
       },
       {
@@ -115,14 +115,14 @@
       "attributes": {
         "damage": 1,
         "weapon_type": "gun",
-        "ammo_type": "BBs?", // Flavor ammo type
+        "ammo_type": "BBs?", 
         "clip_size": 1 
       },
       "value": 10,
       "icon": null,
       "max_durability": 50,
       "current_durability": 50,
-      "durability_loss_per_use": 0.5, // Less durability loss due to low power
+      "durability_loss_per_use": 0.5, 
       "is_repairable": true
     },
     {
@@ -185,13 +185,13 @@
         "damage": 30,
         "weapon_type": "melee",
         "melee_type": "blade",
-        "clearing_ability": true // Example of a special attribute
+        "clearing_ability": true 
       },
       "value": 300,
       "icon": null,
       "max_durability": 150,
       "current_durability": 150,
-      "durability_loss_per_use": 1.5, // Higher durability loss for heavy use
+      "durability_loss_per_use": 1.5, 
       "is_repairable": true
     },
     {
@@ -207,7 +207,7 @@
       "icon": null,
       "max_durability": 80,
       "current_durability": 80,
-      "durability_loss_per_use": 0, // Armour loses durability when damaged, not per "use" in the same way as weapons
+      "durability_loss_per_use": 0, 
       "is_repairable": true
     },
     {
@@ -317,7 +317,7 @@
       },
       "value": 30,
       "icon": null,
-      "max_durability": 1, // Ammo boxes are consumed when used
+      "max_durability": 1, 
       "current_durability": 1,
       "durability_loss_per_use": 1,
       "is_repairable": false
@@ -365,7 +365,7 @@
         },
         "value": 30,
         "icon": null,
-        "max_durability": 1, // Ammo boxes are consumed when used
+        "max_durability": 1, 
         "current_durability": 1,
         "durability_loss_per_use": 1,
         "is_repairable": false
@@ -411,7 +411,7 @@
           "ammo_type": ".22 Caliber",
           "quantity": 6
         },
-        "value": 20, // Adjusted value, .22 is less valuable than 9mm
+        "value": 20, 
         "icon": null,
         "max_durability": 1,
         "current_durability": 1,
@@ -427,7 +427,7 @@
           "ammo_type": ".22 Caliber",
           "quantity": 12
         },
-        "value": 40, // Adjusted value
+        "value": 40, 
         "icon": null,
         "max_durability": 1,
         "current_durability": 1,
@@ -443,7 +443,7 @@
           "ammo_type": ".22 Caliber",
           "quantity": 24
         },
-        "value": 80, // Adjusted value
+        "value": 80, 
         "icon": null,
         "max_durability": 1,
         "current_durability": 1,
@@ -459,7 +459,7 @@
           "ammo_type": ".38 Caliber",
           "quantity": 6
         },
-        "value": 25, // Adjusted value, .38 is less common than 9mm but more than .22
+        "value": 25, 
         "icon": null,
         "max_durability": 1,
         "current_durability": 1,
@@ -475,7 +475,7 @@
           "ammo_type": ".38 Caliber",
           "quantity": 12
         },
-        "value": 50, // Adjusted value
+        "value": 50, 
         "icon": null,
         "max_durability": 1,
         "current_durability": 1,
@@ -491,7 +491,7 @@
           "ammo_type": ".38 Caliber",
           "quantity": 24
         },
-        "value": 100, // Adjusted value
+        "value": 100, 
         "icon": null,
         "max_durability": 1,
         "current_durability": 1,
@@ -504,7 +504,7 @@
       "description": "A small dose of Night Shadow, a mysterious substance.",
       "item_type": "consumable",
       "attributes": {
-        "mutate_level": 1, // Reduced mutation level for small pack
+        "mutate_level": 1, 
         "intoxicate_level": 1,
         "effect_type": "multi" 
       },
@@ -521,8 +521,8 @@
       "description": "A moderate dose of Night Shadow.",
       "item_type": "consumable",
       "attributes": {
-        "mutate_level": 3, // Medium mutation level
-        "intoxicate_level": 2, // Slightly higher intoxication
+        "mutate_level": 3, 
+        "intoxicate_level": 2, 
         "effect_type": "multi"
       },
       "value": 150,
@@ -538,8 +538,8 @@
       "description": "A large, potent dose of Night Shadow.",
       "item_type": "consumable",
       "attributes": {
-        "mutate_level": 5, // Higher mutation level
-        "intoxicate_level": 3, // Stronger intoxication
+        "mutate_level": 5, 
+        "intoxicate_level": 3, 
         "effect_type": "multi"
       },
       "value": 300,
@@ -560,7 +560,7 @@
       },
       "value": 20,
       "icon": null,
-      "max_durability": 1, // Could be considered consumable, or have limited uses
+      "max_durability": 1, 
       "current_durability": 1,
       "durability_loss_per_use": 1,
       "is_repairable": false
@@ -608,9 +608,9 @@
       },
       "value": 30,
       "icon": null,
-      "max_durability": 100, // Charms could have durability, flavor-wise
+      "max_durability": 100, 
       "current_durability": 100,
-      "durability_loss_per_use": 0, // Charms might not degrade with use, or very slowly
+      "durability_loss_per_use": 0, 
       "is_repairable": true 
     },
     {

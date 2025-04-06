@@ -2,12 +2,12 @@ import json
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-def load_items_data(schema_path="main/data/schemas/item_schema.json", data_path="main/data/items.json"):
+def load_items_data(schema_path="main/data/schemas/items_schema.json", data_path="main/data/items.json"):
     """
     Loads item data from a JSON file and validates it against a JSON schema.
 
     Args:
-        schema_path (str, optional): Path to the JSON schema file. Defaults to "main/data/schemas/item_schema.json".
+        schema_path (str, optional): Path to the JSON schema file. Defaults to "main/data/schemas/items_schema.json".
         data_path (str, optional): Path to the JSON data file. Defaults to "main/data/items.json".
 
     Returns:
@@ -16,7 +16,7 @@ def load_items_data(schema_path="main/data/schemas/item_schema.json", data_path=
     """
     try:
         with open(schema_path, 'r') as schema_file:
-            item_schema = json.load(schema_file)
+            items_schema = json.load(schema_file)
     except FileNotFoundError:
         print(f"Error: Schema file not found at {schema_path}")
         return None
@@ -35,7 +35,7 @@ def load_items_data(schema_path="main/data/schemas/item_schema.json", data_path=
         return None
 
     try:
-        validate(instance=items_data_list, schema=item_schema)
+        validate(instance=items_data_list, schema=items_schema)
         print("Item data validated successfully against schema.")  # Success message
     except ValidationError as e:
         print("Error: Item data failed schema validation:")
