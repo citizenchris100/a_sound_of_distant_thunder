@@ -117,7 +117,7 @@ about a month ago.""",None),
 Don't worry it has a motor. I'd suggest you take care of it. We will be back to the precise coordinates we drop 
 you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be 
 back here in 12 hours or find another ride home.""",None)]
-    dialog_system.conversation_system(character,NPC.boat_captain(),hd1,rsp1,[
+    dialog_system.conversation_system(character,NPC.boat_captain(game_items_data),hd1,rsp1,[
         {"label" : "Attack",
          "action": disembark,
          "op1": True,
@@ -132,11 +132,11 @@ back here in 12 hours or find another ride home.""",None)]
 def disembark(character, attack):
     print('------------------------------')
     if attack:
-        battle_system.battle_state(character, NPC.boat_captain(), False, False)
+        battle_system.battle_state(character, NPC.boat_captain(game_items_data), False, False)
         print('------------------------------')
-        battle_system.battle_state(character, NPC.deck_hand01(), True, False)
+        battle_system.battle_state(character, NPC.deck_hand01(game_items_data), True, False)
         print('------------------------------')
-        battle_system.battle_state(character, NPC.deck_hand02(), True, False)
+        battle_system.battle_state(character, NPC.deck_hand02(game_items_data), True, False)
         print('------------------------------')
         use_textwrap("""Confidentiality is always of paramount concern on these assignments. Though The Captain seemed
 to know very little about the client's facility. It was enough. He and the crew had to go. 
@@ -203,9 +203,9 @@ I'm not sure if it was the moonlight or what but their skin was wrinkly and almo
 The most disturbing quality was what appeared to be an elongated snout or jaw. Though admittedly tt was hard to make out
 before the attack came.""")
         print('------------------------------')
-        battle_system.battle_state(character, NPC.basic_goblin(), True,False)
+        battle_system.battle_state(character, NPC.basic_goblin(game_items_data), True,False)
         print('------------------------------')
-        battle_system.battle_state(character, NPC.basic_goblin(), True,False)
+        battle_system.battle_state(character, NPC.basic_goblin(game_items_data), True,False)
         print('------------------------------')
         use_textwrap("""After I catch my breath and calm down a bit I'm able to get a better look at these...things.
 Whatever they are they aren't human. Taking this job is starting to seem like a very bad idea. Regardless of how good
@@ -230,9 +230,9 @@ the Lighthouse until I come to what has to be the entrance.""")
 as inviting as well.""")
                 if random.randint(0, 12) < character.get_luck():
                     print('------------------------------')
-                    battle_system.battle_state(character, NPC.basic_goblin(), True,False)
+                    battle_system.battle_state(character, NPC.basic_goblin(game_items_data), True,False)
                     print('------------------------------')
-                    battle_system.battle_state(character, NPC.basic_goblin(), True,False)
+                    battle_system.battle_state(character, NPC.basic_goblin(game_items_data), True,False)
                 dock(character, False)
             elif "inventory" in option.lower() or option == "3":
                 inventory.inventory(character)
@@ -335,7 +335,7 @@ You're dead.""",2)])
 come out there and kill you..""",
                               None),
     )
-    lhk = NPC.light_house_keeper()
+    lhk = NPC.light_house_keeper(game_items_data)
     if first:
         explore = False
         print('------------------------------')
