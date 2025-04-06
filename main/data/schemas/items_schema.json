@@ -1,55 +1,55 @@
 {
+  "type": "array",  
+  "items": {       
     "type": "object",
     "properties": {
       "item_id": {
         "type": "string",
-        "description": "Unique identifier for the item."
+        "description": "Unique identifier for the item"
       },
       "name": {
         "type": "string",
-        "description": "Display name of the item."
+        "description": "Display name of the item"
       },
       "description": {
         "type": "string",
-        "description": "In-game description of the item."
+        "description": "In-game description"
       },
       "item_type": {
         "type": "string",
         "enum": ["weapon", "armor", "consumable", "ammo", "misc"],
-        "description": "Category of the item."
+        "description": "Category of the item"
       },
       "attributes": {
         "type": "object",
-        "description": "Type-specific attributes.",
-        "properties": {
-        
-        },
+        "description": "Type-specific attributes",
+        "properties": {},
         "additionalProperties": true
       },
       "value": {
         "type": "integer",
-        "description": "Base value of the item."
+        "description": "Base value of the item"
       },
       "icon": {
         "type": "string",
-        "description": "Icon image path (optional).",
+        "description": "Icon image path (optional)",
         "default": null
       },
       "max_durability": {
         "type": "integer",
-        "description": "Maximum durability of the item when in perfect condition."
+        "description": "Max durability"
       },
       "current_durability": {
         "type": "integer",
-        "description": "Current durability of the item. Decreases with use/damage."
+        "description": "Current durability"
       },
       "durability_loss_per_use": {
         "type": "integer",
-        "description": "Amount of durability lost per use (for weapons, armor). May be 0 for items that don't degrade with use."
+        "description": "Durability loss per use"
       },
       "is_repairable": {
         "type": "boolean",
-        "description": "Indicates if the item can be repaired."
+        "description": "Is repairable"
       }
     },
     "required": [
@@ -65,3 +65,4 @@
       "is_repairable"
     ]
   }
+}
