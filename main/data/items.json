@@ -10,11 +10,252 @@
         "ammo_type": "9mm",
         "clip_size": 6
       },
-      "value": 100,
+      "value": 150,
       "icon": null,
       "max_durability": 100,
       "current_durability": 100,
       "durability_loss_per_use": 1,
+      "is_repairable": true
+    },
+    {
+      "item_id": "medium_pistol",
+      "name": "Medium Pistol",
+      "description": "A step up from the basic pistol, offering slightly more power and reliability.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 17,
+        "weapon_type": "gun",
+        "ammo_type": "9mm",
+        "clip_size": 6
+      },
+      "value": 170,
+      "icon": null,
+      "max_durability": 120,
+      "current_durability": 120,
+      "durability_loss_per_use": 1,
+      "is_repairable": true
+    },
+    {
+      "item_id": "advanced_pistol",
+      "name": "Advanced Pistol",
+      "description": "A high-quality pistol with improved damage and a larger magazine.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 20,
+        "weapon_type": "gun",
+        "ammo_type": "9mm",
+        "clip_size": 16
+      },
+      "value": 200,
+      "icon": null,
+      "max_durability": 150,
+      "current_durability": 150,
+      "durability_loss_per_use": 1,
+      "is_repairable": true
+    },
+    {
+      "item_id": "large_revolver",
+      "name": "Large Revolver",
+      "description": "A powerful revolver, slower to reload but packs a punch.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 25,
+        "weapon_type": "gun",
+        "ammo_type": ".44 Magnum", 
+        "clip_size": 6 
+      },
+      "value": 250,
+      "icon": null,
+      "max_durability": 130,
+      "current_durability": 130,
+      "durability_loss_per_use": 2, // Higher durability loss due to power
+      "is_repairable": true
+    },
+    {
+        "item_id": "med_revolver",
+        "name": "Medium Revolver",
+        "description": "A medium sized revolver, slower to reload but packs a punch.",
+        "item_type": "weapon",
+        "attributes": {
+          "damage": 25,
+          "weapon_type": "gun",
+          "ammo_type": ".38 caliber", 
+          "clip_size": 6 
+        },
+        "value": 250,
+        "icon": null,
+        "max_durability": 110,
+        "current_durability": 110,
+        "durability_loss_per_use": 2, // Higher durability loss due to power
+        "is_repairable": true
+      },
+      {
+        "item_id": "small_revolver",
+        "name": "Small Revolver",
+        "description": "A less powerful revolver, slower to reload but packs a punch.",
+        "item_type": "weapon",
+        "attributes": {
+          "damage": 25,
+          "weapon_type": "gun",
+          "ammo_type": ".22 Caliber", 
+          "clip_size": 6 
+        },
+        "value": 250,
+        "icon": null,
+        "max_durability": 90,
+        "current_durability": 90,
+        "durability_loss_per_use": 2, 
+        "is_repairable": true
+      },
+    {
+      "item_id": "pop_gun",
+      "name": "Pop Gun",
+      "description": "A weak, almost toy-like gun. Barely effective.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 1,
+        "weapon_type": "gun",
+        "ammo_type": "BBs?", // Flavor ammo type
+        "clip_size": 1 
+      },
+      "value": 10,
+      "icon": null,
+      "max_durability": 50,
+      "current_durability": 50,
+      "durability_loss_per_use": 0.5, // Less durability loss due to low power
+      "is_repairable": true
+    },
+    {
+      "item_id": "basic_knife",
+      "name": "Basic Knife",
+      "description": "A simple, functional knife for close-quarters combat.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 10,
+        "weapon_type": "melee",
+        "melee_type": "blade" 
+      },
+      "value": 100,
+      "icon": null,
+      "max_durability": 80,
+      "current_durability": 80,
+      "durability_loss_per_use": 1,
+      "is_repairable": true
+    },
+    {
+      "item_id": "medium_knife",
+      "name": "Medium Knife",
+      "description": "A more robust knife, better for combat.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 14,
+        "weapon_type": "melee",
+        "melee_type": "blade"
+      },
+      "value": 140,
+      "icon": null,
+      "max_durability": 100,
+      "current_durability": 100,
+      "durability_loss_per_use": 1,
+      "is_repairable": true
+    },
+    {
+      "item_id": "large_knife",
+      "name": "Large Knife",
+      "description": "A large combat knife, effective for inflicting serious damage.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 20,
+        "weapon_type": "melee",
+        "melee_type": "blade"
+      },
+      "value": 200,
+      "icon": null,
+      "max_durability": 120,
+      "current_durability": 120,
+      "durability_loss_per_use": 1,
+      "is_repairable": true
+    },
+    {
+      "item_id": "machete",
+      "name": "Machete",
+      "description": "A heavy blade, excellent for both combat and clearing obstacles.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 30,
+        "weapon_type": "melee",
+        "melee_type": "blade",
+        "clearing_ability": true // Example of a special attribute
+      },
+      "value": 300,
+      "icon": null,
+      "max_durability": 150,
+      "current_durability": 150,
+      "durability_loss_per_use": 1.5, // Higher durability loss for heavy use
+      "is_repairable": true
+    },
+    {
+      "item_id": "basic_body_armour",
+      "name": "Basic Body Armour",
+      "description": "Lightweight body armour. Provides basic protection.",
+      "item_type": "armor",
+      "attributes": {
+        "defense": 3,
+        "armor_type": "body"
+      },
+      "value": 80,
+      "icon": null,
+      "max_durability": 80,
+      "current_durability": 80,
+      "durability_loss_per_use": 0, // Armour loses durability when damaged, not per "use" in the same way as weapons
+      "is_repairable": true
+    },
+    {
+      "item_id": "medium_body_armour",
+      "name": "Medium Body Armour",
+      "description": "Provides a good balance of protection and mobility.",
+      "item_type": "armor",
+      "attributes": {
+        "defense": 5,
+        "armor_type": "body"
+      },
+      "value": 150,
+      "icon": null,
+      "max_durability": 120,
+      "current_durability": 120,
+      "durability_loss_per_use": 0,
+      "is_repairable": true
+    },
+    {
+      "item_id": "advanced_body_armour",
+      "name": "Advanced Body Armour",
+      "description": "High-grade body armour, offering excellent protection.",
+      "item_type": "armor",
+      "attributes": {
+        "defense": 7,
+        "armor_type": "body"
+      },
+      "value": 250,
+      "icon": null,
+      "max_durability": 160,
+      "current_durability": 160,
+      "durability_loss_per_use": 0,
+      "is_repairable": true
+    },
+    {
+      "item_id": "epic_body_armour",
+      "name": "Epic Body Armour",
+      "description": "The pinnacle of personal body armour. Unmatched protection.",
+      "item_type": "armor",
+      "attributes": {
+        "defense": 10,
+        "armor_type": "body"
+      },
+      "value": 400,
+      "icon": null,
+      "max_durability": 200,
+      "current_durability": 200,
+      "durability_loss_per_use": 0,
       "is_repairable": true
     },
     {
@@ -34,15 +275,223 @@
       "is_repairable": false
     },
     {
-        "item_id": "small_ns_pack",
-        "name": "Small Pack of Night Shade",
-        "description": "a pack containing a minimum dose or small hit of Night Shade.",
-        "item_type": "consumable",
+      "item_id": "medium_med_pack",
+      "name": "Medium Med Pack",
+      "description": "A more comprehensive medical kit, restores a moderate amount of health.",
+      "item_type": "consumable",
+      "attributes": {
+        "heal_amount": 40,
+        "effect_type": "heal"
+      },
+      "value": 80,
+      "icon": null,
+      "max_durability": 1,
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "advanced_med_pack",
+      "name": "Advanced Med Pack",
+      "description": "A high-end medical kit, providing significant health restoration.",
+      "item_type": "consumable",
+      "attributes": {
+        "heal_amount": 80,
+        "effect_type": "heal"
+      },
+      "value": 150,
+      "icon": null,
+      "max_durability": 1,
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "small_9mm_ammo_box",
+      "name": "Small 9mm Ammo Box",
+      "description": "A small box containing 9mm ammunition.",
+      "item_type": "ammo",
+      "attributes": {
+        "ammo_type": "9mm",
+        "quantity": 6
+      },
+      "value": 30,
+      "icon": null,
+      "max_durability": 1, // Ammo boxes are consumed when used
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "med_9mm_ammo_box",
+      "name": "Medium 9mm Ammo Box",
+      "description": "A medium-sized box containing 9mm ammunition.",
+      "item_type": "ammo",
+      "attributes": {
+        "ammo_type": "9mm",
+        "quantity": 12
+      },
+      "value": 60,
+      "icon": null,
+      "max_durability": 1,
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "large_9mm_ammo_box",
+      "name": "Large 9mm Ammo Box",
+      "description": "A large box containing 9mm ammunition.",
+      "item_type": "ammo",
+      "attributes": {
+        "ammo_type": "9mm",
+        "quantity": 24
+      },
+      "value": 120,
+      "icon": null,
+      "max_durability": 1,
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+        "item_id": "small_44mag_ammo_box",
+        "name": "Small 44 magnum Ammo Box",
+        "description": "A small box containing 44 magnum ammunition.",
+        "item_type": "ammo",
         "attributes": {
-          "mutate":5,
-          "effect_type": "mutate"
+          "ammo_type": "9mm",
+          "quantity": 6
         },
-        "value": 50,
+        "value": 30,
+        "icon": null,
+        "max_durability": 1, // Ammo boxes are consumed when used
+        "current_durability": 1,
+        "durability_loss_per_use": 1,
+        "is_repairable": false
+      },
+      {
+        "item_id": "med_44mag_ammo_box",
+        "name": "Medium 44 magnum Ammo Box",
+        "description": "A medium-sized box containing 44 magnum ammunition.",
+        "item_type": "ammo",
+        "attributes": {
+          "ammo_type": "9mm",
+          "quantity": 12
+        },
+        "value": 60,
+        "icon": null,
+        "max_durability": 1,
+        "current_durability": 1,
+        "durability_loss_per_use": 1,
+        "is_repairable": false
+      },
+      {
+        "item_id": "large_44mag_ammo_box",
+        "name": "Large 44 magnum Ammo Box",
+        "description": "A large box containing 44 magnum ammunition.",
+        "item_type": "ammo",
+        "attributes": {
+          "ammo_type": "9mm",
+          "quantity": 24
+        },
+        "value": 120,
+        "icon": null,
+        "max_durability": 1,
+        "current_durability": 1,
+        "durability_loss_per_use": 1,
+        "is_repairable": false
+      },
+      {
+        "item_id": "small_22cal_ammo_box",
+        "name": "Small .22 Caliber Ammo Box",
+        "description": "A small box of .22 caliber ammunition.",
+        "item_type": "ammo",
+        "attributes": {
+          "ammo_type": ".22 Caliber",
+          "quantity": 6
+        },
+        "value": 20, // Adjusted value, .22 is less valuable than 9mm
+        "icon": null,
+        "max_durability": 1,
+        "current_durability": 1,
+        "durability_loss_per_use": 1,
+        "is_repairable": false
+      },
+      {
+        "item_id": "med_22cal_ammo_box",
+        "name": "Medium .22 Caliber Ammo Box",
+        "description": "A medium box of .22 caliber ammunition.",
+        "item_type": "ammo",
+        "attributes": {
+          "ammo_type": ".22 Caliber",
+          "quantity": 12
+        },
+        "value": 40, // Adjusted value
+        "icon": null,
+        "max_durability": 1,
+        "current_durability": 1,
+        "durability_loss_per_use": 1,
+        "is_repairable": false
+      },
+      {
+        "item_id": "large_22cal_ammo_box",
+        "name": "Large .22 Caliber Ammo Box",
+        "description": "A large box of .22 caliber ammunition.",
+        "item_type": "ammo",
+        "attributes": {
+          "ammo_type": ".22 Caliber",
+          "quantity": 24
+        },
+        "value": 80, // Adjusted value
+        "icon": null,
+        "max_durability": 1,
+        "current_durability": 1,
+        "durability_loss_per_use": 1,
+        "is_repairable": false
+      },
+      {
+        "item_id": "small_38cal_ammo_box",
+        "name": "Small .38 Caliber Ammo Box",
+        "description": "A small box of .38 caliber ammunition.",
+        "item_type": "ammo",
+        "attributes": {
+          "ammo_type": ".38 Caliber",
+          "quantity": 6
+        },
+        "value": 25, // Adjusted value, .38 is less common than 9mm but more than .22
+        "icon": null,
+        "max_durability": 1,
+        "current_durability": 1,
+        "durability_loss_per_use": 1,
+        "is_repairable": false
+      },
+      {
+        "item_id": "med_38cal_ammo_box",
+        "name": "Medium .38 Caliber Ammo Box",
+        "description": "A medium box of .38 caliber ammunition.",
+        "item_type": "ammo",
+        "attributes": {
+          "ammo_type": ".38 Caliber",
+          "quantity": 12
+        },
+        "value": 50, // Adjusted value
+        "icon": null,
+        "max_durability": 1,
+        "current_durability": 1,
+        "durability_loss_per_use": 1,
+        "is_repairable": false
+      },
+      {
+        "item_id": "large_38cal_ammo_box",
+        "name": "Large .38 Caliber Ammo Box",
+        "description": "A large box of .38 caliber ammunition.",
+        "item_type": "ammo",
+        "attributes": {
+          "ammo_type": ".38 Caliber",
+          "quantity": 24
+        },
+        "value": 100, // Adjusted value
         "icon": null,
         "max_durability": 1,
         "current_durability": 1,
@@ -50,19 +499,150 @@
         "is_repairable": false
       },
     {
-      "item_id": "basic_body_armour",
-      "name": "Basic Body Armour",
-      "description": "Lightweight body armour. Provides basic protection.",
-      "item_type": "armor",
+      "item_id": "small_ns_pack",
+      "name": "Small Pack of Night Shadow",
+      "description": "A small dose of Night Shadow, a mysterious substance.",
+      "item_type": "consumable",
       "attributes": {
-        "defense": 3,
-        "armor_type": "body"
+        "mutate_level": 1, // Reduced mutation level for small pack
+        "intoxicate_level": 1,
+        "effect_type": "multi" 
       },
-      "value": 80,
+      "value": 50,
       "icon": null,
-      "max_durability": 80,
-      "current_durability": 80,
-      "durability_loss_per_use": 0, 
+      "max_durability": 1,
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "medium_ns_pack",
+      "name": "Medium Pack of Night Shadow",
+      "description": "A moderate dose of Night Shadow.",
+      "item_type": "consumable",
+      "attributes": {
+        "mutate_level": 3, // Medium mutation level
+        "intoxicate_level": 2, // Slightly higher intoxication
+        "effect_type": "multi"
+      },
+      "value": 150,
+      "icon": null,
+      "max_durability": 1,
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "large_ns_pack",
+      "name": "Large Pack of Night Shadow",
+      "description": "A large, potent dose of Night Shadow.",
+      "item_type": "consumable",
+      "attributes": {
+        "mutate_level": 5, // Higher mutation level
+        "intoxicate_level": 3, // Stronger intoxication
+        "effect_type": "multi"
+      },
+      "value": 300,
+      "icon": null,
+      "max_durability": 1,
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "cologne1",
+      "name": "Cologne",
+      "description": "A basic cologne to improve your charm.",
+      "item_type": "misc",
+      "attributes": {
+        "charm_boost": 1,
+        "effect_type": "charm_boost"
+      },
+      "value": 20,
+      "icon": null,
+      "max_durability": 1, // Could be considered consumable, or have limited uses
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "cologne2",
+      "name": "Fancy Cologne",
+      "description": "A more refined cologne for a better charm boost.",
+      "item_type": "misc",
+      "attributes": {
+        "charm_boost": 2,
+        "effect_type": "charm_boost"
+      },
+      "value": 50,
+      "icon": null,
+      "max_durability": 1,
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "cologne3",
+      "name": "Very Fancy Cologne",
+      "description": "Top-tier cologne for maximum charm enhancement.",
+      "item_type": "misc",
+      "attributes": {
+        "charm_boost": 3,
+        "effect_type": "charm_boost"
+      },
+      "value": 100,
+      "icon": null,
+      "max_durability": 1,
+      "current_durability": 1,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "charm1",
+      "name": "Rabbit's Foot",
+      "description": "A lucky rabbit's foot charm.",
+      "item_type": "misc",
+      "attributes": {
+        "luck_boost": 1,
+        "effect_type": "luck_boost"
+      },
+      "value": 30,
+      "icon": null,
+      "max_durability": 100, // Charms could have durability, flavor-wise
+      "current_durability": 100,
+      "durability_loss_per_use": 0, // Charms might not degrade with use, or very slowly
+      "is_repairable": true 
+    },
+    {
+      "item_id": "charm2",
+      "name": "Four-Leaf Clover",
+      "description": "An exceptionally lucky four-leaf clover.",
+      "item_type": "misc",
+      "attributes": {
+        "luck_boost": 2,
+        "effect_type": "luck_boost"
+      },
+      "value": 60,
+      "icon": null,
+      "max_durability": 100,
+      "current_durability": 100,
+      "durability_loss_per_use": 0,
+      "is_repairable": true
+    },
+    {
+      "item_id": "charm3",
+      "name": "Horseshoe",
+      "description": "A classic horseshoe charm for good luck.",
+      "item_type": "misc",
+      "attributes": {
+        "luck_boost": 3,
+        "effect_type": "luck_boost"
+      },
+      "value": 90,
+      "icon": null,
+      "max_durability": 100,
+      "current_durability": 100,
+      "durability_loss_per_use": 0,
       "is_repairable": true
     }
   ]
