@@ -1,9 +1,6 @@
-# main/inventory.py (Refactored for PURE Data-Driven Approach using Dictionaries)
-
 from Util import vowel_start
-import copy # Import copy for deep copying items when un-equipping
-
-# import items - REMOVE this import!
+import copy 
+from ItemUtil import is_item_broken, get_gun_ammo, set_gun_ammo, get_item_attribute
 
 def inventory(character_var):
     """Displays inventory and handles using/equipping/discarding items (dictionaries)."""

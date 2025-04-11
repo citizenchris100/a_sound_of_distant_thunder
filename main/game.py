@@ -107,7 +107,6 @@ or entering the corresponding number.""")
 
 
 def speak_to_captain(character):
-    # Dialog definitions remain unchanged
     hd1 = [dialog.HeroDialog(False,"Nearly there", """Looks like we\'re nearly there Captain""",None),
            dialog.HeroDialog(False,"The Storm","""Looks like we have a pretty bas system headed
 our way.""",None),
@@ -131,11 +130,10 @@ Don't worry it has a motor. I'd suggest you take care of it. We will be back to 
 you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be
 back here in 12 hours or find another ride home.""",None)]
 
-    # Pass game_items_data when creating the Boat Captain (Unchanged from previous correct version)
     captain_npc = NPC.boat_captain(game_items_data)
     if captain_npc is None:
         print("Error: Could not create Boat Captain NPC.")
-        return # Prevent further execution if NPC creation failed
+        return 
 
     dialog_system.conversation_system(character, captain_npc, hd1, rsp1, [
         {"label" : "Attack", "action": disembark, "op1": True,},
