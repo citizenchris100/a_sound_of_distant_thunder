@@ -243,7 +243,10 @@ to and from the island.\nHe mentioned that he stopped getting ferry jobs about a
 
     captain.set_inventory(captain_inventory_items)
     captain.set_name("Boat Captain")
-    captain.set_health(75)
+    captain.set_strength(15) 
+    captain.set_gun_attribute(18) 
+    captain.set_health(100) 
+    captain.set_defence(6) 
     return captain
 
 

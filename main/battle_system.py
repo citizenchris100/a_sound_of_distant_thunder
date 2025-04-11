@@ -11,6 +11,8 @@ from ItemUtil import (
     get_gun_ammo, set_gun_ammo
 )
 
+# TODO: limit inventory use during battle to allow only the use of one item per turn. using item should take the players turn
+
 def display_score():
     try:
         with open("../score.txt", "r") as file:
@@ -57,7 +59,13 @@ def npc_defence(enemy_var):
 
 def calculate_melee_hit(attacker, weapon_dict):
     """Calculates melee hit damage, decreases durability."""
-    strength = attacker.get_strength_attribute()
+    strength = 0
+    if hasattr(attacker, 'get_strength_attribute'): 
+        strength = attacker.get_strength_attribute()
+    elif hasattr(attacker, 'get_strength'): 
+        strength = attacker.get_strength()
+    else:
+        print(f"Warning: Cannot get strength for attacker {attacker.get_name()}")
     weapon_damage = 0
     if weapon_dict and not is_item_broken(weapon_dict):
         weapon_damage = get_item_attribute(weapon_dict, 'damage', default=0)
@@ -120,13 +128,30 @@ def apply_damage_to_target(target, damage, attacker_name="Attacker"):
             if is_item_broken(equipped_armour_dict):
                  print(f"   {target.get_name()}'s {get_item_property(equipped_armour_dict,'name','Armor')} broke!")
    
-    current_hp = target.get_health()
-    new_hp = current_hp - total_damage_taken
-    target.set_health(new_hp)
+    current_hp = 0
+    if hasattr(target, 'get_health_points'): 
+        current_hp = target.get_health_points()
+    elif hasattr(target, 'get_health'): 
+        current_hp = target.get_health()
+    else:
+        print(f"Warning: Cannot get health for target {target.get_name()}")
 
-    print(f"   {target.get_name()} takes {total_damage_taken} damage to health.")
-    if new_hp <= 0:
-        print(f"   {target.get_name()} has been defeated!")
+    new_hp = current_hp - total_damage_taken
+
+    set_hp_success = False
+    if hasattr(target, 'set_health_points'):
+        target.set_health_points(new_hp)
+        set_hp_success = True
+    elif hasattr(target, 'set_health'): 
+        target.set_health(new_hp)
+        set_hp_success = True
+    else:
+        print(f"Warning: Cannot set health for target {target.get_name()}")
+
+    if set_hp_success:
+        print(f"   {target.get_name()} takes {total_damage_taken} damage to health.")
+        if new_hp <= 0:
+            print(f"   {target.get_name()} has been defeated!") 
 
 
 def enemy_attack(character_var, enemy_var):
@@ -139,7 +164,7 @@ def enemy_attack(character_var, enemy_var):
     if hasattr(enemy_var, 'get_equipped_gun'):
         equipped_gun_dict = enemy_var.get_equipped_gun()
         if equipped_gun_dict and get_gun_ammo(equipped_gun_dict) > 0 and not is_item_broken(equipped_gun_dict):
-            if hasattr(enemy_var, 'get_gun_skill') and enemy_var.get_gun_skill() > enemy_var.get_strength():
+            if hasattr(enemy_var, 'get_gun_skill'):
                 use_gun = True
 
     if use_gun and equipped_gun_dict:
