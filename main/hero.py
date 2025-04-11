@@ -1,9 +1,8 @@
 import random
 import sys
 import os
-import items
 import data_loader
-
+import copy
 
 class Hero:
     def __init__(self, dp, strength, gun_skill, luck, charm, stealth, game_items_data):
@@ -13,11 +12,11 @@ class Hero:
         self.hp = 65
         self.hp_limit = 65
         self.status_effects = []
-        self.inventory = []
+        self.inventory = [] 
         self.inventory_limit = 5
-        self.equipped_gun = None
-        self.equipped_melee = None
-        self.equipped_armour = None
+        self.equipped_gun = None 
+        self.equipped_melee = None 
+        self.equipped_armour = None 
         self.defence_points = dp
         self.strength_attribute = strength
         self.gun_skill_attribute = gun_skill
@@ -25,16 +24,10 @@ class Hero:
         self.charm_attribute = charm
         self.stealth_attribute = stealth
         self.location = None
-        
-        
+
         basic_med_pack_data = game_items_data.get("basic_med_pack")
         if basic_med_pack_data:
-            med_pack_item = items.Item(
-                item_name=basic_med_pack_data.get("name"),
-                item_value=basic_med_pack_data.get("value"),
-                item_attribute=basic_med_pack_data.get("attributes", {}).get("effect_type")
-            )
-            self.inventory.append(med_pack_item)
+            self.inventory.append(copy.deepcopy(basic_med_pack_data)) 
         else:
             print("Warning: 'basic_med_pack' data not found in game_items_data. Starting without med pack.")
         
@@ -65,17 +58,31 @@ class Hero:
     def get_inventory(self):
         return self.inventory
 
-    def add_inventory(self, item):
+    def add_inventory(self, item_dict_or_instance): # Renamed parameter for clarity
+        """Adds an item dictionary to the inventory if space allows."""
         if len(self.inventory) < self.inventory_limit:
-            self.inventory.append(item)
-            print('------------------------------')
-            print(item.get_item_name(), " added to your inventory.", sep='')
+            if isinstance(item_dict_or_instance, dict): # Check if it's a dictionary
+                self.inventory.append(item_dict_or_instance)
+                print('------------------------------')
+                # Access name directly from the dictionary using .get() for safety
+                print(item_dict_or_instance.get("name", "Unknown Item"), " added to your inventory.", sep='')
+            else:
+                print("Error: Attempted to add a non-dictionary item to inventory.")
         else:
             print('------------------------------')
             print("Your Inventory is Full. You can discard Items to make room if you so choose")
 
-    def del_inventory(self, item):
-        del self.inventory[item]
+    def del_inventory(self, item_index): # Changed parameter to index
+        """Deletes an item from the inventory by its index."""
+        try:
+            if 0 <= item_index < len(self.inventory):
+                removed_item = self.inventory.pop(item_index) # Use pop to remove by index
+                print(f"Removed {removed_item.get('name', 'Unknown Item')} from inventory.")
+            else:
+                print("Error: Invalid item index for deletion.")
+        except IndexError:
+            # This might happen if the index is out of bounds, though the check above helps
+            print("Error: Could not remove item at the specified index.")
 
     def get_inventory_limit(self):
         return self.inventory_limit
