@@ -13,6 +13,8 @@ import copy
 
 game_items_data = {} 
 
+# TODO: add ability to save game
+
 
 def boat_zone(character):
     while True:
@@ -35,16 +37,17 @@ crazy not to. In any case the ask is simple. Restore communications to the islan
 information as to what the hell is going on.""")
             print('------------------------------')
         elif "speak" in prompt.lower() or prompt == "2":
+            # TODO: add an are you sure before attacking the captain?
             speak_to_captain(character)
         elif "look" in prompt.lower() or prompt == "3":
             print('------------------------------')
             use_textwrap("""This boat or ship rather is pretty beat up. I'm guessing this was all we could get with
 such short notice.""")
             print('------------------------------')
-            # Check if ammo has already been picked up (updated check)
+           
             has_ammo = any(item_dict.get("item_type") == "ammo" for item_dict in character.get_inventory())
 
-            if not has_ammo: # Only show the case option if ammo hasn't been picked up yet
+            if not has_ammo: 
                 use_textwrap("""There is a case near by. Probably the supplies prepared for me. Might
 be a good idea to take a look. They could help""")
                 print('------------------------------')
