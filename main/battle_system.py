@@ -1,33 +1,103 @@
 import random
 import math
 import sys
+import datetime
 import inventory 
 import lvl_system
 import hero 
+import os 
 from NPC import Enemy 
 from ItemUtil import (
     get_item_attribute, get_item_property,
     decrease_item_durability, is_item_broken,
     get_gun_ammo, set_gun_ammo
 )
+import logging
+logger = logging.getLogger(__name__)
 
 # TODO: update combat to consider range and stealth. gun combat that is surprise should be more lethal etc..
 # TODO: add a view stats options durring battle
 # TODO: gun damage should be based soley on range/surprise and gun skill
 
-# --- Score Functions (Unchanged) ---
-def display_score():
-    try:
-        with open("../score.txt", "r") as file:
-            for line in file:
-                xline = line.split(",")
-                if len(xline) >= 2: print(xline[0], xline[1].strip())
-    except FileNotFoundError: print("Score file not found.")
-
 def write_score(score, name):
+    """Appends the player's name, score, and current date to the score file using a robust relative path."""
     try:
-        with open("../score.txt", "a") as file: file.write(f"{name},{score}\n")
-    except IOError: print("Error writing to score file.")
+        script_dir = os.path.dirname(__file__) 
+        score_file_path = os.path.abspath(os.path.join(script_dir, "..", "score.txt"))
+    except NameError:
+        score_file_path = "../score.txt"
+        logger.warning("__file__ not found, falling back to relative path '%s' for score file.", score_file_path)
+
+    try:
+        now = datetime.datetime.now()
+        date_str = now.strftime("%m/%d/%y")
+        line_to_write = f"{name},{score},{date_str}\n"
+        logger.info("Attempting to write score to calculated path: %s", score_file_path)
+        with open(score_file_path, "a") as file:
+             file.write(line_to_write)
+        logger.info("Successfully wrote score for %s to %s", name, score_file_path)
+
+    except IOError as e:
+        logger.error("IOError writing score file '%s': %s", score_file_path, e)
+        print(f"Error writing to score file: {e}") 
+    except Exception as e:
+        logger.exception("Unexpected error writing score file '%s':", score_file_path) 
+        print(f"An unexpected error occurred saving the score.") 
+
+
+def display_score():
+    """Reads scores from file using robust relative path, sorts them, and displays a ranked list."""
+    scores = []
+    try:
+        script_dir = os.path.dirname(__file__)
+        score_file_path = os.path.abspath(os.path.join(script_dir, "..", "score.txt"))
+    except NameError:
+        score_file_path = "../score.txt"
+        logger.warning("__file__ not found, falling back to relative path '%s' for score file.", score_file_path)
+
+    try:
+        logger.info("Attempting to read scores from: %s", score_file_path)
+        with open(score_file_path, "r") as file:
+            for line_num, line in enumerate(file, 1):
+                line = line.strip()
+                if not line: 
+                    continue
+                try:
+                    parts = line.split(',')
+                    if len(parts) == 3:
+                        name = parts[0].strip() 
+                        score_str = parts[1].strip()
+                        date_str = parts[2].strip()
+                        score_int = int(score_str)
+                        scores.append({'name': name, 'score': score_int, 'date': date_str})
+                    else:
+                        logger.warning("Skipping malformed score line #%d (expected 3 parts, found %d): %s",
+                                     line_num, len(parts), line)
+
+                except ValueError:
+                    logger.warning("Skipping score line #%d with invalid score value: %s", line_num, line)
+                except Exception as e:
+                    logger.error("Error processing score line #%d '%s': %s", line_num, line, e)
+
+    except FileNotFoundError:
+        logger.info("Score file not found at %s. No scores to display.", score_file_path)
+        print("No scores recorded yet.")
+        return 
+    except Exception as e:
+         logger.exception("Unexpected error reading score file '%s':", score_file_path)
+         print(f"Error reading score file.") 
+         return
+
+    scores.sort(key=lambda item: item['score'], reverse=True)
+
+    print("\n--- HIGH SCORES ---")
+    print(f"{'Rank':>4} | {'Score':>6} | {'Name':<12} | {'Date':<8}")
+    print("-" * 37) 
+    max_scores_to_show = 10 
+    for i, entry in enumerate(scores[:max_scores_to_show]):
+        rank = i + 1
+        print(f"{rank:>4} | {entry['score']:>6} | {entry['name']:<12} | {entry['date']:<8}")
+    print("-" * 37) 
 
 def game_over(character_var):
     score = character_var.get_exp()
@@ -35,15 +105,17 @@ def game_over(character_var):
         print("\nYou have been defeated.")
         print(f"Your Final score is {score}")
         name = input("Enter your Name: ")
-        write_score(score, name)
+        try:
+            write_score(score, name)
+            print(f"Score for {name} saved.")
+        except Exception as e:
+            print("Could not save score.")
         display_score()
-        print("\nExiting game...")
-        sys.exit()
-
-# --- Helper Functions for Dictionary Access (Now Imported from ItemUtil) ---
-# These are now defined in ItemUtil.py
-
-# --- Refactored Combat Functions (Using Imported Helpers Directly) ---
+        print("\nGame Over sequence complete.")
+        return True
+    else:
+        logger.warning("game_over() called but player HP > 0.")
+        return False 
 
 def character_defence(character_var):
     """Calculates character's total defense."""
