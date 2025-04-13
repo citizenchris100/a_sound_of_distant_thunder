@@ -15,7 +15,7 @@ from ItemUtil import (
 import logging
 logger = logging.getLogger(__name__)
 
-# TODO: update combat to consider range and stealth. gun combat that is surprise should be more lethal etc..
+# TODO: critical hit concept
 # TODO: add a view stats options durring battle
 # TODO: gun damage should be based soley on range/surprise and gun skill
 

@@ -154,7 +154,7 @@ class Hero:
         return self.stealth_attribute
 
     def set_stealth_attribute(self, stealth):
-        self.charm_attribute = min(stealth, 7)
+        self.stealth_attribute = min(stealth, 7)
 
     def get_location(self):
         return self.location
