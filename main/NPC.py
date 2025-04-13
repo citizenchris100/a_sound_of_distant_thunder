@@ -1,6 +1,8 @@
 import random
 import names 
 import copy
+import logging
+logger = logging.getLogger(__name__)
 
 class Enemy:
     def __init__(self, en_name, health, defence, strength, luck, awareness):
@@ -13,6 +15,7 @@ class Enemy:
         self.luck_attribute = luck
         self.inventory = [] 
         self.awareness_attribute = awareness
+        self.equipped_melee = None
 
     def get_name(self):
         return self.name
@@ -60,6 +63,18 @@ class Enemy:
             self.inventory.remove(item_dict)
         except ValueError:
             print(f"Warning: Item not found in {self.name}'s inventory for removal.")
+            
+    def get_equipped_melee(self):
+        """Returns the dictionary representing the equipped melee weapon, or None."""
+        return self.equipped_melee
+
+    def set_equipped_melee(self, melee_dict):
+         """Equips a melee weapon represented by a dictionary."""
+         if melee_dict is None or isinstance(melee_dict, dict):
+            self.equipped_melee = melee_dict
+         else:
+            logger.error("Tried to equip non-dictionary item %s as melee for %s.",
+                         melee_dict, self.name)
 
 
 class Human(Enemy):
@@ -136,35 +151,96 @@ def get_random_loot_id(loot_type):
     return None
 
 def add_loot(enemy, game_items_data):
-    """Adds loot (item dictionaries) to an enemy's inventory based on luck."""
-    if random.randint(0, 10) < enemy.get_luck():
+    """Adds loot (item dictionaries) to an enemy's inventory."""
+
+    med_pack_chance = 0.0 
+    enemy_name = enemy.get_name() 
+    enemy_luck = enemy.get_luck()
+
+    if "Alpha Goblin" in enemy_name:
+        med_pack_chance = 0.50 + (enemy_luck * 0.05) 
+    elif "Beta Goblin" in enemy_name:
+        med_pack_chance = 0.30 + (enemy_luck * 0.05)
+    elif "Goblin" in enemy_name: 
+        med_pack_chance = 0.15 + (enemy_luck * 0.05) 
+    else:
+        med_pack_chance = 0.20 + (enemy_luck * 0.05)
+    
+    med_pack_chance = max(0.0, min(med_pack_chance, 1.0))
+    
+    if random.random() < med_pack_chance:
         item_id = get_random_loot_id("med_pack")
-        item_data = game_items_data.get(item_id)
-        if item_data: 
-            enemy.add_inventory(copy.deepcopy(item_data)) 
-            
+        if "Goblin" in enemy_name and "Alpha" not in enemy_name and "Beta" not in enemy_name:
+             if random.random() < 0.7: # 70% chance for basic from basic goblin
+                 item_id = "basic_med_pack"
+
+        if item_id:
+            item_data = game_items_data.get(item_id)
+            if item_data:
+                enemy.add_inventory(copy.deepcopy(item_data))
+                logger.debug("%s got loot: %s (Chance: %.2f)", enemy.get_name(), item_id, med_pack_chance)
+            else:
+                logger.warning("Med pack item data missing for id: %s", item_id)
+        else:
+             logger.warning("get_random_loot_id failed for med_pack type.")
+             
     if random.randint(0, 6) < enemy.get_luck():
         item_id = get_random_loot_id("night_shadow")
-        item_data = game_items_data.get(item_id)
-        if item_data: 
-            enemy.add_inventory(copy.deepcopy(item_data)) 
-
+        if item_id:
+            item_data = game_items_data.get(item_id)
+            if item_data:
+                enemy.add_inventory(copy.deepcopy(item_data))
+                logger.debug("%s got loot: %s", enemy.get_name(), item_id)
+            else: 
+                logger.warning("Night shadow item data missing for id: %s", item_id)
+        else:
+             logger.warning("get_random_loot_id failed for night_shadow type.")
+   
     if random.randint(0, 24) < enemy.get_luck():
         item_id = get_random_loot_id("misc_item")
-        item_data = game_items_data.get(item_id)
-        if item_data: 
-            enemy.add_inventory(copy.deepcopy(item_data)) 
+        if item_id:
+            item_data = game_items_data.get(item_id)
+            if item_data:
+                enemy.add_inventory(copy.deepcopy(item_data))
+                logger.debug("%s got loot: %s", enemy.get_name(), item_id)
+            else:
+                logger.warning("Misc item data missing for id: %s", item_id)
+        else:
+             logger.warning("get_random_loot_id failed for misc_item type.")
 
 def basic_goblin(game_items_data):
     goblin = Enemy("Goblin", random.randint(15, 30), random.randint(1, 3), random.randint(5, 10),
                    random.randint(0, 5), random.randint(1, 5))
     add_loot(goblin, game_items_data)
+    
+    probability_of_weapon = 0.4 
+    possible_weapons = ["rusty_pipe", "naily_board"] 
+
+    if random.random() < probability_of_weapon:
+        chosen_weapon_id = random.choice(possible_weapons)
+        weapon_data = game_items_data.get(chosen_weapon_id)
+        if weapon_data:
+            weapon_instance = copy.deepcopy(weapon_data)
+            goblin.set_equipped_melee(weapon_instance)
+            logger.debug("Basic Goblin spawned with %s", weapon_instance.get('name'))
+        else:
+            logger.warning("Weapon data for '%s' not found for Basic Goblin.", chosen_weapon_id)
+    
     return goblin
 
 def beta_goblin(game_items_data):
     goblin = Enemy("Beta Goblin", random.randint(35, 65), random.randint(4, 6), random.randint(10, 17),
                    random.randint(2, 7), random.randint(3, 5))
     add_loot(goblin, game_items_data) 
+    possible_weapons = ["rusty_pipe", "naily_board", "heavy_wrench"] 
+    chosen_weapon_id = random.choice(possible_weapons)
+    weapon_data = game_items_data.get(chosen_weapon_id)
+    if weapon_data:
+        weapon_instance = copy.deepcopy(weapon_data)
+        goblin.set_equipped_melee(weapon_instance)
+        logger.debug("Beta Goblin spawned with %s", weapon_instance.get('name'))
+    else:
+        logger.error("CRITICAL: Weapon data for '%s' not found for Beta Goblin. Should not happen!", chosen_weapon_id)
     return goblin
 
 def alpha_goblin(game_items_data):
@@ -172,6 +248,16 @@ def alpha_goblin(game_items_data):
                    random.randint(4, 7), random.randint(5, 7))
     add_loot(goblin, game_items_data) 
     add_loot(goblin, game_items_data) 
+    possible_weapons = ["naily_board", "heavy_wrench", "basic_knife"]
+
+    chosen_weapon_id = random.choice(possible_weapons)
+    weapon_data = game_items_data.get(chosen_weapon_id)
+    if weapon_data:
+        weapon_instance = copy.deepcopy(weapon_data)
+        goblin.set_equipped_melee(weapon_instance)
+        logger.debug("Alpha Goblin spawned with %s", weapon_instance.get('name'))
+    else:
+        logger.error("CRITICAL: Weapon data for '%s' not found for Alpha Goblin. Should not happen!", chosen_weapon_id)
     return goblin
 
 

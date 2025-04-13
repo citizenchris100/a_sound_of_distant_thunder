@@ -195,6 +195,57 @@
       "is_repairable": true
     },
     {
+      "item_id": "rusty_pipe",
+      "name": "Rusty Pipe",
+      "description": "A beat up rusty old piece of pipe.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 3,
+        "weapon_type": "melee",
+        "melee_type": "blunt" 
+      },
+      "value": 25,
+      "icon": "",
+      "max_durability": 100,
+      "current_durability": 100,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
+      "item_id": "naily_board",
+      "name": "Naily Board",
+      "description": "A piece of wood with nails sticking out the end.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 5,
+        "weapon_type": "melee",
+        "melee_type": "blunt" 
+      },
+      "value": 15,
+      "icon": "",
+      "max_durability": 75,
+      "current_durability": 75,
+      "durability_loss_per_use": 10,
+      "is_repairable": false
+    },
+    {
+      "item_id": "heavy_wrench",
+      "name": "Heavy Wrench",
+      "description": "A large pipe wrench.",
+      "item_type": "weapon",
+      "attributes": {
+        "damage": 10,
+        "weapon_type": "melee",
+        "melee_type": "blunt" 
+      },
+      "value": 55,
+      "icon": "",
+      "max_durability": 200,
+      "current_durability": 200,
+      "durability_loss_per_use": 1,
+      "is_repairable": false
+    },
+    {
       "item_id": "basic_body_armour",
       "name": "Basic Body Armour",
       "description": "Lightweight body armour. Provides basic protection.",

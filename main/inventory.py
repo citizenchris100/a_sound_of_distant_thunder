@@ -1,6 +1,18 @@
 from Util import vowel_start
 import copy 
 from ItemUtil import is_item_broken, get_gun_ammo, set_gun_ammo, get_item_attribute
+try:
+
+    from ItemUtil import is_item_broken
+except ImportError:
+    print("ERROR in inventory.py: Could not import 'is_item_broken' from ItemUtil. Weapon loot check will fail.")
+    # Define a dummy function to avoid immediate crashes later
+    def is_item_broken(item_dict):
+        return False # Default to not broken if import fails
+
+
+# TODO: is full inventory working? what to do if tries to add more items to inventory than slots available?
+# TODO: consolodate multiple items in list ex: med pack x2 etc...
 
 def inventory(character_var):
     """Displays inventory and handles using/equipping/discarding items (dictionaries)."""
@@ -225,38 +237,45 @@ def inventory(character_var):
 
 
 def loot_add(character_var, enemy_var):
-    """Handles looting items (dictionaries) from a defeated enemy."""
-    enemy_inv = enemy_var.get_inventory() # Should be a list of dictionaries
+    """Handles looting items (dictionaries) from a defeated enemy, including their equipped weapon."""
 
-    if not enemy_inv:
+    enemy_inv = enemy_var.get_inventory() 
+    equipped_weapon = enemy_var.get_equipped_melee()
+    eligible_weapon = None
+
+    if equipped_weapon and not is_item_broken(equipped_weapon):
+        eligible_weapon = equipped_weapon 
+
+    combined_loot = list(enemy_inv) 
+    if eligible_weapon:
+        combined_loot.append(eligible_weapon) 
+
+    if not combined_loot: 
         print(f"{enemy_var.get_name()} had no loot.")
         return
 
-    while enemy_inv: # Loop while enemy still has items
+    while combined_loot:
         print('------------------------------')
         print(f'--- {enemy_var.get_name()}\'s Remaining Items ---')
-        for i, item_dict in enumerate(enemy_inv):
+      
+        for i, item_dict in enumerate(combined_loot):
             item_name = item_dict.get("name", "Unknown Item")
-            print(f"{i + 1}: {item_name}")
+            print(f"{i + 1}: {item_name}") 
         print('------------------------------')
-
         n = input("Enter item number to take, 'All', 'Inv' for your inventory, or 'Exit'.\n> ")
-
         if "exit" in n.lower():
             print("Stopped looting.")
             break
         elif "inv" in n.lower():
-            inventory(character_var) # Show player inventory
-            continue # Go back to loot prompt
+            inventory(character_var) 
+            continue
         elif "all" in n.lower():
             items_taken_count = 0
             items_could_not_take = []
-            # Iterate over a copy of the list because we modify it
-            for item_dict in list(enemy_inv):
+            for item_dict in list(combined_loot):
                 if len(character_var.get_inventory()) < character_var.get_inventory_limit():
-                    # Use deepcopy when adding loot to player inventory
                     character_var.add_inventory(copy.deepcopy(item_dict))
-                    enemy_inv.remove(item_dict) # Remove original dict from enemy
+                    combined_loot.remove(item_dict) 
                     items_taken_count += 1
                 else:
                     items_could_not_take.append(item_dict.get("name", "Unknown Item"))
@@ -265,16 +284,16 @@ def loot_add(character_var, enemy_var):
                  print(f"Took {items_taken_count} item(s).")
             if items_could_not_take:
                  print("Inventory full. Could not take:", ", ".join(items_could_not_take))
-            break # Exit looting after taking all possible items
+            break 
+
         elif n.isdigit():
             try:
                 index = int(n) - 1
-                if 0 <= index < len(enemy_inv):
-                    item_to_take = enemy_inv[index]
+                if 0 <= index < len(combined_loot):
+                    item_to_take = combined_loot[index]
                     if len(character_var.get_inventory()) < character_var.get_inventory_limit():
-                         # Use deepcopy when adding loot
                         character_var.add_inventory(copy.deepcopy(item_to_take))
-                        enemy_inv.pop(index) # Remove item from enemy by index
+                        combined_loot.pop(index)
                     else:
                         print("Your inventory is full. Cannot take this item.")
                 else:
@@ -283,6 +302,5 @@ def loot_add(character_var, enemy_var):
                 print("Invalid input.")
         else:
             print("Invalid input. Enter a number, 'All', 'Inv', or 'Exit'.")
-
-    if not enemy_inv:
+    if not combined_loot:
         print("Looted all items.")

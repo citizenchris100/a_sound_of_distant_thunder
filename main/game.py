@@ -10,11 +10,19 @@ import dialog
 import dialog_system
 import data_loader
 import copy 
+import logging
 
 game_items_data = {} 
 
 # TODO: add ability to save game
 
+logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
+    datefmt='%Y-%m-%d %H:%M:%S', 
+    filename='game.log', 
+    filemode='a' # 'a' for append (adds to file), 'w' for overwrite each run
+)
 
 def boat_zone(character):
     while True:
@@ -494,7 +502,7 @@ def dock(character, first):
 def title_screen():
     global game_items_data
     os.system('cls' if os.name == 'nt' else 'clear')
-    print('------------------------------') # Print separators
+    print('------------------------------') 
     print('- A Sound of Distant Thunder -')
     print('------------------------------')
     print('-   by Christopher Manning   -')
@@ -504,22 +512,18 @@ def title_screen():
     print('-          3. Quit           -')
     print('------------------------------')
 
-    # Load item data (Unchanged from previous correct version)
     game_items_data = data_loader.load_items_data()
     if not game_items_data:
         print("FATAL ERROR: Failed to load essential item data. Game cannot start.")
-        sys.exit() # Exit if data fails to load
+        sys.exit() 
 
     while True:
         option = input("> ")
         if option.lower() == "play" or option == "1":
-            # Pass game_items_data to class_selection (Unchanged)
             character = hero.class_selection(game_items_data=game_items_data)
             if character is None:
                  print("Error during character creation.")
                  continue
-
-            # Character stats display remains unchanged
             print('------------------------------')
             print('--Your Character\'s Stats-----')
             print(f"- Health: {character.get_health_points()}/{character.get_hp_limit()}")
@@ -606,6 +610,5 @@ def help_menu():
     print('------------------------------')
 
 
-# Start the game
-if __name__ == "__main__": # Good practice to put main execution under this
+if __name__ == "__main__": 
     title_screen()
