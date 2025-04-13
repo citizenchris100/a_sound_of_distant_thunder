@@ -11,6 +11,7 @@ import dialog_system
 import data_loader
 import copy 
 import logging
+from mechanics import check_player_surprise
 
 game_items_data = {} 
 
@@ -214,6 +215,8 @@ Wonderful. This gig is already starting off well."""
 
 
 def lighthouse_exterior(character, first):
+    global game_items_data, boat_broke 
+
     if first:
         print('------------------------------')
         use_textwrap(boat_broke)
@@ -244,14 +247,31 @@ I'm not sure if it was the moonlight or what but their skin was wrinkly and almo
 The most disturbing quality was what appeared to be an elongated snout or jaw. Though admittedly tt was hard to make out
 before the attack came.""")
         print('------------------------------')
-        # Pass game_items_data when creating Goblins for battle (Unchanged from previous correct version)
+
+        # --- MODIFIED GOBLIN ENCOUNTER 1 (Scripted - Player Aware) ---
+        logging.info("Triggering initial Lighthouse exterior encounter (Scripted, player aware).")
         goblin1 = NPC.basic_goblin(game_items_data)
         goblin2 = NPC.basic_goblin(game_items_data)
-        if goblin1: battle_system.battle_state(character, goblin1, True,False)
+
+        # ** Override surprise check for this specific scripted encounter **
+        # Player sees them coming and prepares, so player is not surprised.
+        is_player_surprised1 = False
+        print(f"DEBUG: Player surprised status vs Goblins: {is_player_surprised1} (Scripted - Player Aware)")
+
+        # Call battle_state for each enemy, passing surprise=False
+        if goblin1:
+            battle_system.battle_state(character, goblin1, surprise=is_player_surprised1, range_attack=False) # Using False
+        # Check health before fighting next enemy in sequence
         if character.get_health_points() > 0 and goblin2:
-            print('------------------------------')
-            battle_system.battle_state(character, goblin2, True,False)
-        if character.get_health_points() <= 0: return # Exit if player died
+            print('------------------------------') # Separator between fights
+            # Use the *same* initial surprise status for the second goblin in the group
+            battle_system.battle_state(character, goblin2, surprise=is_player_surprised1, range_attack=False) # Using False
+        # --- END MODIFIED GOBLIN ENCOUNTER 1 ---
+
+        if character.get_health_points() <= 0:
+            logging.warning("Player defeated in initial lighthouse exterior encounter.")
+            return # Exit function if player died
+
         print('------------------------------')
         use_textwrap("""After I catch my breath and calm down a bit I'm able to get a better look at these...things.
 Whatever they are they aren't human. Taking this job is starting to seem like a very bad idea. Regardless of how good
@@ -259,51 +279,255 @@ the money is. No amount of money is worth getting your head ripped off by some p
 the Lighthouse until I come to what has to be the entrance.""")
         print('------------------------------')
     else:
+        # Player returns to the exterior
         use_textwrap("""Outside the Lighthouse. Just as ominous and creepy as it ever was.""")
+        print('------------------------------') # Added separator
 
-    # Loop and options logic remain unchanged
+    # Loop for exterior actions
     while True:
-        option = input("1. Enter Lighthouse\n2. Explore\n3. Inventory\n4. Help\n> ")
+        option = input("1. Enter Lighthouse\n2. Explore Path to Dock\n3. Inventory\n4. Help\n> ")
+        print('------------------------------') # Added separator after input
+
         if "enter" in option.lower() or option == "1":
-            lighthouse_inside(character, True)
-            break
-        elif "explore" in option.lower() or option == "2":
-            print('------------------------------')
+            lighthouse_inside(character, True) # Assuming True resets the inside state?
+            break # Exit exterior loop as we entered lighthouse
+        elif "explore" in option.lower() or option == "2": # Explore Path
             use_textwrap("""There is a path nearby that most likely leads to the dock.""")
             print('------------------------------')
-            option2 = input("1. Take Path to Dock\n2. Enter Lighthouse\n3. Inventory\n4. Help\n> ")
-            if "enter" in option2.lower() or option2 == "2":
-                lighthouse_inside(character, True)
-                break
-            elif "take" in option2.lower() or option2 == "1":
-                use_textwrap("""The path to the dock is about as dark and dreary as the rest of this place. It's just
-as inviting as well.""")
-                if random.randint(0, 12) < character.get_luck():
+            option2 = input("1. Take Path to Dock\n2. Stay Here\n> ")
+            print('------------------------------') # Added separator
+
+            if "take" in option2.lower() or option2 == "1":
+                use_textwrap("""The path to the dock is about as dark and dreary as the rest of this place.""")
+                # --- GOBLIN ENCOUNTER 2 (Random Path Encounter - Uses Surprise Check) ---
+                # Random chance check (Maybe base on Stealth vs generic area awareness later?)
+                if random.randint(0, 12) < character.get_luck(): # TODO: Revisit encounter trigger logic later
+                    logging.info("Triggering random path encounter.")
+                    print("Something stirs on the path ahead!")
                     print('------------------------------')
-                    # Pass game_items_data when creating Goblins (Unchanged)
                     goblin3 = NPC.basic_goblin(game_items_data)
                     goblin4 = NPC.basic_goblin(game_items_data)
-                    if goblin3: battle_system.battle_state(character, goblin3, True,False)
+                    enemies_in_group2 = [g for g in [goblin3, goblin4] if g]
+
+                    is_player_surprised2 = False # Default
+                    if enemies_in_group2:
+                         # TODO: Get environment factors for path area
+                         env_factors2 = {}
+                         # Call the actual check function from mechanics.py
+                         is_player_surprised2 = check_player_surprise(character, enemies_in_group2, environment_factors=env_factors2)
+
+                    # Fight sequence using calculated surprise
+                    if goblin3:
+                         battle_system.battle_state(character, goblin3, surprise=is_player_surprised2, range_attack=False)
                     if character.get_health_points() > 0 and goblin4:
-                         print('------------------------------')
-                         battle_system.battle_state(character, goblin4, True,False)
-                    if character.get_health_points() <= 0: return # Exit if player died
-                dock(character, False)
-                break
-            elif "inventory" in option2.lower() or option2 == "3":
-                inventory.inventory(character)
-            elif "help" in option2.lower() or option2 == "4":
-                help_menu()
+                         print('------------------------------') # Separator
+                         battle_system.battle_state(character, goblin4, surprise=is_player_surprised2, range_attack=False)
+
+                    if character.get_health_points() <= 0:
+                        logging.warning("Player defeated in random path encounter.")
+                        return # Exit function if player defeated
+                    print('------------------------------') # Separator after combat finished
+                # --- END GOBLIN ENCOUNTER 2 ---
+
+                # Proceed to dock whether encounter happened or not (if player survived)
+                dock(character, True) # Assuming True means arriving for first time via path
+                break # Exit exterior loop as we moved to dock
+            elif "stay" in option2.lower() or option2 == "2":
+                continue # Go back to exterior options loop
             else:
-                use_textwrap("""Not a valid entry. Please choose from the following options by entering the command
-           or entering the corresponding number.""")
+                 use_textwrap("""Invalid input.""")
+                 print('------------------------------') # Separator
+
         elif "inventory" in option.lower() or option == "3":
             inventory.inventory(character)
         elif "help" in option.lower() or option == "4":
-            help_menu()
+            help_menu() # Assuming help_menu exists and returns
         else:
-            use_textwrap("""Not a valid entry. Please choose from the following options by entering the command
-or entering the corresponding number.""")
+            use_textwrap("""Not a valid entry. Please choose from the following options.""")
+            print('------------------------------') # Separator
+
+def lighthouse_den(character, first):
+    global game_items_data # Access global items data
+
+    # --- Dialog definitions ---
+    hd1 = [dialog.HeroDialog(False,"I need help.", """Like I said earlier I was just attacked by some
+kind of ...thing. My boats motor is on the fritz. Maybe you have some parts that could help me fix it?""",0),
+           dialog.HeroDialog(False, "Let me in now!", """Come on old timer let me in now!
+This isn't a game I was just attacked and in need of some assistance.""", 1),
+           dialog.HeroDialog(False, "Let me in or I'll bust this door down!",
+                             """This is stupid. I just told you I was attacked. Open up now or I might just
+have to bust this door down""", 2)
+           ]
+    res1 = dialog.responses(
+        dialog.ResponseDialog(False, "Come on in", """Alright I'll let you in. But no funny business.""", None),
+        dialog.ResponseDialog(False,"Fuck you", """Hah! Fuck you. I look out for one person. Me!. Also
+let me tell you something right now. If you have any intentions of making it off this island alive you had
+better work on your manners. Because you're not doing it without my help I'll tell you that.""",
+                              [dialog.HeroDialog(False, "I'm sorry", """Look, you're right.
+I do need you're help ok. I'm sorry. I've been through a lot. What with getting
+attacked by that...purple goblin thing. I guess you could say I'm a tad rattled.""", 0),
+                               dialog.HeroDialog(False, "Give me a break.", """Come on man. Look
+I get it. You're in a position to fuck with me. I need you more than you need me
+yadda yadda yadda. Would you just let me in for gods sakes.""", 1),
+                               dialog.HeroDialog(False,"Fuck You!", """Fuck me? Fuck you Old Man!
+You're dead.""",2)])
+    )
+    res2 = dialog.responses(
+        dialog.ResponseDialog(False, "Come on in", """Alright I'll let you in. But no funny business.""", None),
+        dialog.ResponseDialog(False, "Come on in", """Well Sonny Boy I guess I'm just going ot have to
+come out there and kill you..""", None), # Should this response also trigger combat? Assumed yes below.
+    )
+    # --- End Dialog definitions ---
+
+    lhk = NPC.light_house_keeper(game_items_data)
+    if lhk is None:
+        print("Error: Could not create Lighthouse Keeper NPC.")
+        logging.error("Failed to create Lighthouse Keeper NPC instance.")
+        return
+
+    if first:
+        explore = False # Reset explore flag for this area
+        print('------------------------------')
+        use_textwrap("""With each step up that creaky old spiral stair case the smell gets worse. It smells like a combination
+of stale beer, body odor and maybe...death? Definitely something dead up here. I reach the top landing which has a single
+heavy wooden door. This must be the Lighthouse Keeper's den.""")
+        while True:
+            print('------------------------------')
+            option = input("1. Knock on door\n2. Explore Landing\n3. Inventory\n4. Go Back Downstairs\n5. Help\n> ")
+            if "knock" in option.lower() or option == "1":
+                print('------------------------------')
+                use_textwrap("""I approach cautiously and lightly knock on the door.""")
+                # Run first dialog sequence
+                s1 = dialog_system.persuasion_system(character, lhk, hd1, res1, 6) # Check persuasion skill value needed
+
+                if s1 is None:
+                    logging.info("Dialog with Lighthouse Keeper ended prematurely (s1).")
+                    break # Exit knock sequence
+
+                # Outcome 1: Keeper lets player in peacefully
+                elif s1.get("succeed"):
+                    print('------------------------------')
+                    print("The heavy door creaks open...")
+                    logging.info("Player peacefully enters Lighthouse Keeper's den.")
+                    # TODO: Add function call or logic for inside the Keeper's room
+                    print("(Placeholder: Entering Keeper's room peacefully)")
+                    # Need logic here to actually move player state or call next function
+
+                # Outcome 2: First dialog failed, potentially leading to second chance or fight
+                else:
+                    print('------------------------------')
+                    # Check if response has further hero options (indicating second chance)
+                    if s1.get("hero_responses"):
+                         s2 = dialog_system.persuasion_system(character, lhk, s1["hero_responses"], res2, s1.get("score", 0))
+                         if s2 is None:
+                             logging.info("Second dialog with Lighthouse Keeper ended prematurely (s2).")
+                             break
+                         # Outcome 2a: Second chance succeeded
+                         elif s2.get("succeed"):
+                            print('------------------------------')
+                            print("The heavy door creaks open...")
+                            logging.info("Player peacefully enters Lighthouse Keeper's den after second chance.")
+                            # TODO: Add function call or logic for inside the Keeper's room
+                            print("(Placeholder: Entering Keeper's room peacefully)")
+                            # Need logic here to actually move player state or call next function
+                         # Outcome 2b: Second chance failed -> FIGHT!
+                         else:
+                            print('------------------------------')
+                            # Check which response led to combat - maybe only "Fuck You!"/"Come on out.." triggers it?
+                            # Assuming any failure from res2 triggers combat for now
+                            use_textwrap("The old man bursts through the door, enraged!") # Or use s2 response text?
+                            logging.warning("Dialogue failed, triggering Lighthouse Keeper fight.")
+                            # --- KEEPER ENCOUNTER (Using hardcoded surprise) ---
+                            is_player_surprised_keeper = True # Keeper bursting out always surprises player
+                            print(f"DEBUG: Player surprised status vs Keeper: {is_player_surprised_keeper} (Scripted)")
+                            # Pass hardcoded True for surprise
+                            battle_system.battle_state(character, lhk, surprise=is_player_surprised_keeper, range_attack=False)
+                            # --- END KEEPER ENCOUNTER ---
+
+                            if character.get_health_points() <= 0:
+                                logging.warning("Player defeated by Lighthouse Keeper.")
+                                return # Exit function if player died
+                            print('------------------------------')
+                            print("The Lighthouse Keeper lies defeated.")
+                            # TODO: What happens after defeating the keeper? Loot his body? Enter room?
+                            print("(Placeholder: Keeper defeated. What next?)")
+                            # Need logic here after winning fight
+
+                    # Outcome 3: First dialog failed directly to combat (e.g., maybe res1 only had one path?)
+                    # This might occur if the structure of res1 response doesn't include 'hero_responses' on failure
+                    elif "Attack" in s1.get("label", ""): # Example check if direct attack was chosen in first dialog
+                         use_textwrap("What the hell do you think you're doing?") # Keeper response text
+                         logging.warning("Direct attack chosen, triggering Lighthouse Keeper fight.")
+                         # --- KEEPER ENCOUNTER (Using hardcoded surprise - player initiates?) ---
+                         # If player attacks first, should they be surprised? Maybe False here?
+                         is_player_surprised_keeper = False # Player initiated the attack
+                         print(f"DEBUG: Player surprised status vs Keeper: {is_player_surprised_keeper} (Player Attack)")
+                         battle_system.battle_state(character, lhk, surprise=is_player_surprised_keeper, range_attack=False)
+                         # --- END KEEPER ENCOUNTER ---
+                         if character.get_health_points() <= 0: return # Exit if player died
+                         print('------------------------------')
+                         print("The Lighthouse Keeper lies defeated.")
+                         print("(Placeholder: Keeper defeated. What next?)")
+
+                    else:
+                         # Handle other potential failure paths from the first dialog if needed
+                         logging.error("Unhandled dialog failure path from s1 for Lighthouse Keeper: %s", s1)
+                         print("An unexpected dialogue outcome occurred.")
+
+                break # Exit den options loop after knock sequence resolves
+
+            elif "explore" in option.lower() or option == "2": # Explore Landing
+                 print('------------------------------')
+                 if not explore:
+                    use_textwrap("""You scan the landing. It's small, dusty, and smells just as bad as the foyer. Doesn't look like much of interest here.""")
+                    if random.randint(0, 20) < character.get_luck(): # Harder to find things
+                        use_textwrap("""Against the odds, you spot something wedged in a crack near the wall!""")
+                        found_item_id = "charm1" # Example item ID
+                        found_item_data = game_items_data.get(found_item_id)
+                        if found_item_data:
+                             character.add_inventory(copy.deepcopy(found_item_data))
+                        else:
+                             print(f"Warning: Could not find item data for '{found_item_id}'.")
+                             logging.warning("Item data missing for '%s' found on den landing.", found_item_id)
+                    else:
+                         use_textwrap("""Nothing but dust bunnies and grime.""")
+                    explore = True # Mark landing as explored
+                 else:
+                     use_textwrap("You've already checked the landing thoroughly.")
+
+            elif "inventory" in option.lower() or option == "3":
+                inventory.inventory(character) # Assuming inventory module handles dicts now
+
+            elif "back" in option.lower() or "downstairs" in option.lower() or option == "4": # Go Back Downstairs
+                lighthouse_inside(character, False) # Return to foyer logic
+                break # Exit this loop
+
+            elif "help" in option.lower() or option == "5":
+                help_menu() # Assuming help_menu exists
+
+            else:
+                use_textwrap("""Not a valid entry. Please choose from the following options.""")
+    else:
+        # This is called when returning to the den area after being inside the keeper's room or going downstairs
+        # Should likely show different options or just route back to the foyer/exterior?
+        # For now, just prints a message and implicitly returns (or should call another state).
+        print('------------------------------')
+        use_textwrap("You are back on the landing outside the Lighthouse Keeper's door.")
+        # Let's assume returning here means going back downstairs by default for now
+        lighthouse_inside(character, False) # Calls the foyer function again
+
+# --- Make sure help_menu() and use_textwrap() are defined or imported ---
+# Placeholder for help_menu if needed
+def help_menu():
+     print("\n[Help Menu Placeholder]\n")
+
+# Placeholder for use_textwrap if needed
+def use_textwrap(text):
+     import textwrap
+     print(textwrap.fill(text, width=60)) # Example width
+
+# Placeholder for boat_broke if needed
+boat_broke = "The boat broke."
 
 
 def lighthouse_inside(character, first):
@@ -370,112 +594,6 @@ disease from that crap. Probably a good idea to just move on.""")
     else:
         print("You are back in the messy foyer of the lighthouse.")
         lighthouse_exterior(character, False) # Simple return for now
-
-
-def lighthouse_den(character, first):
-    # Dialog definitions remain unchanged
-    hd1 = [dialog.HeroDialog(False,"I need help.", """Like I said earlier I was just attacked by some
-kind of ...thing. My boats motor is on the fritz. Maybe you have some parts that could help me fix it?""",0),
-           dialog.HeroDialog(False, "Let me in now!", """Come on old timer let me in now!
-This isn't a game I was just attacked and in need of some assistance.""", 1),
-           dialog.HeroDialog(False, "Let me in or I'll bust this door down!",
-                             """This is stupid. I just told you I was attacked. Open up now or I might just
-have to bust this door down""", 2)
-           ]
-    res1 = dialog.responses(
-        dialog.ResponseDialog(False, "Come on in", """Alright I'll let you in. But no funny business.""",
-                              None),
-        dialog.ResponseDialog(False,"Fuck you", """Hah! Fuck you. I look out for one person. Me!. Also
-let me tell you something right now. If you have any intentions of making it off this island alive you had
-better work on your manners. Because you're not doing it without my help I'll tell you that.""",
-                              [dialog.HeroDialog(False, "I'm sorry", """Look, you're right.
-I do need you're help ok. I'm sorry. I've been through a lot. What with getting
-attacked by that...purple goblin thing. I guess you could say I'm a tad rattled.""", 0),
-                               dialog.HeroDialog(False, "Give me a break.", """Come on man. Look
-I get it. You're in a position to fuck with me. I need you more than you need me
-yadda yadda yadda. Would you just let me in for gods sakes.""", 1),
-                               dialog.HeroDialog(False,"Fuck You!", """Fuck me? Fuck you Old Man!
-You're dead.""",2)])
-    )
-    res2 = dialog.responses(
-        dialog.ResponseDialog(False, "Come on in", """Alright I'll let you in. But no funny business.""",
-                              None),
-        dialog.ResponseDialog(False, "Come on in", """Well Sonny Boy I guess I'm just going ot have to
-come out there and kill you..""",
-                              None),
-    )
-
-    # Pass game_items_data when creating the Lighthouse Keeper (Unchanged)
-    lhk = NPC.light_house_keeper(game_items_data)
-    if lhk is None:
-        print("Error: Could not create Lighthouse Keeper NPC.")
-        return
-
-    if first:
-        explore = False
-        print('------------------------------')
-        use_textwrap("""With each step up that creaky old spiral stair case...""") # Shortened
-        while True:
-            print('------------------------------')
-            option = input("1. Knock on door\n2. Explore\n3. Inventory\n4. Return\n5. Help\n> ")
-            if "knock" in option.lower() or option == "1":
-                print('------------------------------')
-                use_textwrap("""I approach causiously amd lightly knock on the door.""")
-                s1 = dialog_system.persuasion_system(character, lhk, hd1, res1, 6)
-                if s1 is None: break
-                elif s1["succeed"]:
-                    print('------------------------------')
-                    print("The heavy door creaks open...")
-                    # TODO: Add logic for entering the lighthouse keeper's room
-                else:
-                    print('------------------------------')
-                    s2 = dialog_system.persuasion_system(character, lhk, s1["hero_responses"], res2, s1["score"])
-                    if s2 is None: break
-                    elif s2["succeed"]:
-                        print('------------------------------')
-                        print("The heavy door creaks open...")
-                        # TODO: Add logic for entering the lighthouse keeper's room
-                    else:
-                        print('------------------------------')
-                        use_textwrap("The old man bursts through the door, enraged!")
-                        battle_system.battle_state(character, lhk, True, False)
-                        if character.get_health_points() <= 0: return # Exit if player died
-                        print('------------------------------')
-                        print("The Lighthouse Keeper lies defeated.") # Example post-battle message
-                break # Exit loop after dialog/battle outcome
-            elif "explore" in option.lower() or option == "2":
-                 print('------------------------------')
-                 if not explore:
-                    use_textwrap("""In hopes of finding something useful...""") # Shortened
-                    if random.randint(0, 12) < character.get_luck():
-                        use_textwrap("""Wouldn't you know it... I found something.""")
-                        # --- Start of CORRECTED Loot Finding ---
-                        found_item_id = "charm1" # Example
-                        found_item_data = game_items_data.get(found_item_id)
-                        if found_item_data:
-                             # Use deepcopy
-                             character.add_inventory(copy.deepcopy(found_item_data))
-                        else:
-                             print(f"Warning: Could not find item data for '{found_item_id}'.")
-                        # --- End of CORRECTED Loot Finding ---
-                    else:
-                         use_textwrap("""Of course there isn't anything to be found...""") # Shortened
-                    explore = True
-                 else:
-                     use_textwrap("I've already rummaged through this crap enough.")
-            elif "inventory" in option.lower() or option == "3":
-                inventory.inventory(character)
-            elif "help" in option.lower() or option == "5":
-                help_menu()
-            elif "return" in option.lower() or option == "4":
-                lighthouse_inside(character, False)
-                break
-            else:
-                use_textwrap("""Not a valid entry. Please choose from the following options by entering the command
-or entering the corresponding number.""")
-    else:
-        print("You are back on the landing outside the Lighthouse Keeper's door.")
-        lighthouse_inside(character, False) # Returning to the foyer for now
 
 
 def dock(character, first):

@@ -1,0 +1,159 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Game Location Data Schema",
+    "description": "Defines the structure for location data in the game.",
+    "type": "object",
+    "items": {
+      "type": "object",
+      "properties": {
+        "location_id": {
+          "type": "string",
+          "description": "Unique internal identifier for the location (e.g., 'lighthouse_exterior')."
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name shown to the player (e.g., 'Lighthouse Exterior')."
+        },
+        "description": {
+          "type": "string",
+          "description": "Main descriptive text for the location. Supports dynamic elements via engine parsing (TODO)."
+        },
+        "visited_description": {
+          "type": "string",
+          "description": "Optional shorter description shown on subsequent visits."
+        },
+        "exits": {
+          "type": "object",
+          "description": "Defines connections to other locations. Keys are player commands/directions, values are destination location_ids.",
+          "patternProperties": {
+            "^.+$": { "type": "string", "description": "Destination location_id" }
+          },
+          "additionalProperties":  false,
+          "minProperties": 0 
+        },
+        "items": {
+          "type": "array",
+          "description": "List of items initially present in the location.",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Simple item_id."
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "item_id": { "type": "string", "description": "ID of the item."},
+                  "quantity": { "type": "integer", "minimum": 1, "description": "Number of items (if stackable)." },
+                  "description": { "type": "string", "description": "Optional specific description for this instance in the location." },
+                  "state": { "type": "string", "description": "Optional state like 'hidden', 'visible', 'in_container'."}
+                  
+                },
+                "required": ["item_id"],
+                "additionalProperties":  true 
+              }
+            ]
+          }
+        },
+        "npcs": {
+          "type": "array",
+          "description": "List of npc_ids for NPCs initially present in the location.",
+          "items": {
+            "type": "string",
+            "description": "Unique identifier of the NPC (linking to NPC data)."
+          }
+        },
+        "environment": {
+          "type": "object",
+          "description": "Environmental factors affecting mechanics.",
+          "properties": {
+            "light": {
+              "type": "string",
+              "enum": ["bright", "normal", "dim", "dark"],
+              "description": "Ambient light level."
+            },
+            "cover": {
+              "type": "string",
+              "enum": ["none", "partial", "full"],
+              "description": "General availability of cover."
+            },
+            "weather": {
+              "type": "string",
+              "description": "Current weather condition (e.g., clear, misty, rain, storm, fog)."
+            },
+            "temperature": {
+              "type": "string",
+              "description": "Ambient temperature indication (e.g., hot, normal, cold, freezing)."
+            },
+            "sound_level": {
+              "type": "string",
+              "enum": ["quiet", "normal", "noisy"],
+              "description": "Ambient sound level."
+            }
+          },
+          "additionalProperties":  true 
+        },
+        "events_on_entry": {
+          "type": "array",
+          "description": "List of event/script IDs to trigger upon entering the location.",
+          "items": {
+            "type": "string",
+            "description": "Identifier for an event or script."
+          }
+        },
+        "interactables": {
+          "type": "array",
+          "description": "List of specific interactive objects or points within the location.",
+          "items": {
+            "$ref": "#/definitions/interactable"
+          }
+        }
+      },
+      "required": [
+        "location_id",
+        "name",
+        "description",
+        "exits"
+      ],
+      "additionalProperties":  false 
+    },
+  
+    "definitions": {
+      "interactable": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique ID for this interactable within the location."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name/keyword player might use to interact (e.g., 'door', 'junk pile', 'terminal')."
+          },
+          "description": {
+            "type": "string",
+            "description": "Description shown when examined or interacted with."
+          },
+          "state": {
+            "type": "string",
+            "description": "Optional current state (e.g., 'locked', 'open', 'powered_off', 'searched')."
+          },
+          "actions": {
+            "type": "object",
+            "description": "Maps player commands (verb) to event/script IDs.",
+            "patternProperties": {
+              "^.+$": { "type": "string", "description": "event_id or script reference" }
+            },
+            "additionalProperties":  false
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "actions"
+        ],
+        "additionalProperties":  false
+      }
+    }
+  }

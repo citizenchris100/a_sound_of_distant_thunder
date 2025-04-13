@@ -1,0 +1,56 @@
+{
+    "location_id": "boat_deck",
+    "name": "Deck of Old Ship",
+    "description": "You stand on the damp, creaking deck of an old freighter. The air smells of salt, rust, and diesel fumes. The low rumble of the engine vibrates through your boots. A 'sound of distant thunder' echoes ominously. The only visible crew are the captain near the bridge door and a couple of deck hands securing cargo.",
+    "visited_description": "You are on the deck of the old ship. The captain and deck hands eye you.",
+    "exits": {},
+    "items": [],
+    "npcs": [
+      "npc_boat_captain",
+      "npc_deck_hand_1",
+      "npc_deck_hand_2"
+    ],
+    "environment": {
+      "light": "dim",
+      "cover": "partial",
+      "weather": "gathering_storm",
+      "temperature": "warm",
+      "sound_level": "normal"
+    },
+    "events_on_entry": [
+      "event_display_chapter_1_intro"
+    ],
+    "interactables": [
+      {
+        "id": "boat_case_interactable",
+        "name": "case",
+        "description": "A sturdy-looking metal supply case rests near some coiled ropes. It looks like standard agency issue.",
+        "state": "closed",
+        "actions": {
+          "examine": "display_text:It looks like standard military or agency supply issue. Might contain useful gear.",
+          "look at": "event:trigger_case_interaction",
+          "open": "event:trigger_case_interaction"
+        }
+      },
+      {
+         "id": "boat_railing_interactable",
+         "name": "railing",
+         "description": "A rusty metal railing lines the edge of the deck.",
+         "actions": {
+            "examine": "display_text:It's pitted with rust from the sea air but feels solid. Looking over the side reveals dark, choppy water.",
+            "look over": "display_text:The waves below look cold and uninviting. The distant island looms.",
+            "lean on": "display_text:You lean on the railing, feeling the vibration of the engines."
+         }
+      },
+      {
+          "id": "dossier_interactable",
+          "name": "dossier",
+          "description": "Your mission briefing dossier lies on a nearby crate.",
+          "actions": {
+              "read": "event:display_dossier_text",
+              "examine": "display_text:Standard issue dossier. Contains the mission briefing.",
+              "take": "display_text:You already have the dossier."
+          }
+      }
+    ]
+  }
