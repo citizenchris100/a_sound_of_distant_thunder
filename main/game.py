@@ -13,7 +13,9 @@ import copy
 import logging
 from mechanics import check_player_surprise
 
-game_items_data = {} 
+game_data = None
+game_items_data = {}
+game_locations_data = {}
 
 # TODO: add ability to save game
 
@@ -24,6 +26,167 @@ logging.basicConfig(
     filename='game.log', 
     filemode='a' # 'a' for append (adds to file), 'w' for overwrite each run
 )
+
+def main_game_loop(character):
+    """
+    Main loop to handle player actions, display location info, and process movement.
+    """
+    global game_locations_data, game_items_data # Add others like game_npc_data later
+
+    game_is_running = True
+    first_look = True # Flag to force full description on first entry or after 'look'
+
+    while game_is_running:
+        # --- 1. Get Current Location Info ---
+        current_location_id = character.get_location()
+        # ... (error handling for invalid ID) ...
+        current_location = game_locations_data.get(current_location_id)
+        # ... (error handling for missing data) ...
+
+        # --- 2. Process Location Entry / Display Description ---
+        print("-" * 30)
+        print(f"Location: {current_location.get('name', 'Unknown Area')}")
+        print("-" * 30)
+
+        has_visited = character.has_visited(current_location_id)
+        if not has_visited or first_look:
+             use_textwrap(current_location.get('description', 'You see nothing remarkable.'))
+             if not has_visited:
+                 character.add_visited_location(current_location_id)
+                 # TODO: Trigger 'events_on_entry' for first visit
+        else:
+             use_textwrap(current_location.get('visited_description', current_location.get('description', 'You see nothing remarkable.')))
+
+        print("-" * 30) # Separator after description
+
+        # --- 3. NEW: Display Contextual Information ---
+        # NPCs (Show IDs for now, replace with names when NPC data is loaded)
+        npcs_here = current_location.get('npcs', [])
+        if npcs_here:
+            print("You see:")
+            for npc_id in npcs_here:
+                # TODO: Look up actual NPC name from loaded NPC data
+                npc_name = npc_id.replace("npc_", "").replace("_", " ").title() # Simple name guess
+                print(f"- {npc_name}")
+
+        # Interactables (Show their 'name' field which player might use)
+        interactables_here = current_location.get('interactables', [])
+        if interactables_here:
+            # Avoid printing "You notice:" if NPCs were already listed
+            if not npcs_here:
+                 print("You notice:")
+            else:
+                 print("Also here:") # Or just list them
+            for interactable in interactables_here:
+                 # Use capitalize() for better sentence structure if needed
+                 interactable_name = interactable.get('name', 'an object')
+                 # Maybe prefix with 'a'/'an'?
+                 print(f"- a {interactable_name}")
+
+        # Exits (List the commands for Phase 1 - can hide behind 'exits' command later)
+        available_exits = current_location.get('exits', {})
+        if available_exits:
+            print("Possible Exits:")
+            exit_commands = list(available_exits.keys())
+            # Make it a bit more readable than just a comma-separated list
+            for exit_cmd in exit_commands:
+                 print(f"- {exit_cmd}")
+            # print("- " + ", ".join(exit_commands)) # Alternative simple list
+        # --- End Display Context ---
+
+        first_look = False # Reset flag after displaying context
+        print("-" * 30) # Separator before prompt
+
+        # --- 4. Get Player Input ---
+        command = input("> ").lower().strip()
+        logging.debug("Player command: '%s'", command)
+
+        # --- 5. Parse Player Input (Simple) ---
+        parts = command.split()
+        verb = parts[0] if parts else ""
+        noun = " ".join(parts[1:]) if len(parts) > 1 else ""
+
+        # --- 6. Execute Action ---
+        if verb == "quit":
+            print("Quitting game.")
+            game_is_running = False
+            continue # Go to top of loop to exit
+
+        elif verb == "help":
+            help_menu()
+            continue # Show prompt again after help
+
+        elif verb == "inventory":
+            inventory.inventory(character)
+            continue # Show prompt again after inventory
+
+        elif verb == "look":
+            first_look = True # Set flag to re-display full description & context
+            print("\nLooking around again...")
+            continue # Re-run display logic at top of loop
+
+        elif verb == "examine":
+            # (Examine logic remains the same - checks interactables for now)
+            # ... (examine logic code) ...
+            if not noun:
+                print("Examine what?")
+            else:
+                found_target = False
+                # Check interactables
+                for interactable in current_location.get('interactables', []):
+                    # Allow examining by ID or name for flexibility? Just name for now.
+                    if noun == interactable.get('name', '').lower():
+                        # Trigger the examine action defined in JSON if it exists
+                        action_str = interactable.get('actions', {}).get('examine')
+                        if action_str and action_str.startswith("display_text:"):
+                             use_textwrap(action_str.split(":", 1)[1])
+                        else:
+                             # Default if no specific examine action
+                             use_textwrap(interactable.get('description', "You see nothing special about it."))
+                        found_target = True
+                        break
+                # TODO: Add checks for items and NPCs here later
+                if not found_target:
+                    print(f"You don't see '{noun}' here to examine.")
+            continue # Show prompt again after examining
+
+        # --- Handle Movement ---
+        else: # Assume anything else might be a movement command for now
+            moved = False
+            destination_id = None
+            # Check if full command matches an exit key
+            if command in available_exits:
+                destination_id = available_exits[command]
+            # Check if verb implies movement and noun matches an exit key
+            elif verb in ["go", "walk", "climb", "enter", "take", "descend"] and noun in available_exits:
+                destination_id = available_exits[noun]
+            # Check if just the command word matches an exit key
+            elif noun == "" and verb in available_exits:
+                 destination_id = available_exits[verb]
+
+            if destination_id:
+                 # Check if destination location exists
+                 if destination_id not in game_locations_data:
+                     print(f"Error: The way to '{destination_id}' leads nowhere yet.")
+                     logging.error("Movement failed: Destination ID '%s' not found in loaded locations.", destination_id)
+                 else:
+                     # TODO: Check if exit is locked/blocked
+                     print(f"\nYou head towards '{command}'...") # Or use exit key
+                     character.set_location(destination_id)
+                     logging.info("Player moved from %s to %s via command '%s'", current_location_id, destination_id, command)
+                     moved = True
+                     first_look = True # Force description display in new location
+            # --- End Movement Handling ---
+
+            if not moved:
+                 # If it wasn't movement, check other verbs later (take, talk, use, open...)
+                 # For Phase 1, assume it's an unknown command if not movement
+                 print(f"Unknown command: '{command}'")
+
+        # --- 7. Update Game State (Placeholder) ---
+
+    # --- End of loop ---
+    print("\nLeaving game loop.")
 
 def boat_zone(character):
     while True:
@@ -187,26 +350,48 @@ things could have gone on this island for the light house to just be sitting the
 In any case, I have a decision to make. Head to the dock or check out this ominous Light House.""")
 
     # Disembark options logic remains unchanged
-    option = input("1. Light House\n2. Dock\n3. Help\n> ")
-    if "light" in option.lower() or option == "1":
-        os.system('cls' if os.name == 'nt' else 'clear')
+    while True: # Loop until valid choice is made
         print('------------------------------')
-        print('-         Chapter 2          -')
-        print('------------------------------')
-        lighthouse_exterior(character, True)
-    elif "dock" in option.lower() or option == "2":
-        print('------------------------------')
-        print('-         Chapter 2          -')
-        print('------------------------------')
-        use_textwrap("dock description")
-        dock(character, True)
-    elif "help" in option.lower() or option == "3":
-        help_menu()
-        # Decide where to go after help in this context - maybe back to disembark options?
-        disembark(character, attack) # Loop back to disembark choice for now
-    else:
-        print("Invalid Option")
-        disembark(character, attack)
+        option = input("Where to next?\n1. Light House\n2. Dock\n3. Help\n> ")
+        destination_id = None
+        move_location = False
+
+        if "light" in option.lower() or option == "1":
+            destination_id = "lighthouse_exterior" # Target location ID
+            move_location = True
+        elif "dock" in option.lower() or option == "2":
+            destination_id = "dock" # Target location ID (ensure dock.json exists later)
+            move_location = True
+        # --- CORRECTED HELP CONDITION ---
+        elif "help" in option.lower() or option == "3":
+            help_menu()
+            continue # Re-display prompt after help
+        # --- END CORRECTION ---
+        else:
+            print("Invalid Option. Please choose 1, 2, or 3.")
+            continue # Re-display prompt
+
+        # If a valid destination was chosen (move_location is True)
+        if move_location:
+             # Check if destination exists before moving (optional but good)
+             # NOTE: Need access to game_locations_data here, might need to be global or passed in
+             global game_locations_data
+             if destination_id not in game_locations_data:
+                  print(f"Error: Location '{destination_id}' not implemented yet.")
+                  logging.error("Attempted to move to non-existent location: %s", destination_id)
+                  continue # Go back to prompt if destination invalid
+
+             # Optional: Clear screen and show Chapter marker
+             os.system('cls' if os.name == 'nt' else 'clear')
+             print('------------------------------')
+             print('-         Chapter 2          -')
+             print('------------------------------')
+
+             # Set the character's new location attribute
+             character.set_location(destination_id)
+             logging.info("Player location set to '%s' after disembarking.", destination_id)
+             # Return control to the main_game_loop
+             return # Exit the disembark function
 
 
 boat_broke = """As I make my way ashore the boat engine starts to make a sound that can't be good.
@@ -618,7 +803,7 @@ def dock(character, first):
 
 
 def title_screen():
-    global game_items_data
+    global game_data, game_items_data, game_locations_data
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------') 
     print('- A Sound of Distant Thunder -')
@@ -630,10 +815,17 @@ def title_screen():
     print('-          3. Quit           -')
     print('------------------------------')
 
-    game_items_data = data_loader.load_items_data()
-    if not game_items_data:
-        print("FATAL ERROR: Failed to load essential item data. Game cannot start.")
-        sys.exit() 
+    logging.info("Loading all game data...")
+    game_data = data_loader.load_all_data() 
+
+    if game_data is None:
+        logging.critical("load_all_data returned None. Exiting.")
+        sys.exit(1) 
+    game_items_data = game_data.get("items", {})
+    game_locations_data = game_data.get("locations", {})
+
+    logging.info("Data load complete. Items loaded: %d, Locations loaded: %d",
+                 len(game_items_data), len(game_locations_data))
 
     while True:
         option = input("> ")
@@ -642,6 +834,16 @@ def title_screen():
             if character is None:
                  print("Error during character creation.")
                  continue
+            start_location_id = "boat_deck"
+            if start_location_id in game_locations_data:
+                character.set_location(start_location_id) 
+                logging.info("Set player start location to '%s'", start_location_id)
+                print(f"DEBUG [title_screen]: Location just set to: {character.get_location()}")
+            else:
+               
+                print(f"CRITICAL ERROR: Start location '{start_location_id}' not found in loaded data!")
+                logging.critical("Start location '%s' not found!", start_location_id)
+                sys.exit(1)
             print('------------------------------')
             print('--Your Character\'s Stats-----')
             print(f"- Health: {character.get_health_points()}/{character.get_hp_limit()}")
@@ -664,9 +866,9 @@ facility. The dossier here has the details. For this kind of money, I'm more tha
 enough. However I'm a firm believer that  if its too good to be true it probably is. It's looking like  we're
 getting pretty close. The captain is approaching. Looks like its time to disembark.""")
             print('------------------------------')
-            boat_zone(character)
+            main_game_loop(character)
             print("\nEnd of Chapter 1 (or current demo). Thank you for playing!")
-            break # Exit title screen loop after playing
+            break 
         elif option.lower() == "help" or option == "2":
             help_menu()
         elif option.lower() == "quit" or option == "3":

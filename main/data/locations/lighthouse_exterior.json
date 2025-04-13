@@ -1,0 +1,59 @@
+{
+    "location_id": "lighthouse_exterior",
+    "name": "Lighthouse Exterior",
+    "description": "You stand on a windswept, rocky landing about 100 feet above the dark shore, reached by crumbling stairs cut into the cliff face. The air is thick with humidity and a salty mist that clings to everything. Moonlight struggles through the gathering clouds, casting long, eerie shadows from the lighthouse that looms before you. The structure is dark and silent. It's unnervingly quiet, save for the crash of waves below and the rumble of distant thunder. A narrow path, barely visible, winds away into the gloom towards where you assume the dock must be.",
+    "visited_description": "You are outside the dark Lighthouse. The air is heavy and damp. The path leads back towards the dock area, and stairs descend to the beach.",
+    "exits": {
+      "enter lighthouse": "lighthouse_foyer",
+      "take path": "path_to_dock",
+      "descend stairs": "beach_below_lighthouse"
+    },
+    "items": [],
+    "npcs": [],
+    "environment": {
+      "light": "dim",
+      "cover": "partial",
+      "weather": "misty",
+      "temperature": "warm",
+      "sound_level": "quiet"
+    },
+    "events_on_entry": [
+      "event_lh_exterior_check_first_visit"
+    ],
+    "interactables": [
+      {
+        "id": "lh_main_door",
+        "name": "main entrance",
+        "description": "A heavy wooden door reinforced with rusted iron bands. It looks firmly shut.",
+        "state": "locked",
+        "actions": {
+          "examine": "display_text:The door is solid oak, bleached by salt and sun. It's definitely locked. An old intercom box is mounted on the wall beside it.",
+          "open": "event:try_open_lh_door_locked",
+          "use intercom": "event:use_exterior_intercom",
+          "knock": "display_text:You knock loudly, but the sound is deadened by the thick wood. Using the intercom seems more promising."
+        }
+      },
+      {
+        "id": "lh_path_start",
+        "name": "path",
+        "description": "A narrow, winding path leads away from the lighthouse, presumably towards the dock.",
+        "actions": {
+          "examine": "display_text:The path looks overgrown and disappears quickly into the misty darkness."
+        }
+      },
+      {
+        "id": "lh_cliff_stairs",
+        "name": "stairs",
+        "description": "Steep stairs carved directly into the cliff face descend towards the beach.",
+         "actions": {
+          "examine": "display_text:The stone steps are worn and slick with mist. Looks like a treacherous way down."
+        }
+      },
+      {
+        "id": "search_lh_exterior_ground",
+        "name": "search area",
+        "description": "You scan the rocky ground near the lighthouse base.",
+        "action": "event:check_loot:lh_exterior_loot_table"
+      }
+    ]
+  }
