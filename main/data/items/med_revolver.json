@@ -1,0 +1,18 @@
+{
+    "item_id": "med_revolver",
+    "name": "Medium Revolver",
+    "description": "A medium sized revolver, slower to reload but packs a punch.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 25,
+      "weapon_type": "gun",
+      "ammo_type": ".38 caliber", 
+      "clip_size": 6 
+    },
+    "value": 250,
+    "icon": "",
+    "max_durability": 110,
+    "current_durability": 110,
+    "durability_loss_per_use": 2, 
+    "is_repairable": true
+  }

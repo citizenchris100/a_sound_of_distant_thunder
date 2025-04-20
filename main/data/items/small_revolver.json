@@ -1,0 +1,18 @@
+{
+    "item_id": "small_revolver",
+    "name": "Small Revolver",
+    "description": "A less powerful revolver, slower to reload but packs a punch.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 25,
+      "weapon_type": "gun",
+      "ammo_type": ".22 Caliber", 
+      "clip_size": 6 
+    },
+    "value": 250,
+    "icon": "",
+    "max_durability": 90,
+    "current_durability": 90,
+    "durability_loss_per_use": 2, 
+    "is_repairable": true
+  }

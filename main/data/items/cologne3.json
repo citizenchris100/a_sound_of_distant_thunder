@@ -1,0 +1,16 @@
+{
+    "item_id": "cologne3",
+    "name": "Very Fancy Cologne",
+    "description": "Top-tier cologne for maximum charm enhancement.",
+    "item_type": "misc",
+    "attributes": {
+      "charm_boost": 3,
+      "effect_type": "charm_boost"
+    },
+    "value": 100,
+    "icon": "",
+    "max_durability": 1,
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

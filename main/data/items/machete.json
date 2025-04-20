@@ -1,0 +1,18 @@
+{
+    "item_id": "machete",
+    "name": "Machete",
+    "description": "A heavy blade, excellent for both combat and clearing obstacles.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 30,
+      "weapon_type": "melee",
+      "melee_type": "blade",
+      "clearing_ability": true 
+    },
+    "value": 300,
+    "icon": "",
+    "max_durability": 150,
+    "current_durability": 150,
+    "durability_loss_per_use": 2, 
+    "is_repairable": true
+  }

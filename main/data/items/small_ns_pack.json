@@ -1,0 +1,17 @@
+{
+    "item_id": "small_ns_pack",
+    "name": "Small Pack of Night Shadow",
+    "description": "A small dose of Night Shadow, a mysterious substance.",
+    "item_type": "consumable",
+    "attributes": {
+      "mutate_level": 1, 
+      "intoxicate_level": 1,
+      "effect_type": "multi" 
+    },
+    "value": 50,
+    "icon": "",
+    "max_durability": 1,
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

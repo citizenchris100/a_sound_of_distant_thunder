@@ -1,0 +1,16 @@
+{
+    "item_id": "epic_body_armour",
+    "name": "Epic Body Armour",
+    "description": "The pinnacle of personal body armour. Unmatched protection.",
+    "item_type": "armor",
+    "attributes": {
+      "defense": 10,
+      "armor_type": "body"
+    },
+    "value": 400,
+    "icon": "",
+    "max_durability": 200,
+    "current_durability": 200,
+    "durability_loss_per_use": 0,
+    "is_repairable": true
+  }

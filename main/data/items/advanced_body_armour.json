@@ -1,0 +1,16 @@
+{
+    "item_id": "advanced_body_armour",
+    "name": "Advanced Body Armour",
+    "description": "High-grade body armour, offering excellent protection.",
+    "item_type": "armor",
+    "attributes": {
+      "defense": 7,
+      "armor_type": "body"
+    },
+    "value": 250,
+    "icon": "",
+    "max_durability": 160,
+    "current_durability": 160,
+    "durability_loss_per_use": 0,
+    "is_repairable": true
+  }

@@ -1,0 +1,16 @@
+{
+    "item_id": "small_38cal_ammo_box",
+    "name": "Small .38 Caliber Ammo Box",
+    "description": "A small box of .38 caliber ammunition.",
+    "item_type": "ammo",
+    "attributes": {
+      "ammo_type": ".38 Caliber",
+      "quantity": 6
+    },
+    "value": 25, 
+    "icon": "",
+    "max_durability": 1,
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

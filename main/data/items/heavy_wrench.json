@@ -1,0 +1,17 @@
+{
+    "item_id": "heavy_wrench",
+    "name": "Heavy Wrench",
+    "description": "A large pipe wrench.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 10,
+      "weapon_type": "melee",
+      "melee_type": "blunt" 
+    },
+    "value": 55,
+    "icon": "",
+    "max_durability": 200,
+    "current_durability": 200,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

@@ -1,0 +1,16 @@
+{
+    "item_id": "basic_med_pack",
+    "name": "Basic Med Pack",
+    "description": "A standard medical kit. Restores a small amount of health.",
+    "item_type": "consumable",
+    "attributes": {
+      "heal_amount": 20,
+      "effect_type": "heal"
+    },
+    "value": 50,
+    "icon": "",
+    "max_durability": 1,
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

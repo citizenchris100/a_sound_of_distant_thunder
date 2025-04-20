@@ -7,41 +7,43 @@ import logging
 logger = logging.getLogger(__name__) 
 
 
-def load_items_data(schema_path="main/data/schemas/items_schema.json", data_path="main/data/items.json"):
-    try:
-        items_data_dict = {}
-        items_data_list = [] 
-        with open(data_path, 'r') as data_file: 
-             items_data_list = json.load(data_file)
-        with open(schema_path, 'r') as schema_file:
-             items_schema = json.load(schema_file)
-        validate(instance=items_data_list, schema=items_schema) 
+def load_items_data(item_data_path): # Expects path like "main/data/items"
+    """Loads all item JSON files from the specified directory."""
+    item_data = {}
+    if not os.path.isdir(item_data_path):
+        # Print the custom error AND log it before returning empty dict
+        error_detail = f"[Errno 2] No such file or directory: '{item_data_path}'"
+        print(f"ERROR: Item data directory not found. Check paths. Details: {error_detail}")
+        logging.error(f"Item data directory not found: {item_data_path}")
+        return item_data # Return empty dict (safer than None)
 
-        for item_data in items_data_list:
-            item_id = item_data.get("item_id")
-            if item_id:
-                items_data_dict[item_id] = item_data
-            else:
-                logger.warning("Item data missing 'item_id'. Skipping item: %s", item_data.get('name', 'N/A'))
-        logger.info("Successfully loaded and validated %d items from %s", len(items_data_dict), data_path)
-        return items_data_dict
-    except FileNotFoundError as e:
-        logger.error("Error loading item data: File not found - %s", e)
-        print(f"ERROR: Item data file or schema not found. Check paths. Details: {e}")
-        return None
-    except json.JSONDecodeError as e:
-        logger.error("Error decoding JSON for items: %s", e)
-        print(f"ERROR: Invalid JSON format in item data or schema. Details: {e}")
-        return None
-    except ValidationError as e:
-        logger.error("Item data schema validation failed: %s", e)
-        print(f"ERROR: Items data validation failed. Check data format against schema.")
-        print(f"Path: {list(e.path)}, Message: {e.message}")
-        return None
-    except Exception as e:
-        logger.exception("An unexpected error occurred during item loading:")
-        print(f"ERROR: An unexpected error occurred loading items.")
-        return None
+    logging.info(f"Loading item data from: {item_data_path}")
+    for filename in os.listdir(item_data_path):
+        if filename.endswith(".json"):
+            filepath = os.path.join(item_data_path, filename)
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    item_id = data.get('id') # Assuming items also have an 'id' field
+
+                    if not item_id:
+                        logging.warning(f"Skipping item file {filename}: Missing 'id' key.")
+                        continue
+
+                    # TODO: Add JSON schema validation here if desired (using items_schema.json)
+
+                    if item_id in item_data:
+                        logging.warning(f"Duplicate item ID '{item_id}' found in {filename}. Overwriting previous entry.")
+
+                    item_data[item_id] = data
+                    logging.debug(f"Loaded item: {item_id} from {filename}")
+
+            except json.JSONDecodeError as e:
+                logging.error(f"Error decoding JSON from {filepath}: {e}")
+            except Exception as e:
+                logging.error(f"Error loading item file {filepath}: {e}")
+    logging.info(f"Finished loading {len(item_data)} items.")
+    return item_data # Return the dictionary
 
 def load_location_data(directory_path="main/data/locations", schema_path="main/data/schemas/locations_schema.json"):
     """
@@ -124,33 +126,73 @@ def load_location_data(directory_path="main/data/locations", schema_path="main/d
          print("Warning: No locations were loaded successfully.")
     return locations_dict
 
-def load_all_data():
-    """Loads all primary game data types (items, locations, etc.)."""
-    logger.info("--- Starting Full Data Load ---")
-    all_game_data = {}
+def load_npc_data(npc_data_path):
+    """Loads all NPC JSON files from the specified directory."""
+    npc_data = {}
+    if not os.path.isdir(npc_data_path):
+        logging.error(f"NPC data directory not found: {npc_data_path}")
+        return npc_data # Return empty if directory doesn't exist
 
-    items_data = load_items_data()
-    if items_data is not None:
-        all_game_data["items"] = items_data
-    else:
-        logger.error("ITEM LOADING FAILED.")
-       
-    locations_data = load_location_data()
-    if locations_data is not None:
-        all_game_data["locations"] = locations_data
-    else:
-        logger.error("LOCATION LOADING FAILED.")
+    logging.info(f"Loading NPC data from: {npc_data_path}")
+    for filename in os.listdir(npc_data_path):
+        if filename.endswith(".json"):
+            filepath = os.path.join(npc_data_path, filename)
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    npc_id = data.get('id')
 
-    # --- TODO: Add calls to load other data types ---
-    # all_game_data["npcs"] = load_npc_data()
-    # all_game_data["dialogue"] = load_dialogue_data()
-    # all_game_data["classes"] = load_class_data()
-    # ---
+                    if not npc_id:
+                        logging.warning(f"Skipping NPC file {filename}: Missing 'id' key.")
+                        continue
 
-    logger.info("--- Full Data Load Finished ---")
-    if "items" not in all_game_data or "locations" not in all_game_data:
-         print("CRITICAL ERROR: Failed to load essential game data (Items or Locations). Cannot continue.")
-         return None
+                    # TODO: Add JSON schema validation here later if you create npcs_schema.json
+                    # try:
+                    #     jsonschema.validate(instance=data, schema=npc_schema)
+                    # except jsonschema.ValidationError as e:
+                    #     logging.error(f"NPC file {filename} failed schema validation: {e.message}")
+                    #     continue
 
-    return all_game_data
+                    if npc_id in npc_data:
+                        logging.warning(f"Duplicate NPC ID '{npc_id}' found in {filename}. Overwriting previous entry.")
+
+                    npc_data[npc_id] = data
+                    logging.debug(f"Loaded NPC: {npc_id} from {filename}")
+
+            except json.JSONDecodeError as e:
+                logging.error(f"Error decoding JSON from {filepath}: {e}")
+            except Exception as e:
+                logging.error(f"Error loading NPC file {filepath}: {e}")
+    logging.info(f"Finished loading {len(npc_data)} NPCs.")
+    return npc_data
+
+def load_all_data(base_data_path="main/data"):
+    """Loads all game data (locations, items, NPCs) from subdirectories."""
+    logging.info("--- Starting Full Data Load ---")
+
+    # Define paths to data subdirectories
+    locations_path = os.path.join(base_data_path, "locations")
+    items_path = os.path.join(base_data_path, "items")
+    npcs_path = os.path.join(base_data_path, "npcs")
+
+    # Call load functions WITH paths and store results in a single dictionary
+    all_data = {
+        "locations": load_location_data(locations_path),
+        "items": load_items_data(items_path),
+        "npcs": load_npc_data(npcs_path)
+    }
+
+    # Optional: Add checks here to ensure critical data loaded successfully
+    # Using .get() is safer in case a load function returned None or empty
+    if not all_data.get("locations"):
+        logging.critical("Failed to load any location data! Check path and files.")
+        # Consider returning None or raising an exception if essential data fails
+    if not all_data.get("items"):
+        logging.critical("Failed to load any item data! Check path and files.")
+    if not all_data.get("npcs"):
+        logging.warning("No NPC data loaded. Check path or this might be expected.")
+
+    logging.info("--- Full Data Load Finished ---")
+    # Return the single dictionary containing all loaded data
+    return all_data
 

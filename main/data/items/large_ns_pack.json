@@ -1,0 +1,17 @@
+{
+    "item_id": "large_ns_pack",
+    "name": "Large Pack of Night Shadow",
+    "description": "A large, potent dose of Night Shadow.",
+    "item_type": "consumable",
+    "attributes": {
+      "mutate_level": 5, 
+      "intoxicate_level": 3, 
+      "effect_type": "multi"
+    },
+    "value": 300,
+    "icon": "",
+    "max_durability": 1,
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }
