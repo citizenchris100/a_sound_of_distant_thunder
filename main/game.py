@@ -157,26 +157,35 @@ def handle_game_event(event_string, character, location_data, target_data):
     print("-" * 30)
 
 
+# In main/game.py
+# --- Make sure necessary imports and globals are defined above ---
+# Imports: sys, os, hero, inventory, NPC, random, dialog, dialog_system,
+#          data_loader, copy, logging, mechanics, actions
+# Globals: game_locations_data, game_items_data, game_npc_data
+# Functions: use_textwrap, help_menu, handle_game_event
+
 def main_game_loop(character):
     """
     Main loop: Displays location, suggests actions, gets input, processes commands.
     Handles standard commands, movement, talk, and generic object actions.
     Tracks examined state per location visit.
     """
-    global game_locations_data, game_items_data, game_npc_data
+    global game_locations_data, game_items_data, game_npc_data # Access globals
 
+    # --- Initialize loop state variables BEFORE the loop ---
     game_is_running = True
-    first_look = True
-    examined_this_visit = set()
-    previous_location_id = None
+    first_look = True # Force full description on first entry or after 'look'
+    examined_this_visit = set() # Track examined IDs for the current location visit
+    previous_location_id = None # Track location changes
+    # --- End initialization ---
 
     while game_is_running:
         # --- 1. Get Current Location Info ---
         current_location_id = character.get_location()
         if current_location_id not in game_locations_data:
             print(f"ERROR: Unknown location ID '{current_location_id}'. Ending game.")
-            logging.critical("Player location '%s' not found.", current_location_id)
-            break
+            logging.critical("Player location '%s' not found in game_locations_data.", current_location_id)
+            break # Exit loop
         current_location = game_locations_data[current_location_id]
 
         # --- Reset examined state if location changed ---
@@ -184,7 +193,7 @@ def main_game_loop(character):
             logging.debug(f"Location changed from {previous_location_id} to {current_location_id}. Clearing examined set.")
             examined_this_visit.clear()
             previous_location_id = current_location_id
-            first_look = True
+            first_look = True # Force look on location change
 
         # --- 2. Display Location Description ---
         print("-" * 30)
@@ -195,6 +204,7 @@ def main_game_loop(character):
             description = current_location.get('description', 'You see nothing remarkable.')
             use_textwrap(description)
             if not has_visited: character.add_visited_location(current_location_id)
+            # TODO: Trigger 'events_on_entry' from JSON data
         else:
             description = current_location.get('visited_description', current_location.get('description', 'You see nothing remarkable.'))
             use_textwrap(description)
@@ -205,7 +215,9 @@ def main_game_loop(character):
         if npcs_here:
             print("You see:")
             for npc_id in npcs_here:
-                npc_name = npc_id.replace("npc_", "").replace("_", " ").title()
+                # Use simple name derivation until NPC data loading is fully confirmed
+                npc_data = game_npc_data.get(npc_id) if game_npc_data else None
+                npc_name = npc_data.get('name') if npc_data else npc_id.replace("npc_", "").replace("_", " ").title()
                 print(f"- {npc_name}")
 
         interactables_here = current_location.get('interactables', [])
@@ -221,7 +233,7 @@ def main_game_loop(character):
             print("\nPossible Exits:")
             for exit_cmd in available_exits.keys(): print(f"- {exit_cmd}")
 
-        first_look = False
+        first_look = False # Reset flag after displaying context
         print("-" * 30)
 
         # --- Display Suggested Actions ---
@@ -236,7 +248,6 @@ def main_game_loop(character):
         if not command: continue
 
         # --- 5. Parse Player Input ---
-        # Using simple parser for now. Assumes verb is first word.
         parts = command.split(maxsplit=1)
         verb = parts[0] if parts else ""
         noun = parts[1] if len(parts) > 1 else ""
@@ -245,7 +256,7 @@ def main_game_loop(character):
         # --- 6. Execute Action ---
         action_executed = False
 
-        # --- Handle Standard Commands ---
+        # --- Handle Standard Commands (except 'look' without noun) ---
         if verb == "quit":
             print("Quitting game.")
             game_is_running = False
@@ -256,7 +267,6 @@ def main_game_loop(character):
         elif verb == "inventory":
             inventory.inventory(character)
             action_executed = True
-        # NOTE: 'look' (no noun) is handled AFTER object interactions
 
         # --- Handle Movement ---
         elif verb == "go":
@@ -269,58 +279,43 @@ def main_game_loop(character):
                     print(f"\nYou go {noun}...")
                     character.set_location(destination_id)
                     logging.info("Player moved from %s to %s via 'go %s'", current_location_id, destination_id, noun)
-                    # State reset (clearing examined_this_visit, setting first_look) happens at the top of the next loop
+                    # State reset happens at top of next loop
             else:
                 print(f"You can't go '{noun}' from here.")
             action_executed = True
 
-         # --- Handle Talk/Speak ---
+        # --- Handle Talk/Speak ---
         elif verb == "talk" or verb == "speak":
             if not noun:
                 print("Talk to who?")
-                action_executed = True # Handled (clarification needed)
             else:
                 npc_found = False
-                target_npc_data = None # To store the data dict of the found NPC
-                npc_list_ids = current_location.get('npcs', []) # Get list of NPC IDs present
-
+                target_npc_data = None
+                npc_list_ids = current_location.get('npcs', [])
                 for npc_id in npc_list_ids:
-                    # --- Look up actual NPC data ---
-                    # Assumes game_npc_data dictionary is loaded globally
                     npc_data = game_npc_data.get(npc_id)
                     if not npc_data:
-                        logging.warning(f"NPC data not found for ID: {npc_id} listed in location {current_location_id}")
-                        continue # Skip if data missing for this ID in the global dict
-
-                    # Compare player input noun with the NPC's actual name from data (case-insensitive)
+                        logging.warning(f"NPC data not found for ID: {npc_id} in location {current_location_id}")
+                        continue
                     npc_actual_name = npc_data.get('name', '').lower()
-                    # Optional: Add alias checking here later if needed
                     if noun == npc_actual_name:
                         npc_found = True
-                        target_npc_data = npc_data # Store the found NPC's full data dictionary
+                        target_npc_data = npc_data
                         logging.info(f"Matched input '{noun}' to NPC: {npc_id} ('{npc_data.get('name')}')")
-                        break # Found the right NPC, stop searching the list
+                        break
 
                 if npc_found and target_npc_data:
-                    # --- Trigger Dialog System (PLACEHOLDER) ---
                     # TODO: Implement actual dialog system call here
                     npc_display_name = target_npc_data.get('name', 'them')
                     print(f"\nYou start talking to {npc_display_name}...")
                     logging.info(f"Initiating dialog with {target_npc_data.get('id')}")
-                    # Placeholder for actual dialog call:
                     print("(Dialog system interaction not implemented yet)")
-                    # --- End Trigger Dialog Placeholder ---
                 elif not npc_found:
-                    # Only print if a noun was provided but no match was found
                     print(f"You don't see anyone called '{noun}' here to talk to.")
+            action_executed = True
 
-                action_executed = True # Mark talk command as handled (whether NPC found or not)
-        # --- End of talk/speak handler ---
-
-        # elif noun: ... (rest of generic object handler for examine, open, etc.)
-
-        # --- Handle Generic Object Actions (if not talk/speak) ---
-        elif noun: # Only process other verbs if there is a noun
+        # --- Handle Generic Object Actions ---
+        elif noun: # Check other verbs only if a noun was provided
             potential_targets = current_location.get('interactables', []) + current_location.get('items', [])
             target_found = False
             for target_data in potential_targets:
@@ -351,7 +346,7 @@ def main_game_loop(character):
                         action_executed = True
                         break # Examine handled
 
-                    elif verb in available_object_actions: # Handle other defined verbs
+                    elif verb in available_object_actions: # Handle other verbs
                         action_string = available_object_actions[verb]
                         logging.info("Executing action '%s' on object '%s' with string '%s'", verb, noun, action_string)
                         if action_string.startswith("display_text:"): use_textwrap(action_string.split(":", 1)[1].strip())
@@ -362,13 +357,13 @@ def main_game_loop(character):
                     else: # Verb not valid for this object
                         print(f"You can't {verb} the {noun}.")
                         action_executed = True
-                        break # Interaction handled
+                        break # Interaction handled (by failing)
 
             if not target_found:
                 # Noun provided but object not found - let fall through to Unknown Command
                  pass
 
-        # --- Handle standard 'look' command (only if noun is empty and not handled above) ---
+        # --- Handle standard 'look' command (only if noun is empty) ---
         elif verb == "look" and not noun:
             first_look = True
             print("\nLooking around again...")
@@ -376,9 +371,6 @@ def main_game_loop(character):
 
         # --- Handle Unknown Commands ---
         if not action_executed:
-            # This catches:
-            # - Completely unknown verbs
-            # - Verbs with nouns where the noun object wasn't found
             print(f"Unknown command: '{command}'")
 
         # --- Loop Continuation ---
@@ -388,7 +380,7 @@ def main_game_loop(character):
         else:
             break
 
-    # --- End of loop ---
+    # --- End of game loop ---
     print("\nLeaving game loop.")
 
 def boat_zone(character):
@@ -1020,6 +1012,7 @@ def title_screen():
 
     logging.info("Loading all game data...")
     game_data = data_loader.load_all_data() 
+    game_npc_data = game_data.get("npcs") or {} 
 
     if game_data is None:
         logging.critical("load_all_data returned None. Exiting.")

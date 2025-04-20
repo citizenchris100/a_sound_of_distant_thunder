@@ -10,9 +10,6 @@ logger = logging.getLogger(__name__)
 def load_items_data(item_data_path):
     """Loads all item JSON files from the specified directory."""
     item_data = {}
-    # Keep debug prints temporarily if helpful
-    print(f"--- Debugging load_items_data ---")
-    print(f"DEBUG: Attempting to load items from path: '{item_data_path}'")
 
     if not os.path.isdir(item_data_path):
         error_detail = f"[Errno 2] No such file or directory: '{item_data_path}'"
@@ -23,7 +20,6 @@ def load_items_data(item_data_path):
     logging.info(f"Loading item data from: {item_data_path}")
     try:
         files_in_dir = os.listdir(item_data_path)
-        print(f"DEBUG: Files found in directory: {files_in_dir}")
     except Exception as e:
         print(f"ERROR: Could not list directory '{item_data_path}': {e}")
         logging.error(f"Could not list directory '{item_data_path}': {e}")
@@ -32,15 +28,12 @@ def load_items_data(item_data_path):
     for filename in files_in_dir:
         if filename.endswith(".json"):
             filepath = os.path.join(item_data_path, filename)
-            print(f"DEBUG: Processing file: '{filepath}'")
             try:
                 with open(filepath, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                 # --- VVV CHANGE HERE VVV ---
                 item_id = data.get('item_id') # <<< Use 'item_id'
                 # --- ^^^ CHANGE HERE ^^^ ---
-                print(f"DEBUG: Loaded JSON, found item_id: '{item_id}'") # Updated print
-
                 if not item_id:
                     # Update warning message too
                     logging.warning(f"Skipping item file {filename}: Missing 'item_id' key.")
@@ -62,7 +55,6 @@ def load_items_data(item_data_path):
                 logging.error(f"Error loading item file {filepath}: {e}")
 
     logging.info(f"Finished loading {len(item_data)} items.")
-    print(f"--- End Debugging load_items_data ---")
     return item_data
 
 def load_location_data(directory_path="main/data/locations", schema_path="main/data/schemas/locations_schema.json"):
