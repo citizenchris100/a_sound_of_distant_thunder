@@ -12,6 +12,7 @@ import data_loader
 import copy 
 import logging
 from mechanics import check_player_surprise
+import actions
 
 game_data = None
 game_items_data = {}
@@ -27,165 +28,299 @@ logging.basicConfig(
     filemode='a' # 'a' for append (adds to file), 'w' for overwrite each run
 )
 
+def help_menu():
+    """Displays help information."""
+    # Define your actual help text here later
+    print("\n--- Help Menu ---")
+    print("Available commands depend on context.")
+    print("Common commands: look, go [direction], examine [object], inventory, help, quit")
+    print("Other commands may become available based on objects.")
+    print("-----------------\n")
+
+# --- Event Handler Function (incorporating loot_container logic) ---
+def handle_game_event(event_string, character, location_data, target_data):
+    """
+    Handles specific game events/actions triggered by action strings defined in JSON.
+    Includes generic logic for 'loot_container' action type using 'contains_items'.
+
+    Args:
+        event_string (str): The action string from JSON (e.g., "loot_container", "display_specific_text:dossier_briefing").
+        character (Hero): The player character object.
+        location_data (dict): The data for the current location (from game_locations_data).
+        target_data (dict): The data dict for the interactable/item that triggered the event.
+    """
+    global game_items_data, game_locations_data, CONTAINER_CONTENTS # Ensure these are accessible
+
+    logging.info(f"Handling action/event: {event_string} for target: {target_data.get('name', 'N/A')}")
+    print("-" * 30)
+
+    action_type = event_string
+    action_payload = None
+    if ":" in event_string:
+        parts = event_string.split(":", 1)
+        action_type = parts[0]
+        action_payload = parts[1] if len(parts) > 1 else None
+
+    if action_type == "loot_container":
+        target_id = target_data.get('id')
+        target_name = target_data.get('name', 'container')
+
+        # Find the actual interactable data in the main location dictionary to modify state
+        live_target_data = None
+        interactable_index = -1
+        interactable_list = location_data.get('interactables', [])
+        for index, data in enumerate(interactable_list):
+            if data.get('id') == target_id:
+                live_target_data = data
+                interactable_index = index
+                break
+
+        if live_target_data is None:
+             print(f"Error: Could not find live data for interactable ID '{target_id}'.")
+             logging.error("Could not find live data for interactable ID '%s'", target_id)
+        else:
+            current_state = live_target_data.get('state', 'closed')
+
+            if current_state != 'empty':
+                print(f"You open the {target_name}.")
+                # Get item list DIRECTLY from the object's data
+                item_ids_in_container = live_target_data.get('contains_items', [])
+
+                if not item_ids_in_container:
+                    print("...but it's empty.")
+                    # Update state to empty and remove the 'open' action
+                    location_data['interactables'][interactable_index]['state'] = 'empty'
+                    location_data['interactables'][interactable_index]['description'] = f"An empty {target_name}."
+                    verb_that_triggered = next((v for v, a in target_data.get('actions',{}).items() if a == action_type), None)
+                    if verb_that_triggered and verb_that_triggered in location_data['interactables'][interactable_index].get('actions',{}):
+                         del location_data['interactables'][interactable_index]['actions'][verb_that_triggered]
+
+                else: # Container has items listed
+                    items_found_data = []
+                    items_found_names = []
+                    for item_id in item_ids_in_container:
+                        item_data = game_items_data.get(item_id)
+                        if item_data:
+                            items_found_data.append(item_data)
+                            items_found_names.append(item_data.get('name', item_id))
+                        else: logging.warning("Item definition missing for '%s' in container '%s'.", item_id, target_id)
+
+                    if items_found_names: # Check if any valid items were actually found
+                        print("Inside you find:")
+                        for name in items_found_names: print(f"- {name}")
+                        while True:
+                            choice = input("Take these items? (yes/no) > ").lower().strip()
+                            if choice in ['yes', 'y']:
+                                print("\nYou added:")
+                                for item_data_to_add in items_found_data:
+                                    character.add_inventory(copy.deepcopy(item_data_to_add))
+                                    item_name = item_data_to_add.get('name', item_data_to_add.get('id','unknown item'))
+                                    print(f"- {item_name}")
+                                # Update State and remove action verb
+                                location_data['interactables'][interactable_index]['state'] = 'empty'
+                                location_data['interactables'][interactable_index]['description'] = f"An empty {target_name}."
+                                location_data['interactables'][interactable_index]['contains_items'] = [] # Remove items
+                                verb_that_triggered = next((v for v, a in target_data.get('actions',{}).items() if a == action_type), None)
+                                if verb_that_triggered and verb_that_triggered in location_data['interactables'][interactable_index].get('actions',{}):
+                                     del location_data['interactables'][interactable_index]['actions'][verb_that_triggered]
+                                     logging.debug(f"Removed '{verb_that_triggered}' action for '{target_id}'.")
+                                break
+                            elif choice in ['no', 'n']:
+                                print("You close it back up, leaving the items for now.")
+                                break
+                            else: print("Please answer yes or no.")
+                    else: # No valid items found
+                        print("It seems to be empty.")
+                        location_data['interactables'][interactable_index]['state'] = 'empty'
+                        location_data['interactables'][interactable_index]['description'] = f"An empty {target_name}."
+                        verb_that_triggered = next((v for v, a in target_data.get('actions',{}).items() if a == event_string), None)
+                        if verb_that_triggered and verb_that_triggered in location_data['interactables'][interactable_index].get('actions',{}):
+                             del location_data['interactables'][interactable_index]['actions'][verb_that_triggered]
+
+            elif current_state == 'empty':
+                 print(f"You check the {target_name} again, but it's already empty.")
+            else:
+                 print(f"The {target_name} is in an unusual state ('{current_state}') and cannot be interacted with further.")
+
+    # Example for display_text payload (if not handled directly by main loop)
+    elif action_type == "display_text":
+        if action_payload: use_textwrap(action_payload)
+        else: logging.warning("Action 'display_text' called without payload.")
+
+    # --- Add handlers for other action_types here ---
+    # elif action_type == "toggle_switch": ...
+
+    else:
+        print(f"You try to interact, triggering '{event_string}', but nothing specific happens yet.")
+        logging.warning("Unhandled action/event type triggered: %s", event_string)
+
+    print("-" * 30)
+
+
+# --- Updated Main Game Loop ---
 def main_game_loop(character):
     """
-    Main loop to handle player actions, display location info, and process movement.
+    Main loop: Displays location, suggests actions, gets input, processes commands.
+    Handles generic actions based on JSON and tracks examined state per location visit.
     """
-    global game_locations_data, game_items_data # Add others like game_npc_data later
+    global game_locations_data, game_items_data # Access global data
 
     game_is_running = True
-    first_look = True # Flag to force full description on first entry or after 'look'
+    first_look = True
+    examined_this_visit = set()
+    previous_location_id = None
 
     while game_is_running:
         # --- 1. Get Current Location Info ---
         current_location_id = character.get_location()
-        # ... (error handling for invalid ID) ...
-        current_location = game_locations_data.get(current_location_id)
-        # ... (error handling for missing data) ...
+        if current_location_id not in game_locations_data:
+            print(f"ERROR: Unknown location ID '{current_location_id}'. Ending game.")
+            logging.critical("Player location '%s' not found in game_locations_data.", current_location_id)
+            break
 
-        # --- 2. Process Location Entry / Display Description ---
+        current_location = game_locations_data[current_location_id]
+
+        # --- Reset examined state if location changed ---
+        if current_location_id != previous_location_id:
+            logging.debug(f"Location changed from {previous_location_id} to {current_location_id}. Clearing examined set.")
+            examined_this_visit.clear()
+            previous_location_id = current_location_id
+            first_look = True # Force look on location change
+
+        # --- 2. Display Location Description ---
         print("-" * 30)
         print(f"Location: {current_location.get('name', 'Unknown Area')}")
         print("-" * 30)
-
         has_visited = character.has_visited(current_location_id)
         if not has_visited or first_look:
-             use_textwrap(current_location.get('description', 'You see nothing remarkable.'))
-             if not has_visited:
-                 character.add_visited_location(current_location_id)
-                 # TODO: Trigger 'events_on_entry' for first visit
+            description = current_location.get('description', 'You see nothing remarkable.')
+            use_textwrap(description)
+            if not has_visited: character.add_visited_location(current_location_id)
         else:
-             use_textwrap(current_location.get('visited_description', current_location.get('description', 'You see nothing remarkable.')))
+            description = current_location.get('visited_description', current_location.get('description', 'You see nothing remarkable.'))
+            use_textwrap(description)
 
-        print("-" * 30) # Separator after description
-
-        # --- 3. NEW: Display Contextual Information ---
-        # NPCs (Show IDs for now, replace with names when NPC data is loaded)
+        # --- 3. Display Contextual Information ---
+        print("-" * 30)
         npcs_here = current_location.get('npcs', [])
         if npcs_here:
             print("You see:")
             for npc_id in npcs_here:
-                # TODO: Look up actual NPC name from loaded NPC data
-                npc_name = npc_id.replace("npc_", "").replace("_", " ").title() # Simple name guess
+                npc_name = npc_id.replace("npc_", "").replace("_", " ").title()
                 print(f"- {npc_name}")
 
-        # Interactables (Show their 'name' field which player might use)
         interactables_here = current_location.get('interactables', [])
-        if interactables_here:
-            # Avoid printing "You notice:" if NPCs were already listed
-            if not npcs_here:
-                 print("You notice:")
-            else:
-                 print("Also here:") # Or just list them
-            for interactable in interactables_here:
-                 # Use capitalize() for better sentence structure if needed
-                 interactable_name = interactable.get('name', 'an object')
-                 # Maybe prefix with 'a'/'an'?
-                 print(f"- a {interactable_name}")
+        items_here = current_location.get('items', [])
+        if interactables_here or items_here:
+             if not npcs_here: print("You notice:")
+             else: print("Also here:")
+             for interactable_data in interactables_here: print(f"- a {interactable_data.get('name', 'an object')}")
+             for item_data in items_here: print(f"- a {item_data.get('name', 'an item')}")
 
-        # Exits (List the commands for Phase 1 - can hide behind 'exits' command later)
         available_exits = current_location.get('exits', {})
         if available_exits:
-            print("Possible Exits:")
-            exit_commands = list(available_exits.keys())
-            # Make it a bit more readable than just a comma-separated list
-            for exit_cmd in exit_commands:
-                 print(f"- {exit_cmd}")
-            # print("- " + ", ".join(exit_commands)) # Alternative simple list
-        # --- End Display Context ---
+            print("\nPossible Exits:")
+            for exit_cmd in available_exits.keys(): print(f"- {exit_cmd}")
 
-        first_look = False # Reset flag after displaying context
-        print("-" * 30) # Separator before prompt
+        first_look = False
+        print("-" * 30)
+
+        # --- Display Suggested Actions ---
+        available_actions_list = actions.get_available_actions(current_location)
+        print("Suggested actions:")
+        for action in available_actions_list: print(f"- {action}")
+        print("-" * 20)
 
         # --- 4. Get Player Input ---
         command = input("> ").lower().strip()
         logging.debug("Player command: '%s'", command)
+        if not command: continue
 
-        # --- 5. Parse Player Input (Simple) ---
-        parts = command.split()
-        verb = parts[0] if parts else ""
-        noun = " ".join(parts[1:]) if len(parts) > 1 else ""
+        # --- 5. Parse Player Input ---
+        parts = command.split(maxsplit=1)
+        verb = parts[0]
+        noun = parts[1] if len(parts) > 1 else ""
 
         # --- 6. Execute Action ---
-        if verb == "quit":
-            print("Quitting game.")
-            game_is_running = False
-            continue # Go to top of loop to exit
+        action_executed = False
 
-        elif verb == "help":
-            help_menu()
-            continue # Show prompt again after help
+        # Handle Standard Commands
+        if verb == "quit": print("Quitting game."); game_is_running = False; action_executed = True
+        elif verb == "help": help_menu(); action_executed = True
+        elif verb == "inventory": inventory.inventory(character); action_executed = True
+        elif verb == "look": first_look = True; print("\nLooking around again..."); action_executed = True
 
-        elif verb == "inventory":
-            inventory.inventory(character)
-            continue # Show prompt again after inventory
-
-        elif verb == "look":
-            first_look = True # Set flag to re-display full description & context
-            print("\nLooking around again...")
-            continue # Re-run display logic at top of loop
-
-        elif verb == "examine":
-            # (Examine logic remains the same - checks interactables for now)
-            # ... (examine logic code) ...
-            if not noun:
-                print("Examine what?")
-            else:
-                found_target = False
-                # Check interactables
-                for interactable in current_location.get('interactables', []):
-                    # Allow examining by ID or name for flexibility? Just name for now.
-                    if noun == interactable.get('name', '').lower():
-                        # Trigger the examine action defined in JSON if it exists
-                        action_str = interactable.get('actions', {}).get('examine')
-                        if action_str and action_str.startswith("display_text:"):
-                             use_textwrap(action_str.split(":", 1)[1])
-                        else:
-                             # Default if no specific examine action
-                             use_textwrap(interactable.get('description', "You see nothing special about it."))
-                        found_target = True
-                        break
-                # TODO: Add checks for items and NPCs here later
-                if not found_target:
-                    print(f"You don't see '{noun}' here to examine.")
-            continue # Show prompt again after examining
-
-        # --- Handle Movement ---
-        else: # Assume anything else might be a movement command for now
-            moved = False
-            destination_id = None
-            # Check if full command matches an exit key
-            if command in available_exits:
-                destination_id = available_exits[command]
-            # Check if verb implies movement and noun matches an exit key
-            elif verb in ["go", "walk", "climb", "enter", "take", "descend"] and noun in available_exits:
+        # Handle Movement
+        elif verb == "go":
+            if noun in available_exits:
                 destination_id = available_exits[noun]
-            # Check if just the command word matches an exit key
-            elif noun == "" and verb in available_exits:
-                 destination_id = available_exits[verb]
+                if destination_id not in game_locations_data: print(f"Error: The way '{noun}' leads nowhere yet."); logging.error("Movement failed: Dest ID '%s' not found.", destination_id)
+                else: print(f"\nYou go {noun}..."); character.set_location(destination_id); logging.info("Player moved from %s to %s via 'go %s'", current_location_id, destination_id, noun)
+            else: print(f"You can't go '{noun}' from here.")
+            action_executed = True
 
-            if destination_id:
-                 # Check if destination location exists
-                 if destination_id not in game_locations_data:
-                     print(f"Error: The way to '{destination_id}' leads nowhere yet.")
-                     logging.error("Movement failed: Destination ID '%s' not found in loaded locations.", destination_id)
-                 else:
-                     # TODO: Check if exit is locked/blocked
-                     print(f"\nYou head towards '{command}'...") # Or use exit key
-                     character.set_location(destination_id)
-                     logging.info("Player moved from %s to %s via command '%s'", current_location_id, destination_id, command)
-                     moved = True
-                     first_look = True # Force description display in new location
-            # --- End Movement Handling ---
+        # Handle Generic Object Actions
+        else:
+            if not noun: print(f"What do you want to {verb}?"); action_executed = True
+            else:
+                potential_targets = current_location.get('interactables', []) + current_location.get('items', [])
+                target_found = False
+                for target_data in potential_targets:
+                    object_name_lower = target_data.get('name', '').lower()
+                    if noun == object_name_lower:
+                        target_found = True
+                        target_id = target_data.get('id', object_name_lower)
+                        available_object_actions = target_data.get('actions', {})
 
-            if not moved:
-                 # If it wasn't movement, check other verbs later (take, talk, use, open...)
-                 # For Phase 1, assume it's an unknown command if not movement
-                 print(f"Unknown command: '{command}'")
+                        if verb == "examine": # Special handling for examine
+                            if target_id in examined_this_visit:
+                                examined_text = target_data.get("examined_description")
+                                use_textwrap(examined_text if examined_text else f"You find nothing new about the {noun}.")
+                            else: # First time examining
+                                action_string = available_object_actions.get(verb)
+                                if action_string:
+                                    if action_string.startswith("display_text:"): use_textwrap(action_string.split(":", 1)[1].strip())
+                                    elif action_string.startswith("event:"): handle_game_event(action_string.split(":", 1)[1].strip(), character, current_location, target_data)
+                                    else: use_textwrap(target_data.get('description', f"You examine the {noun} closely."))
+                                else: use_textwrap(target_data.get('description', f"You look at the {noun}."))
+                                examined_this_visit.add(target_id) # Mark as examined
 
-        # --- 7. Update Game State (Placeholder) ---
+                                # Check for and suggest FOLLOW-UP actions
+                                follow_up_verbs = [v for v in available_object_actions if v != "examine"]
+                                if follow_up_verbs:
+                                    print("\nYou could also try:")
+                                    for follow_up_verb in follow_up_verbs: print(f"- {follow_up_verb} {noun}")
+                            action_executed = True
+                            break # Examine handled
 
-    # --- End of loop ---
+                        elif verb in available_object_actions: # Handle other verbs
+                            action_string = available_object_actions[verb]
+                            logging.info("Executing action '%s' on object '%s' with string '%s'", verb, noun, action_string)
+                            if action_string.startswith("display_text:"): use_textwrap(action_string.split(":", 1)[1].strip())
+                            elif action_string.startswith("event:") or action_string.startswith("loot_container"): # Trigger events or specific action types
+                                handle_game_event(action_string, character, current_location, target_data)
+                            else: print(f"You try to {verb} the {noun}, but aren't sure how.")
+                            action_executed = True
+                            break # Other action handled
+                        else: # Verb not in actions dict for this object
+                            print(f"You can't {verb} the {noun}.")
+                            action_executed = True
+                            break # Interaction handled (by failing)
+
+                if not target_found:
+                    print(f"You don't see a '{noun}' here.")
+                    action_executed = True # Command acknowledged
+
+        # Handle Unknown Commands
+        if not action_executed:
+            print(f"Unknown command: '{command}'")
+
+        # --- Loop Continuation ---
+        if game_is_running:
+            if verb != "look": print("-" * 30) # Separator unless player just looked
+            continue
+
+    # --- End of game loop ---
     print("\nLeaving game loop.")
 
 def boat_zone(character):

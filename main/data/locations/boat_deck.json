@@ -26,10 +26,15 @@
         "name": "case",
         "description": "A sturdy-looking metal supply case rests near some coiled ropes. It looks like standard agency issue.",
         "state": "closed",
+        "contains_items": [
+          "basic_pistol",
+          "basic_knife",
+          "basic_med_pack",
+          "small_9mm_ammo_box"
+      ],
         "actions": {
           "examine": "display_text:It looks like standard military or agency supply issue. Might contain useful gear.",
-          "look at": "event:trigger_case_interaction",
-          "open": "event:trigger_case_interaction"
+        "open": "loot_container" 
         }
       },
       {
