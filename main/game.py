@@ -17,6 +17,7 @@ import actions
 game_data = None
 game_items_data = {}
 game_locations_data = {}
+game_npc_data = {}
 
 # TODO: add ability to save game
 
