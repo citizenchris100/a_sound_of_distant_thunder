@@ -1,11 +1,11 @@
 {
-    "id": "deck_hand2",
+    "id": "npc_deck_hand_2",
     "name": "Deck Hand 2",
     "description": "An older guy, probably a few years younger than the captain. His life has been lived on many ships just as this I would imagine.",
     "examined_description": "This old fart would only grumble if I said anything to him.",
     "state": "neutral",
     "hostile": false,
-    "aliases": ["old boat hand"],
+    "aliases": ["deck hand 2"],
     "initial_fondness": 0, 
     "stats": {
       "max_health": 25,

@@ -1,0 +1,239 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Dialog Conversation Schema",
+    "description": "Defines the structure for a branching conversation data file.",
+    "type": "object",
+  
+    "properties": {
+      "dialog_nodes": {
+        "description": "Contains all the nodes (steps) for this conversation, keyed by unique node IDs.",
+        "type": "object",
+        "patternProperties": {
+          "^[a-zA-Z0-9_]+$": {
+            "$ref": "#/definitions/dialogNode"
+          }
+        },
+        "additionalProperties": false,
+        "minProperties": 1
+      }
+    },
+    "required": ["dialog_nodes"],
+    "additionalProperties": false,
+  
+    "definitions": {
+  
+      "dialogNode": {
+        "description": "Represents a single point/step in the conversation.",
+        "type": "object",
+        "properties": {
+          "npc_text": {
+            "description": "The text spoken by the NPC at this node.",
+            "type": "string"
+          },
+          "player_choices": {
+            "description": "List of choices available to the player from this node.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/playerChoice"
+            },
+            "minItems": 0,
+            "default": []
+          }
+          
+        },
+        "required": ["npc_text", "player_choices"],
+        "additionalProperties": false
+      },
+  
+      "playerChoice": {
+        "description": "Represents a single option the player can choose.",
+        "type": "object",
+        "properties": {
+          "choice_id": {
+            "description": "Optional unique identifier for this choice within the dialog (useful for runtime tracking).",
+            "type": "string"
+          },
+          "choice_text": {
+            "description": "The text presented to the player for this option.",
+            "type": "string"
+          },
+          "destination_node": {
+            "description": "ID of the next dialogNode, or a special keyword like '[END_CONVERSATION]', '[END_CONVERSATION_AND_ATTACK]'.",
+            "type": "string"
+          },
+          "conditions": {
+            "description": "Optional list of conditions that must ALL be met for this choice to be available.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/condition"
+            },
+            "default": []
+          },
+          "effects": {
+            "description": "Optional list of effects that happen immediately when this choice is selected.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/effect"
+            },
+            "default": []
+          },
+          "repeatable": {
+            "description": "Can this option be chosen more than once if the node is revisited? (Usually false for story progression).",
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": ["choice_text", "destination_node"],
+        "additionalProperties": false
+      },
+  
+      "condition": {
+        "description": "A single condition required for a player choice to be available.",
+        "type": "object",
+        "properties": {
+          "condition_type": {
+            "description": "The type of condition to check.",
+            "type": "string",
+            "enum": [
+              "check_stat",       
+              "check_item",       
+              "check_flag",       
+              "check_fondness",   
+              "check_npc_state"  
+              
+            ]
+          }
+          
+        },
+        "required": ["condition_type"],
+        
+        "oneOf": [
+          { "$ref": "#/definitions/condition_check_stat" },
+          { "$ref": "#/definitions/condition_check_item" },
+          { "$ref": "#/definitions/condition_check_flag" },
+          { "$ref": "#/definitions/condition_check_fondness" },
+          { "$ref": "#/definitions/condition_check_npc_state" }
+        ]
+      },
+  
+      "effect": {
+        "description": "A single effect that occurs when a player choice is selected.",
+        "type": "object",
+        "properties": {
+          "effect_type": {
+            "description": "The type of effect to apply.",
+            "type": "string",
+            "enum": [
+              "change_fondness",  
+              "set_flag",         
+              "give_item",        
+              "take_item",        
+              "perform_check",    
+              "set_npc_state",    
+              "start_combat"     
+            
+            ]
+          }
+        },
+        "required": ["effect_type"],
+        "oneOf": [
+          { "$ref": "#/definitions/effect_change_fondness" },
+          { "$ref": "#/definitions/effect_set_flag" },
+          { "$ref": "#/definitions/effect_give_item" },
+          { "$ref": "#/definitions/effect_take_item" },
+          { "$ref": "#/definitions/effect_perform_check" },
+          { "$ref": "#/definitions/effect_set_npc_state" },
+          { "$ref": "#/definitions/effect_start_combat" }
+        ]
+      },
+  
+      "condition_check_stat": {
+        "properties": {
+          "condition_type": { "const": "check_stat" },
+          "stat": { "type": "string", "description": "Player stat ID (e.g., 'charm', 'luck')." },
+          "min": { "type": "integer", "description": "Minimum value required (inclusive)." },
+          "max": { "type": "integer", "description": "Optional maximum value allowed (inclusive)." }
+        }, "required": ["stat", "min"]
+      },
+      "condition_check_item": {
+        "properties": {
+          "condition_type": { "const": "check_item" },
+          "item_id": { "type": "string", "description": "Item ID player must possess." },
+          "quantity": { "type": "integer", "minimum": 1, "default": 1, "description": "Minimum quantity." }
+        }, "required": ["item_id"]
+      },
+      "condition_check_flag": {
+        "properties": {
+          "condition_type": { "const": "check_flag" },
+          "flag_name": { "type": "string", "description": "Name of the game flag (e.g., 'met_captain', 'power_on')." },
+          "flag_value": { "type": ["boolean", "string", "number"], "default": true, "description": "Required value." }
+        }, "required": ["flag_name"]
+      },
+      "condition_check_fondness": {
+        "properties": {
+          "condition_type": { "const": "check_fondness" },
+          "target_npc": { "type": "string", "default": "CURRENT", "description": "NPC ID or 'CURRENT' to refer to the NPC in this conversation." },
+          "min": { "type": "integer", "description": "Minimum fondness required (inclusive)." },
+          "max": { "type": "integer", "description": "Optional maximum fondness allowed (inclusive)." }
+        }, "required": ["min"]
+      },
+       "condition_check_npc_state": {
+        "properties": {
+          "condition_type": { "const": "check_npc_state" },
+          "target_npc": { "type": "string", "default": "CURRENT", "description": "NPC ID or 'CURRENT'." },
+          "required_state": { "type": "string", "description": "The state the NPC must be in (e.g., 'quest_stage_1', 'hostile')." }
+        }, "required": ["required_state"]
+      },
+  
+      "effect_change_fondness": {
+        "properties": {
+          "effect_type": { "const": "change_fondness" },
+          "target_npc": { "type": "string", "default": "CURRENT", "description": "NPC ID or 'CURRENT'." },
+          "amount": { "type": "integer", "description": "Amount to add (can be negative)." }
+        }, "required": ["amount"]
+      },
+      "effect_set_flag": {
+        "properties": {
+          "effect_type": { "const": "set_flag" },
+          "flag_name": { "type": "string", "description": "Name of the game flag." },
+          "flag_value": { "type": ["boolean", "string", "number"], "default": true, "description": "Value to set the flag to." }
+        }, "required": ["flag_name"]
+      },
+      "effect_give_item": {
+        "properties": {
+          "effect_type": { "const": "give_item" },
+          "item_id": { "type": "string", "description": "Item ID to give to player." },
+          "quantity": { "type": "integer", "minimum": 1, "default": 1 }
+        }, "required": ["item_id"]
+      },
+      "effect_take_item": {
+        "properties": {
+          "effect_type": { "const": "take_item" },
+          "item_id": { "type": "string", "description": "Item ID to take from player." },
+          "quantity": { "type": "integer", "minimum": 1, "default": 1 }
+        }, "required": ["item_id"]
+      },
+      "effect_perform_check": {
+        "properties": {
+          "effect_type": { "const": "perform_check" },
+          "check_type": { "type": "string", "description": "Identifier for the type of check (e.g., 'charm_persuasion', 'intimidate', 'luck_guess'). Runner needs to know how to execute this." },
+          "success_node": { "type": "string", "description": "Destination node ID on check success." },
+          "failure_node": { "type": "string", "description": "Destination node ID on check failure." },
+          "difficulty_mod": { "type": "integer", "default": 0, "description": "Optional modifier to the check's difficulty." }
+        }, "required": ["check_type", "success_node", "failure_node"]
+      },
+      "effect_set_npc_state": {
+        "properties": {
+          "effect_type": { "const": "set_npc_state" },
+          "target_npc": { "type": "string", "default": "CURRENT", "description": "NPC ID or 'CURRENT'." },
+          "new_state": { "type": "string", "description": "The new state string for the NPC (e.g., 'hostile', 'agreed_to_help')." }
+        }, "required": ["new_state"]
+      },
+       "effect_start_combat": {
+          "properties": {
+             "effect_type": { "const": "start_combat" },
+             "target_npc": { "type": "string", "default": "CURRENT", "description": "NPC ID or 'CURRENT'." }
+          }
+       }
+    }
+  }
