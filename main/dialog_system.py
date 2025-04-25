@@ -10,24 +10,29 @@ from . import hero # Use relative import
 logger = logging.getLogger(__name__)
 
 # Temporary Game State (Replace with proper state management)
+# TODO: Move flag management to a dedicated state manager or character class
 DIALOG_GAME_STATE = {
     "flags": {}
 }
 
 def _get_flag(flag_name, default=False):
+    """Gets a flag value from the temporary game state."""
     val = DIALOG_GAME_STATE["flags"].get(flag_name)
     return default if val is None else val
 
 def _set_flag(flag_name, value):
+    """Sets a flag value in the temporary game state."""
     logger.debug(f"Setting flag: {flag_name} = {value}")
     DIALOG_GAME_STATE["flags"][flag_name] = value
 
 def use_textwrap(text):
+    """Wraps text for display."""
     dedented_text = textwrap.dedent(str(text)).strip()
     print(textwrap.fill(dedented_text, width=70))
 
 # --- Condition Checking Logic ---
 def _check_condition(condition, character, target_npc_data):
+    """Checks if a single dialog condition object is met."""
     condition_type = condition.get("condition_type")
 
     if condition_type == "check_flag":
@@ -65,8 +70,11 @@ def _check_condition(condition, character, target_npc_data):
         if not item_id: return False
         count = 0
         try:
+            # Assumes character.get_inventory() returns list of item dicts
             for item_dict in character.get_inventory():
-                if isinstance(item_dict, dict) and item_dict.get("item_id") == item_id: count += 1
+                if isinstance(item_dict, dict) and item_dict.get("item_id") == item_id:
+                    # TODO: Handle quantity if items stack within a single dict later
+                    count += 1
         except Exception as e: logging.error(f"Error checking inventory: {e}"); return False
         met = (count >= quantity)
         logger.debug(f"Cond Check: Item '{item_id}' x{quantity}? Player has: {count}. Met: {met}")
@@ -77,8 +85,9 @@ def _check_condition(condition, character, target_npc_data):
         min_val = condition.get("min")
         max_val = condition.get("max")
         if min_val is None: return False
-        # Placeholder
-        current_fondness = 0 # Replace with actual: character.get_fondness(target_npc_id)
+        # Placeholder - Requires implementation of fondness tracking
+        # current_fondness = character.get_fondness(target_npc_id)
+        current_fondness = 0 # Replace with actual call
         met = (current_fondness >= min_val)
         if max_val is not None: met = met and (current_fondness <= max_val)
         logging.warning(f"Cond Check: 'check_fondness' NI. Assumed: {current_fondness}. Met: {met}")
@@ -88,8 +97,9 @@ def _check_condition(condition, character, target_npc_data):
         target_npc_id = target_npc_data.get('id')
         required_state = condition.get("required_state")
         if not required_state: return False
-        # Placeholder
-        current_state = "neutral" # Replace with actual: get_npc_state(target_npc_id)
+        # Placeholder - Requires implementation of NPC state tracking
+        # current_state = get_npc_state(target_npc_id)
+        current_state = "neutral" # Replace with actual call
         met = (current_state == required_state)
         logging.warning(f"Cond Check: 'check_npc_state' NI. Assumed: '{current_state}'. Met: {met}")
         return met
@@ -99,13 +109,15 @@ def _check_condition(condition, character, target_npc_data):
         return False
 
 def _are_conditions_met(conditions, character, target_npc_data):
+    """Checks if ALL conditions in a list are met."""
     if not conditions: return True
     return all(_check_condition(cond, character, target_npc_data) for cond in conditions)
 
 # --- Effect Application Logic ---
 def _apply_effect(effect, character, target_npc_data):
+    """Applies a single dialog effect. Returns special action dict if needed by runner."""
     effect_type = effect.get("effect_type")
-    global game_items_data # Needed for give_item
+    # global game_items_data # Avoid global if possible, pass if needed for give_item
 
     if effect_type == "set_flag":
         flag_name = effect.get("flag_name")
@@ -158,9 +170,10 @@ def _apply_effect(effect, character, target_npc_data):
     else:
         logging.warning(f"Unsupported effect type: {effect_type}")
 
-    return None
+    return None # No special runner action needed
 
 def _apply_effects(effects, character, target_npc_data):
+    """Applies all effects in a list. Returns first special action dict encountered."""
     special_runner_action = None
     if not effects: return None
     for effect in effects:
@@ -170,6 +183,7 @@ def _apply_effects(effects, character, target_npc_data):
 
 # --- Dialog File Loading ---
 def _load_dialog_data(dialog_ref):
+    """Loads and returns dialog nodes data from a JSON file."""
     try:
         script_dir = os.path.dirname(__file__)
         dialog_dir = os.path.join(script_dir, 'data', 'dialogs')
@@ -197,25 +211,54 @@ def _load_dialog_data(dialog_ref):
 
 # --- Main Conversation Runner ---
 def run_conversation(character, target_npc_data):
+    """
+    Runs a dialog conversation based on JSON data.
+    Handles initial attempts to talk to NPCs without dialog.
+    """
     dialog_ref = target_npc_data.get("dialog_ref")
     npc_name = target_npc_data.get("name", "Someone")
     npc_id = target_npc_data.get("id", "unknown_npc")
 
+    # --- <<< MODIFIED SECTION for Non-Dialog NPCs >>> ---
     if not dialog_ref:
-        logging.warning(f"NPC {npc_name} ({npc_id}) has no 'dialog_ref'.")
-        use_textwrap(f"{npc_name} doesn't seem interested in talking right now.")
-        return {"status": "no_dialog"}
+        attempt_flag_name = f"attempted_talk_{npc_id}"
+        already_attempted = _get_flag(attempt_flag_name, default=False)
 
+        print("-" * 30) # Separator before response
+        if not already_attempted:
+            # First attempt: Show examined description and set flag
+            description_to_show = target_npc_data.get("examined_description",
+                                                     target_npc_data.get("description"))
+            # Fallback if even description is missing
+            if not description_to_show:
+                 description_to_show = f"{npc_name} doesn't seem interested in talking right now."
+
+            use_textwrap(description_to_show)
+            _set_flag(attempt_flag_name, True)
+            logging.info(f"First attempt to talk to non-dialog NPC: {npc_id}. Displayed description.")
+            print("-" * 30) # Separator after response
+            return {"status": "no_dialog_first_attempt"}
+        else:
+            # Subsequent attempts: Generic message
+            use_textwrap(f"{npc_name} still doesn't seem interested in talking.")
+            logging.info(f"Subsequent attempt to talk to non-dialog NPC: {npc_id}.")
+            print("-" * 30) # Separator after response
+            return {"status": "no_dialog_already_attempted"}
+    # --- <<< END MODIFIED SECTION >>> ---
+
+    # --- Load Dialog Data (if dialog_ref exists) ---
     dialog_nodes = _load_dialog_data(dialog_ref)
     if dialog_nodes is None:
         use_textwrap("Sorry, there seems to be a problem with the conversation data.")
         return {"status": "error"}
 
+    # --- Conversation State ---
     current_node_id = dialog_ref # Start at the node specified by dialog_ref
-    session_choices_made = set()
+    session_choices_made = set() # Tracks choices made this session
 
-    print("-" * 30) # Separator at start
+    print("-" * 30) # Separator at start of actual dialog
 
+    # --- Main Dialog Loop ---
     while True:
         current_node = dialog_nodes.get(current_node_id)
         if not current_node:
@@ -225,13 +268,13 @@ def run_conversation(character, target_npc_data):
 
         # 1. Display NPC text (if any)
         npc_text = current_node.get("npc_text")
-        if npc_text: # Only print if text is not null or empty
+        if npc_text:
             use_textwrap(f"{npc_name}: {npc_text}")
 
         # 2. Prepare available player choices
         player_choices_data = current_node.get("player_choices", [])
         available_choices = []
-        if not player_choices_data: # Handle nodes with no choices (end of branch)
+        if not player_choices_data:
              logging.debug(f"Node '{current_node_id}' has no player choices. Ending conversation.")
              print("-" * 30)
              return {"status": "ended"}
@@ -243,15 +286,13 @@ def run_conversation(character, target_npc_data):
             choice_key = choice_data.get("choice_id", f"{current_node_id}_{index}")
             if not is_repeatable and choice_key in session_choices_made:
                 continue
-            available_choices.append(choice_data) # Store the full dict
+            available_choices.append(choice_data)
 
         # --- Check for Auto-Continue ---
         chosen_option = None
         if len(available_choices) == 1 and available_choices[0].get("choice_text") == "[CONTINUE]":
             logging.debug(f"Node '{current_node_id}' has single auto-continue choice. Transitioning...")
             chosen_option = available_choices[0]
-            # Skip display and input
-        # --- End Auto-Continue Check ---
         else:
             # 3. Display available choices (if not auto-continuing)
             if not available_choices:
@@ -278,8 +319,8 @@ def run_conversation(character, target_npc_data):
                 except ValueError: print("Please enter the number of your choice.")
                 except EOFError: logging.warning("EOFError during dialog. Ending."); return {"status": "error"}
 
-        # 5. Process Chosen Option (either selected or auto-continued)
-        if chosen_option is None: # Should not happen if logic is correct, but safety check
+        # 5. Process Chosen Option
+        if chosen_option is None:
              logging.error("Error: chosen_option is None after choice selection/auto-continue.")
              return {"status": "error"}
 
@@ -288,7 +329,6 @@ def run_conversation(character, target_npc_data):
         # Mark as chosen if not repeatable
         is_repeatable = chosen_option.get("repeatable", False)
         if not is_repeatable:
-             # Use original index to generate key if choice_id is missing
              original_index = player_choices_data.index(chosen_option) if chosen_option in player_choices_data else -1
              choice_key = chosen_option.get("choice_id", f"{current_node_id}_{original_index}")
              if original_index != -1: session_choices_made.add(choice_key)
@@ -309,7 +349,7 @@ def run_conversation(character, target_npc_data):
                  check_type = check_details.get("check_type")
                  success_node = check_details.get("success_node")
                  failure_node = check_details.get("failure_node")
-                 # Placeholder for actual check logic
+                 # Placeholder
                  success = False # Replace with: perform_skill_check(character, target_npc_data, check_details)
                  logging.warning(f"'perform_check' ({check_type}) NI. Result: {'Success' if success else 'Failure'}")
                  next_node_id = success_node if success else failure_node
@@ -337,6 +377,5 @@ def run_conversation(character, target_npc_data):
              return {"status": "start_combat", "combat_target_id": npc_id}
         else:
             current_node_id = next_node_id
-            # Add separator only if we didn't just auto-continue (which feels abrupt otherwise)
             if chosen_option.get("choice_text") != "[CONTINUE]":
                  print("-" * 20) # Separator between turns
