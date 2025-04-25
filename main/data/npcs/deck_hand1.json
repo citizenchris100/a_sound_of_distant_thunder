@@ -1,0 +1,19 @@
+{
+    "id": "deck_hand1",
+    "name": "Deck Hand 1",
+    "description": "A Medium build young man, maybe in his early twenties. He gives off the impression this could be amongst his first trips with this crew.",
+    "examined_description": "The kid avoids eye contact. He seems entirely focussed on the job at hand and shows little to no interest in conversation.",
+    "state": "neutral",
+    "hostile": false,
+    "aliases": ["boat kid"],
+    "initial_fondness": 0, 
+    "stats": {
+      "max_health": 30,
+      "current_health": 30,
+      "defense": 3,
+      "strength": 6,
+      "accuracy": 4,
+      "charm": 4
+    },
+    "inventory": ["medium_knife"]
+  }

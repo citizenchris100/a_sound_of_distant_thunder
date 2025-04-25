@@ -1,4 +1,4 @@
-from Util import vowel_start
+from .Util import vowel_start
 import copy 
 from ItemUtil import is_item_broken, get_gun_ammo, set_gun_ammo, get_item_attribute
 try:
