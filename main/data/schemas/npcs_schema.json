@@ -1,87 +1,105 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "NPC Definition",
-    "description": "Schema for defining Non-Player Characters in the game.",
-    "type": "object",
-    "properties": {
-      "id": {
-        "description": "Unique identifier string for the NPC (e.g., 'npc_boat_captain'). Should match the filename.",
-        "type": "string",
-        "pattern": "^[a-z0-9_]+$"
-      },
-      "name": {
-        "description": "The display name shown to the player (e.g., 'Boat Captain').",
-        "type": "string",
-        "minLength": 1
-      },
-      "description": {
-        "description": "Text displayed when the NPC is examined initially.",
-        "type": "string",
-        "minLength": 1
-      },
-      "examined_description": {
-        "description": "Optional text displayed when the NPC is examined again after the first time in a location visit.",
-        "type": "string"
-      },
-      "dialog_ref": {
-        "description": "Reference key/ID for the starting node or file of this NPC's primary dialog tree.",
-        "type": "string"
-      },
-      "state": {
-          "description": "Initial state of the NPC (e.g., 'neutral', 'hostile', 'dead', 'quest_stage_1'). Default: 'neutral'.",
-          "type": "string",
-          "default": "neutral"
-      },
-      "hostile": {
-          "description": "Whether the NPC starts as hostile to the player. Default: false.",
-          "type": "boolean",
-          "default": false
-      },
-      "faction": {
-          "description": "Optional faction affiliation (e.g., 'crew', 'island_guard', 'mutant').",
-          "type": "string"
-      },
-      "aliases": {
-          "description": "Optional list of alternative lowercase names the player can use to refer to the NPC.",
-          "type": "array",
-          "items": {
-              "type": "string",
-              "pattern": "^[a-z0-9_ ]+$"
-          },
-          "uniqueItems": true
-      },
-      "stats": {
-          "description": "Optional object containing NPC statistics relevant for combat or checks.",
-          "type": "object",
-          "properties": {
-            "max_health": { "type": "integer", "minimum": 1 },
-            "current_health": { "type": "integer" },
-            "defense": { "type": "integer", "minimum": 0 },
-            "strength": { "type": "integer", "minimum": 0 },
-            "accuracy": { "type": "integer", "minimum": 0 },
-            "charm": { "type": "integer", "minimum": 0 }
-          },
-          "additionalProperties": true
-      },
-      "inventory": {
-          "description": "Optional list of item IDs the NPC starts with.",
-          "type": "array",
-          "items": {
-              "type": "string",
-              "pattern": "^[a-z0-9_]+$"
-          },
-           "uniqueItems": true
-      },
-      "initial_fondness": {
-          "description": "The starting disposition value of the NPC towards the player (e.g., 0=neutral). Can be modified during gameplay on the runtime object.",
-          "type": "integer",
-          "default": 0
-      }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NPC Definition",
+  "description": "Schema for defining Non-Player Characters in the game.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "Unique identifier string for the NPC (e.g., 'npc_boat_captain'). Should match the filename.",
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
     },
-    "required": [
-      "id",
-      "name",
-      "description" 
-    ],
-    "additionalProperties": true 
-  }
+    "name": {
+      "description": "The display name shown to the player (e.g., 'Boat Captain').",
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "description": "Text displayed when the NPC is first seen or examined initially.",
+      "type": "string",
+      "minLength": 1
+    },
+    "examined_description": {
+      "description": "Optional text displayed when the NPC is examined closely or repeatedly.",
+      "type": "string"
+    },
+    "dialog_ref": {
+      "description": "Optional reference key/ID for the starting node/file of this NPC's primary dialog tree.",
+      "type": "string"
+    },
+    "on_attack_dialog_ref": {
+      "description": "Optional reference to a dialog sequence triggered when player attacks this NPC while not hostile.",
+      "type": "string"
+    },
+    "state": {
+        "description": "Initial state of the NPC (e.g., 'neutral', 'hostile', 'dead', 'quest_stage_1'). Default: 'neutral'.",
+        "type": "string",
+        "default": "neutral"
+    },
+    "hostile": {
+        "description": "Whether the NPC starts as hostile to the player. Default: false.",
+        "type": "boolean",
+        "default": false
+    },
+    "faction": {
+        "description": "Optional faction affiliation (e.g., 'boat_crew', 'island_guard', 'mutant'). Used for ally checks.",
+        "type": "string"
+    },
+    "aliases": {
+        "description": "Optional list of alternative lowercase names the player can use to refer to the NPC.",
+        "type": "array",
+        "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_ ]+$"
+        },
+        "uniqueItems": true
+    },
+    "stats": {
+        "description": "Optional object containing NPC statistics relevant for combat or checks.",
+        "type": "object",
+        "properties": {
+          "max_health": { "type": "integer", "minimum": 1 },
+          "current_health": { "type": "integer" },
+          "defense": { "type": "integer", "minimum": 0 },
+          "strength": { "type": "integer", "minimum": 0 },
+          "accuracy": { "type": "integer", "minimum": 0 },
+          "charm": { "type": "integer", "minimum": 0 },
+          "awareness": { "type": "integer", "minimum": 0 }, 
+          "gun_skill": { "type": "integer", "minimum": 0 } 
+        },
+        "additionalProperties": true 
+    },
+    "inventory": {
+        "description": "Optional list of item IDs the NPC starts with.",
+        "type": "array",
+        "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+        },
+         "uniqueItems": true
+    },
+    "equipped_items": {
+        "description": "Optional mapping of equipment slots to item IDs.",
+        "type": "object",
+        "properties": {
+            "gun": { "type": "string" },
+            "melee": { "type": "string" },
+            "armor_body": { "type": "string" },
+            "armor_head": { "type": "string" }
+        },
+        "additionalProperties": true 
+    },
+    "initial_fondness": {
+        "description": "The starting disposition value of the NPC towards the player (e.g., 0=neutral).",
+        "type": "integer",
+        "default": 0
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "description"
+    
+  ],
+  "additionalProperties": true 
+}

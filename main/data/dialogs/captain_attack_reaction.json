@@ -1,0 +1,19 @@
+{
+    "dialog_nodes": {
+      "start_reaction": {
+        "npc_text": "What the hell do you think you're doing?! You'll regret that!",
+        "player_choices": [
+           
+          {
+            "choice_id": "reaction_end",
+            "choice_text": "[CONTINUE]",
+            "destination_node": "[END_CONVERSATION]", 
+            "conditions": [],
+            "effects": []
+          }
+        ]
+      }
+      
+    }
+  }
+  

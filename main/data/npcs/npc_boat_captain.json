@@ -1,20 +1,28 @@
 {
-    "id": "npc_boat_captain",
-    "name": "Boat Captain",
-    "description": "A weathered man with a salt-crusted beard and sharp eyes. He looks like he's seen a thousand storms. He's standing near the bridge door.",
-    "examined_description": "The captain glances at you warily. He seems anxious to get underway or get you off his ship.",
-    "dialog_ref": "captain_main_dialog",
-    "state": "neutral",
-    "hostile": false,
-    "aliases": ["captain"],
-    "initial_fondness": 0, 
-    "stats": {
-      "max_health": 50,
-      "current_health": 50,
-      "defense": 5,
-      "strength": 8,
-      "accuracy": 6,
-      "charm": 4
-    },
-    "inventory": ["large_revolver"]
+  "id": "npc_boat_captain",
+  "name": "Boat Captain",
+  "description": "A weathered man with a salt-crusted beard and sharp eyes. He looks like he's seen a thousand storms. He's standing near the bridge door.",
+  "examined_description": "The captain glances at you warily. He seems anxious to get underway or get you off his ship.",
+  "dialog_ref": "captain_main_dialog",
+  "on_attack_dialog_ref": "captain_attack_reaction", 
+  "state": "neutral",
+  "hostile": false,
+  "faction": "boat_crew", 
+  "aliases": ["captain"],
+  "initial_fondness": 0,
+  "stats": {
+    "max_health": 50,
+    "current_health": 50,
+    "defense": 5,
+    "strength": 8,
+    "accuracy": 6, 
+    "charm": 4,
+    "awareness": 5, 
+    "gun_skill": 10 
+  },
+  "inventory": ["large_revolver"], 
+  "equipped_items": { 
+      "gun": "large_revolver"
+      
   }
+}

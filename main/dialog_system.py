@@ -184,10 +184,15 @@ def _apply_effects(effects, character, target_npc_data):
 # --- Dialog File Loading ---
 def _load_dialog_data(dialog_ref):
     """Loads and returns dialog nodes data from a JSON file."""
+    if not dialog_ref or not isinstance(dialog_ref, str):
+        logging.error(f"Invalid dialog_ref provided for loading: {dialog_ref}")
+        return None
     try:
         script_dir = os.path.dirname(__file__)
         dialog_dir = os.path.join(script_dir, 'data', 'dialogs')
-        file_path = os.path.join(dialog_dir, f"{dialog_ref}.json")
+        # Ensure filename ends with .json, even if ref doesn't include it
+        filename = f"{dialog_ref}.json" if not dialog_ref.endswith(".json") else dialog_ref
+        file_path = os.path.join(dialog_dir, filename)
         logger.info(f"Attempting to load dialog file: {file_path}")
 
         if not os.path.exists(file_path):
@@ -198,62 +203,97 @@ def _load_dialog_data(dialog_ref):
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             # TODO: Add JSON schema validation here
-            return data.get("dialog_nodes", {})
+            dialog_nodes = data.get("dialog_nodes", {})
+            if not isinstance(dialog_nodes, dict):
+                 logging.error(f"Dialog file {filename} has malformed 'dialog_nodes' (not a dictionary).")
+                 return None
+            return dialog_nodes
 
     except json.JSONDecodeError as e:
-        logging.error(f"Error decoding JSON in {dialog_ref}.json: {e}")
+        logging.error(f"Error decoding JSON in dialog file {dialog_ref}.json: {e}")
         print(f"DEBUG: Error reading dialog file {dialog_ref}.json")
         return None
     except Exception as e:
-        logging.exception(f"Unexpected error loading {dialog_ref}.json:")
+        logging.exception(f"Unexpected error loading dialog file {dialog_ref}.json:")
         print(f"DEBUG: Unexpected error loading dialog file {dialog_ref}.json")
         return None
 
 # --- Main Conversation Runner ---
-def run_conversation(character, target_npc_data):
+def run_conversation(character, target_npc_data, override_dialog_ref=None): # <<< Added override_dialog_ref
     """
     Runs a dialog conversation based on JSON data.
     Handles initial attempts to talk to NPCs without dialog.
+    Can run a specific dialog sequence via override_dialog_ref.
+
+    Args:
+        character (hero.Hero): The player character object.
+        target_npc_data (dict): The data dictionary for the NPC being spoken to.
+        override_dialog_ref (str, optional): If provided, load and run this dialog
+                                             instead of the NPC's main dialog_ref.
+
+    Returns:
+        dict: A dictionary containing the status of how the conversation ended.
+              Keys:
+                'status': (str) 'ended', 'combat', 'error', 'no_dialog_first_attempt', etc.
+                'combat_target_id': (str, optional) NPC ID if status is 'combat'
     """
-    dialog_ref = target_npc_data.get("dialog_ref")
+    # Determine which dialog reference to use
+    dialog_ref_to_use = override_dialog_ref if override_dialog_ref else target_npc_data.get("dialog_ref")
+
     npc_name = target_npc_data.get("name", "Someone")
     npc_id = target_npc_data.get("id", "unknown_npc")
 
-    # --- <<< MODIFIED SECTION for Non-Dialog NPCs >>> ---
-    if not dialog_ref:
-        attempt_flag_name = f"attempted_talk_{npc_id}"
-        already_attempted = _get_flag(attempt_flag_name, default=False)
-
-        print("-" * 30) # Separator before response
-        if not already_attempted:
-            # First attempt: Show examined description and set flag
-            description_to_show = target_npc_data.get("examined_description",
-                                                     target_npc_data.get("description"))
-            # Fallback if even description is missing
-            if not description_to_show:
-                 description_to_show = f"{npc_name} doesn't seem interested in talking right now."
-
-            use_textwrap(description_to_show)
-            _set_flag(attempt_flag_name, True)
-            logging.info(f"First attempt to talk to non-dialog NPC: {npc_id}. Displayed description.")
-            print("-" * 30) # Separator after response
-            return {"status": "no_dialog_first_attempt"}
+    # --- Handle NPCs without Dialog (or if override ref wasn't provided for non-dialog NPC) ---
+    if not dialog_ref_to_use:
+        # Only show description/generic message if we weren't trying to run a specific override (like a reaction)
+        if not override_dialog_ref:
+            attempt_flag_name = f"attempted_talk_{npc_id}"
+            already_attempted = _get_flag(attempt_flag_name, default=False)
+            print("-" * 30)
+            if not already_attempted:
+                description_to_show = target_npc_data.get("examined_description", target_npc_data.get("description"))
+                if not description_to_show: description_to_show = f"{npc_name} doesn't seem interested in talking right now."
+                use_textwrap(description_to_show)
+                _set_flag(attempt_flag_name, True)
+                logging.info(f"First talk attempt to non-dialog NPC: {npc_id}.")
+                print("-" * 30)
+                return {"status": "no_dialog_first_attempt"}
+            else:
+                use_textwrap(f"{npc_name} still doesn't seem interested in talking.")
+                logging.info(f"Subsequent talk attempt to non-dialog NPC: {npc_id}.")
+                print("-" * 30)
+                return {"status": "no_dialog_already_attempted"}
         else:
-            # Subsequent attempts: Generic message
-            use_textwrap(f"{npc_name} still doesn't seem interested in talking.")
-            logging.info(f"Subsequent attempt to talk to non-dialog NPC: {npc_id}.")
-            print("-" * 30) # Separator after response
-            return {"status": "no_dialog_already_attempted"}
-    # --- <<< END MODIFIED SECTION >>> ---
+            # This case shouldn't normally happen if override is used correctly (e.g., for reactions)
+            logging.error(f"run_conversation called with override_dialog_ref for NPC {npc_id} who also lacks a main dialog_ref.")
+            return {"status": "error"}
 
-    # --- Load Dialog Data (if dialog_ref exists) ---
-    dialog_nodes = _load_dialog_data(dialog_ref)
-    if dialog_nodes is None:
+
+    # --- Load Dialog Data ---
+    dialog_nodes = _load_dialog_data(dialog_ref_to_use)
+    if dialog_nodes is None or not dialog_nodes: # Check if empty after loading
         use_textwrap("Sorry, there seems to be a problem with the conversation data.")
+        logging.error(f"Failed to load or found no nodes in dialog: {dialog_ref_to_use}")
         return {"status": "error"}
 
+    # --- Determine Start Node ---
+    # Assume the dialog_ref itself is the starting node ID,
+    # OR look for a specific key like "start" if the ref is just the filename.
+    # Let's stick with dialog_ref == start_node_id for now.
+    current_node_id = dialog_ref_to_use
+    # Check if the specific start node exists
+    if current_node_id not in dialog_nodes:
+         # Fallback: Try to find a node named "start" or take the first node found
+         fallback_start_node = dialog_nodes.get("start", next(iter(dialog_nodes), None))
+         if fallback_start_node:
+              logging.warning(f"Start node '{current_node_id}' not found in {dialog_ref_to_use}. Falling back to '{fallback_start_node}'.")
+              current_node_id = fallback_start_node
+         else: # Should not happen if dialog_nodes is not empty, but safety check
+              logging.error(f"Cannot find starting node '{current_node_id}' or any fallback node in {dialog_ref_to_use}.")
+              return {"status": "error"}
+
+
     # --- Conversation State ---
-    current_node_id = dialog_ref # Start at the node specified by dialog_ref
     session_choices_made = set() # Tracks choices made this session
 
     print("-" * 30) # Separator at start of actual dialog
@@ -262,7 +302,7 @@ def run_conversation(character, target_npc_data):
     while True:
         current_node = dialog_nodes.get(current_node_id)
         if not current_node:
-            logging.error(f"Dialog Error: Node ID '{current_node_id}' not found in {dialog_ref}.json")
+            logging.error(f"Dialog Error: Node ID '{current_node_id}' not found in {dialog_ref_to_use}.json")
             use_textwrap("The conversation trails off unexpectedly...")
             return {"status": "error"}
 
@@ -274,12 +314,15 @@ def run_conversation(character, target_npc_data):
         # 2. Prepare available player choices
         player_choices_data = current_node.get("player_choices", [])
         available_choices = []
-        if not player_choices_data:
-             logging.debug(f"Node '{current_node_id}' has no player choices. Ending conversation.")
+        if not player_choices_data or not isinstance(player_choices_data, list): # Handle nodes with no/bad choices
+             logging.debug(f"Node '{current_node_id}' has no valid player choices. Ending branch.")
              print("-" * 30)
              return {"status": "ended"}
 
         for index, choice_data in enumerate(player_choices_data):
+            if not isinstance(choice_data, dict): # Skip malformed choices
+                 logging.warning(f"Skipping malformed choice data in node '{current_node_id}': {choice_data}")
+                 continue
             if not _are_conditions_met(choice_data.get("conditions", []), character, target_npc_data):
                 continue
             is_repeatable = choice_data.get("repeatable", False)
@@ -329,7 +372,11 @@ def run_conversation(character, target_npc_data):
         # Mark as chosen if not repeatable
         is_repeatable = chosen_option.get("repeatable", False)
         if not is_repeatable:
-             original_index = player_choices_data.index(chosen_option) if chosen_option in player_choices_data else -1
+             original_index = -1
+             try: # Find original index safely
+                  original_index = player_choices_data.index(chosen_option)
+             except ValueError:
+                  logging.warning("Could not find chosen_option in original list for key generation.")
              choice_key = chosen_option.get("choice_id", f"{current_node_id}_{original_index}")
              if original_index != -1: session_choices_made.add(choice_key)
 
@@ -363,8 +410,8 @@ def run_conversation(character, target_npc_data):
             next_node_id = chosen_option.get("destination_node")
 
         # 6. Move to Next Node or End
-        if not next_node_id:
-            logging.error(f"Chosen option '{chosen_option.get('choice_text')}' has no destination_node!")
+        if not next_node_id or not isinstance(next_node_id, str): # Check type
+            logging.error(f"Chosen option '{chosen_option.get('choice_text')}' has invalid destination_node: {next_node_id}")
             return {"status": "error"}
 
         if next_node_id == "[END_CONVERSATION]":
