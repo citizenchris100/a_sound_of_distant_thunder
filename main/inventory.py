@@ -1,9 +1,10 @@
 from .Util import vowel_start
 import copy 
-from ItemUtil import is_item_broken, get_gun_ammo, set_gun_ammo, get_item_attribute
+from .ItemUtil import is_item_broken, get_gun_ammo, set_gun_ammo, get_item_attribute 
+
 try:
 
-    from ItemUtil import is_item_broken
+    from .ItemUtil import is_item_broken
 except ImportError:
     print("ERROR in inventory.py: Could not import 'is_item_broken' from ItemUtil. Weapon loot check will fail.")
     # Define a dummy function to avoid immediate crashes later

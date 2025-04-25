@@ -1,5 +1,3 @@
-# --- In main/game.py ---
-# Make sure these imports are present at the top of your game.py
 import sys
 import os
 import copy

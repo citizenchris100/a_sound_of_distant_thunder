@@ -2,12 +2,12 @@ import random
 import math
 import sys
 import datetime
-import inventory 
-import lvl_system
-import hero 
+from . import inventory  
+from . import lvl_system
+from . import hero 
 import os 
-from NPC import Enemy 
-from ItemUtil import (
+from .NPC import Enemy 
+from .ItemUtil import (
     get_item_attribute, get_item_property,
     decrease_item_durability, is_item_broken,
     get_gun_ammo, set_gun_ammo

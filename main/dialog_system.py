@@ -1,4 +1,4 @@
-from Util import use_textwrap
+from .Util import use_textwrap
 import random
 import re
 
