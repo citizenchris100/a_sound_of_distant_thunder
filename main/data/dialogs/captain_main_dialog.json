@@ -1,0 +1,126 @@
+{
+  "dialog_nodes": {
+    "captain_main_dialog": {
+      "npc_text": "Alright, we're nearing the drop-off point. The island's looking just as grim as the reports said. Anything else you need before you head out?",
+      "player_choices": [
+        {
+          "choice_id": "ask_island",
+          "choice_text": "What can you tell me about this island?",
+          "destination_node": "captain_tell_island",
+          "conditions": [
+            {"condition_type": "check_flag", "flag_name": "asked_about_island", "flag_value": false}
+          ],
+          "effects": [
+            {"effect_type": "set_flag", "flag_name": "asked_about_island", "flag_value": true}
+          ]
+        },
+        {
+          "choice_id": "ask_storm",
+          "choice_text": "That storm looks nasty.",
+          "destination_node": "captain_tell_storm",
+           "conditions": [
+            {"condition_type": "check_flag", "flag_name": "asked_about_storm", "flag_value": false}
+          ],
+          "effects": [
+            {"effect_type": "set_flag", "flag_name": "asked_about_storm", "flag_value": true}
+          ]
+        },
+        {
+          "choice_id": "ask_disembark",
+          "choice_text": "I'm ready to disembark.",
+          "destination_node": "captain_confirm_disembark",
+          "conditions": [],
+          "effects": []
+        },
+        {
+          "choice_id": "leave_initial",
+          "choice_text": "(Say nothing and step back)",
+          "destination_node": "[END_CONVERSATION]",
+          "conditions": [],
+          "effects": []
+        }
+      ]
+    },
+    "captain_tell_island": {
+      "npc_text": "Don't know much. Used to ferry supplies now and then, but that dried up weeks ago. Heard whispers about... strange happenings. Folks stopped coming back. Be careful out there.",
+      "player_choices": [
+         
+         {
+          "choice_id": "continue_after_island",
+          "choice_text": "[CONTINUE]", 
+          "destination_node": "captain_anything_else", 
+          "conditions": [],
+          "effects": []
+        }
+      ]
+    },
+    "captain_tell_storm": {
+      "npc_text": "Aye, it's rolling in fast. Looks like a bad one. We won't be able to stick around long after dropping you off. Twelve hours, tops, then we're gone, storm or no storm. Got it?",
+      "player_choices": [
+         
+         {
+          "choice_id": "continue_after_storm",
+          "choice_text": "[CONTINUE]", 
+          "destination_node": "captain_anything_else", 
+          "conditions": [],
+          "effects": []
+        }
+      ]
+    },
+    "captain_anything_else": {
+        "npc_text": null, 
+        "player_choices": [
+             {
+                "choice_id": "ask_island_again",
+                "choice_text": "What can you tell me about this island?",
+                "destination_node": "captain_tell_island",
+                "conditions": [
+                    {"condition_type": "check_flag", "flag_name": "asked_about_island", "flag_value": false}
+                ],
+                "effects": [
+                    {"effect_type": "set_flag", "flag_name": "asked_about_island", "flag_value": true}
+                ]
+            },
+            {
+                "choice_id": "ask_storm_again",
+                "choice_text": "That storm looks nasty.",
+                "destination_node": "captain_tell_storm",
+                 "conditions": [
+                    {"condition_type": "check_flag", "flag_name": "asked_about_storm", "flag_value": false}
+                ],
+                "effects": [
+                    {"effect_type": "set_flag", "flag_name": "asked_about_storm", "flag_value": true}
+                ]
+            },
+            {
+                "choice_id": "ask_disembark_from_else",
+                "choice_text": "I'm ready to disembark.",
+                "destination_node": "captain_confirm_disembark",
+                "conditions": [],
+                "effects": []
+            },
+            {
+                "choice_id": "leave_from_else",
+                "choice_text": "(Leave the conversation)",
+                "destination_node": "[END_CONVERSATION]",
+                "conditions": [],
+                "effects": []
+            }
+        ]
+    },
+    "captain_confirm_disembark": {
+      "npc_text": "Alright then. We'll get the inflatable ready. Remember, twelve hours. Don't be late, or you're finding your own way home. Good luck.",
+      "player_choices": [
+        {
+          "choice_id": "disembark_final",
+          "choice_text": "(Nod and prepare to leave)",
+          "destination_node": "[END_CONVERSATION]",
+          "conditions": [],
+          "effects": [
+            {"effect_type": "set_flag", "flag_name": "player_agreed_disembark", "flag_value": true}
+          ]
+        }
+      ]
+    }
+  }
+}
