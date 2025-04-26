@@ -219,7 +219,16 @@ def main_game_loop(character):
                         try: battle_result_entry = battle_system.battle_state(character, combatants, surprise=True)
                         except Exception as e: logging.exception("Battle error on entry:"); print("Combat error!")
                         if character.get_health_points() <= 0: logging.info("Player defeated on entry."); game_is_running = False; break
-                        # <<< Don't process result here, moved to end of loop >>>
+                        # Process result immediately after battle call
+                        if battle_result_entry and battle_result_entry.get("status") == "enemies_defeated":
+                            defeated_enemies_list = battle_result_entry.get("defeated_enemies", [])
+                            for defeated_obj in defeated_enemies_list:
+                                defeated_npc_id_entry = getattr(defeated_obj, 'original_id', None)
+                                if defeated_npc_id_entry:
+                                    logging.info(f"Setting defeat flag for NPC {defeated_npc_id_entry}"); dialog_system._set_flag(f"npc_defeated_{defeated_npc_id_entry}", True)
+                                    dialog_system._set_flag(f"npc_looted_{defeated_npc_id_entry}", True)
+                                    logging.info(f"Setting looted flag for NPC {defeated_npc_id_entry} after battle.")
+                                else: logging.error("Could not get original_id from defeated NPC object on entry.")
                         combat_started_on_entry = True; break
                     else: logging.error(f"Failed instantiate hostile NPC {npc_id}")
         if not game_is_running: break
@@ -304,7 +313,10 @@ def main_game_loop(character):
         battle_result = battle_result_entry # Carry over result from entry combat if it happened
         battle_result_entry = None # Clear entry result after checking it once
 
+        # <<< Added Debug Print >>>
         print(f"DEBUG: Processing verb: '{verb}' (Type: {type(verb)}), noun: '{noun}' (Type: {type(noun)})")
+        # <<< Added Debug Print >>>
+        print(f"DEBUG: Checking command '{verb}' against known verbs...")
 
         if verb == "quit": print("DEBUG: Matched 'quit'"); print("Quitting."); game_is_running = False; action_executed = True
         elif verb == "help": print("DEBUG: Matched 'help'"); help_menu(); action_executed = True
