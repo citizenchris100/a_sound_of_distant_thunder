@@ -5,6 +5,7 @@
     "examined_description": "This old fart would only grumble if I said anything to him.",
     "state": "neutral",
     "hostile": false,
+    "faction": "boat_crew",
     "aliases": ["deck hand 2"],
     "initial_fondness": 0, 
     "stats": {

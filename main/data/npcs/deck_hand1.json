@@ -5,6 +5,7 @@
     "examined_description": "The kid avoids eye contact. He seems entirely focussed on the job at hand and shows little to no interest in conversation.",
     "state": "neutral",
     "hostile": false,
+    "faction": "boat_crew",
     "aliases": ["deck hand 1"],
     "initial_fondness": 0, 
     "stats": {

@@ -64,8 +64,8 @@
           "strength": { "type": "integer", "minimum": 0 },
           "accuracy": { "type": "integer", "minimum": 0 },
           "charm": { "type": "integer", "minimum": 0 },
-          "awareness": { "type": "integer", "minimum": 0 }, 
-          "gun_skill": { "type": "integer", "minimum": 0 } 
+          "awareness": { "type": "integer", "minimum": 0 },
+          "gun_skill": { "type": "integer", "minimum": 0 }
         },
         "additionalProperties": true 
     },
@@ -99,7 +99,6 @@
     "id",
     "name",
     "description"
-    
   ],
-  "additionalProperties": true 
+  "additionalProperties": true
 }
