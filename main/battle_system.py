@@ -226,7 +226,7 @@ def battle_state(character_var, initial_combatants, surprise=False):
         print(f"{getattr(enemy, 'get_name', lambda: 'Enemy')()}'s Health: {getattr(enemy, 'get_health', lambda: 0)()}")
     print("========================")
 
-    battle_outcome = {"status": "error"}
+    battle_outcome = {"status": "error"} # Default outcome
 
     if surprise:
         print("\nYou were surprised!")
@@ -248,50 +248,48 @@ def battle_state(character_var, initial_combatants, surprise=False):
         for i, enemy in enumerate(active_combatants):
             enemy_name = getattr(enemy, 'get_name', lambda: f'Enemy {i+1}')()
             enemy_hp = getattr(enemy, 'get_health', lambda: '?')()
-            print(f"  {i+1}. Attack {enemy_name} (HP: {enemy_hp})") # Changed prompt
+            print(f"  {i+1}. Attack {enemy_name} (HP: {enemy_hp})")
         print("-" * 10)
         # Display general actions after targets
         num_targets = len(active_combatants)
         for i, opt in enumerate(general_options):
-            print(f"{i+1+num_targets}. {opt}") # Adjust option numbers
+            print(f"{i+1+num_targets}. {opt}")
 
         action_taken = False
         target_enemy = None
-        player_action = None # Store the chosen action type ('melee', 'gun', 'inventory', 'flee')
+        player_action = None
 
         # --- Player Turn Input Loop ---
         while True:
             action_choice_input = input("> ")
             try:
                 action_choice_num = int(action_choice_input)
+                num_targets = len(active_combatants) # Recalculate in case it changed
 
-                # Check if input corresponds to a target
                 if 1 <= action_choice_num <= num_targets:
                     target_index = action_choice_num - 1
                     target_enemy = active_combatants[target_index]
                     target_name = getattr(target_enemy, 'get_name', lambda: f'Target {action_choice_num}')()
-                    # Prompt for action against the selected target
                     print(f"Attack {target_name} with:")
                     print("  1. Melee Attack")
                     print("  2. Gun Attack")
                     print("  3. Back")
-                    while True: # Loop for sub-action input
+                    while True:
                         sub_action_input = input(">> ")
                         try:
                             sub_action_num = int(sub_action_input)
                             if sub_action_num == 1: player_action = "melee"; break
                             elif sub_action_num == 2: player_action = "gun"; break
-                            elif sub_action_num == 3: target_enemy = None; break # Go back to main prompt
+                            elif sub_action_num == 3: target_enemy = None; break # Go back
                             else: print("Invalid action number (1-3).")
                         except ValueError: print("Please enter a number (1-3).")
                         except EOFError: logging.warning("EOF during sub-action."); return {"status": "error"}
-                    if player_action: break # Break main input loop
+                    if player_action: break # Break main input loop if valid attack chosen
 
-                # Check if input corresponds to a general action
                 elif num_targets < action_choice_num <= num_targets + len(general_options):
                     action_index = action_choice_num - num_targets - 1
-                    player_action = general_options[action_index].lower() # 'inventory' or 'flee'
-                    break # Break main input loop
+                    player_action = general_options[action_index].lower()
+                    break
                 else:
                     print("Invalid choice number.")
             except ValueError:
@@ -301,7 +299,6 @@ def battle_state(character_var, initial_combatants, surprise=False):
 
         # --- Process Player Action ---
         if player_action == "melee":
-            # Target enemy should be set from the input loop above
             if target_enemy:
                 action_taken = True; print(f"\n>> Player Turn: Melee Attack on {target_enemy.get_name()} <<")
                 equipped_melee_dict = character_var.get_equipped_melee()
@@ -310,9 +307,7 @@ def battle_state(character_var, initial_combatants, surprise=False):
                 elif is_item_broken(equipped_melee_dict): print(f"   Your {get_item_property(equipped_melee_dict, 'name', 'Weapon')} is broken!"); hit_damage = calculate_melee_hit(character_var, None)
                 else: print(f"   You attack with {get_item_property(equipped_melee_dict, 'name', 'Weapon')}!"); logger.debug(f"Melee: {get_item_property(equipped_melee_dict, 'name', 'N/A')}, Dmg: {get_item_attribute(equipped_melee_dict, 'damage', 'N/A')}, Dur: {get_item_property(equipped_melee_dict, 'current_durability', 'N/A')}"); hit_damage = calculate_melee_hit(character_var, equipped_melee_dict)
                 apply_damage_to_target(target_enemy, hit_damage, character_var.get_name())
-            else:
-                logger.error("Melee action chosen but target_enemy is None.") # Should not happen
-                continue # Skip turn if something went wrong
+            else: logger.error("Melee action chosen but target_enemy is None."); continue
 
         elif player_action == "gun":
             if target_enemy:
@@ -330,9 +325,7 @@ def battle_state(character_var, initial_combatants, surprise=False):
                      hit_roll = random.randint(1, 100); logger.debug(f"Hit Roll={hit_roll} vs Chance={final_hit_chance}% (B:{base_chance} S:{skill_bonus} D:{defense_penalty} L:{luck_mod})")
                      if hit_roll <= final_hit_chance: print("   Your shot hit!"); hit_damage = calculate_gun_hit(character_var, equipped_gun_dict, shots=1); apply_damage_to_target(target_enemy, hit_damage, character_var.get_name())
                      else: print("   Your shot missed!"); calculate_gun_hit(character_var, equipped_gun_dict, shots=1)
-            else:
-                logger.error("Gun action chosen but target_enemy is None.")
-                continue
+            else: logger.error("Gun action chosen but target_enemy is None."); continue
 
         elif player_action == "inventory":
             print("\n>> Player Turn: Access Inventory <<"); inventory.inventory(character_var); action_taken = False
@@ -345,9 +338,8 @@ def battle_state(character_var, initial_combatants, surprise=False):
             else: print("   You couldn't escape!")
 
         # --- Check if Targeted Enemy Defeated ---
-        # Check the specific target first if an attack was made against it
         if target_enemy and getattr(target_enemy, 'get_health', lambda: 0)() <= 0:
-            if target_enemy in active_combatants: # Check if it's still in the active list
+            if target_enemy in active_combatants:
                  enemy_defeat(character_var, target_enemy)
                  defeated_this_fight.append(target_enemy)
                  active_combatants.remove(target_enemy)
@@ -361,7 +353,7 @@ def battle_state(character_var, initial_combatants, surprise=False):
         # --- Enemy Turn(s) ---
         if action_taken and character_var.get_health_points() > 0:
              print("\n>> Enemy Turn(s) <<")
-             for enemy_var in list(active_combatants): # Iterate copy
+             for enemy_var in list(active_combatants):
                   if enemy_var in active_combatants and getattr(enemy_var, 'get_health', lambda: 0)() > 0:
                        enemy_attack(character_var, enemy_var)
                        if character_var.get_health_points() <= 0: break

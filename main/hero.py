@@ -13,8 +13,8 @@ class Hero:
         self.name = 'Alex'
         self.exp = 0
         self.lvl = 0
-        self.hp = 65
-        self.hp_limit = 65
+        self.hp = 165
+        self.hp_limit = 165
         self.status_effects = []
         self.inventory = []
         self.inventory_limit = 5

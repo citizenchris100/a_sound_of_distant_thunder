@@ -10,7 +10,7 @@
   "initial_fondness": 0,
   "stats": {
     "max_health": 30,
-    "current_health": 30,
+    "current_health": 5,
     "defense": 3,
     "strength": 6,
     "accuracy": 4,
