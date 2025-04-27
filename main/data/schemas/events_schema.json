@@ -1,0 +1,118 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Game Events Schema",
+    "description": "Defines the structure for game events data.",
+    "type": "object",
+    "items": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "description": "Unique internal identifier for the event.",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "event_type": {
+          "type": "string",
+          "description": "Type of event that determines handler behavior.",
+          "enum": [
+            "display_text",
+            "loot_container",
+            "trigger_dialog",
+            "set_flag",
+            "check_flag",
+            "give_item",
+            "teleport",
+            "display_chapter",
+            "modify_location",
+            "custom"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of what this event does."
+        },
+        "payload": {
+          "type": "object",
+          "description": "Event-specific data passed to the handler.",
+          "additionalProperties": true
+        },
+        "conditions": {
+          "type": "array",
+          "description": "List of conditions that must be met for event to fire.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["check_flag", "check_stat", "check_item", "check_location", "check_npc_state"]
+              },
+              "flag_name": {
+                "type": "string",
+                "description": "For check_flag conditions."
+              },
+              "expected_value": {
+                "description": "Expected value for flag check."
+              },
+              "stat_name": {
+                "type": "string",
+                "description": "For check_stat conditions."
+              },
+              "min_value": {
+                "type": "number",
+                "description": "Minimum value for stat check."
+              },
+              "max_value": {
+                "type": "number",
+                "description": "Maximum value for stat check."
+              },
+              "item_id": {
+                "type": "string",
+                "description": "For check_item conditions."
+              },
+              "min_quantity": {
+                "type": "integer",
+                "description": "Minimum quantity for item check."
+              },
+              "location_id": {
+                "type": "string",
+                "description": "For check_location conditions."
+              },
+              "npc_id": {
+                "type": "string",
+                "description": "For check_npc_state conditions."
+              },
+              "required_state": {
+                "type": "string",
+                "description": "Required NPC state."
+              }
+            },
+            "required": ["type"]
+          }
+        },
+        "chain_events": {
+          "type": "array",
+          "description": "Event IDs to trigger after this event executes.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Execution priority (higher executes first).",
+          "default": 0
+        },
+        "repeatable": {
+          "type": "boolean",
+          "description": "Whether event can be executed multiple times.",
+          "default": false
+        },
+        "delay_turns": {
+          "type": "integer",
+          "description": "Number of turns to delay before executing.",
+          "minimum": 0
+        }
+      },
+      "required": ["event_id", "event_type"],
+      "additionalProperties": false
+    }
+  }

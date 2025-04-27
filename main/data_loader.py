@@ -178,33 +178,106 @@ def load_npc_data(npc_data_path):
     logging.info(f"Finished loading {len(npc_data)} NPCs.")
     return npc_data
 
+def load_event_data(directory_path="main/data/events", schema_path="main/data/schemas/events_schema.json"):
+    """
+    Loads all event JSON files from a directory, validates each against a schema,
+    and returns a dictionary keyed by event_id.
+    
+    Args:
+        directory_path (str): Path to the directory containing event JSON files.
+        schema_path (str): Path to the JSON schema file for events.
+    
+    Returns:
+        dict: Dictionary of event objects keyed by event_id.
+    """
+    try:
+        with open(schema_path, 'r') as schema_file:
+            event_schema = json.load(schema_file)
+        logger.debug("Event schema loaded successfully from %s", schema_path)
+    except FileNotFoundError:
+        logger.error("Event schema file not found at %s", schema_path)
+        return None
+    except json.JSONDecodeError as e:
+        logger.error("Error decoding JSON in event schema file %s: %s", schema_path, e)
+        return None
+    except Exception as e:
+        logger.exception("Unexpected error loading event schema:")
+        return None
+    
+    events_dict = {}
+    try:
+        logger.info("Scanning for event files in: %s", directory_path)
+        filenames = os.listdir(directory_path)
+    except FileNotFoundError:
+        logger.error("Events directory not found at %s", directory_path)
+        return None
+    except Exception as e:
+        logger.exception("Unexpected error listing events directory:")
+        return None
+    
+    loaded_count = 0
+    error_count = 0
+    for filename in filenames:
+        if filename.endswith(".json"):
+            file_path = os.path.join(directory_path, filename)
+            try:
+                with open(file_path, 'r') as data_file:
+                    event_data = json.load(data_file)
+                
+                # Event files may contain multiple events
+                if isinstance(event_data, dict):
+                    for event_id, event_obj in event_data.items():
+                        try:
+                            validate(instance=event_obj, schema=event_schema)
+                            events_dict[event_id] = event_obj
+                            loaded_count += 1
+                        except ValidationError as e:
+                            logger.error("Event validation failed for %s in %s: %s", event_id, filename, e.message)
+                            error_count += 1
+                else:
+                    logger.warning("Event file %s has unexpected format (not a dictionary).", filename)
+                    
+            except FileNotFoundError:
+                logger.error("Event file %s listed but not found during load.", file_path)
+                error_count += 1
+            except json.JSONDecodeError as e:
+                logger.error("Error decoding JSON in event file %s: %s", file_path, e)
+                error_count += 1
+            except Exception as e:
+                logger.exception("Unexpected error processing event file '%s':", filename)
+                error_count += 1
+    
+    logger.info("Event loading finished. Loaded: %d, Errors/Skipped: %d", loaded_count, error_count)
+    return events_dict
+
 def load_all_data(base_data_path="main/data"):
-    """Loads all game data (locations, items, NPCs) from subdirectories."""
+    """Loads all game data (locations, items, NPCs, events) from subdirectories."""
     logging.info("--- Starting Full Data Load ---")
 
     # Define paths to data subdirectories
     locations_path = os.path.join(base_data_path, "locations")
     items_path = os.path.join(base_data_path, "items")
     npcs_path = os.path.join(base_data_path, "npcs")
+    events_path = os.path.join(base_data_path, "events")
 
     # Call load functions WITH paths and store results in a single dictionary
     all_data = {
         "locations": load_location_data(locations_path),
         "items": load_items_data(items_path),
-        "npcs": load_npc_data(npcs_path)
+        "npcs": load_npc_data(npcs_path),
+        "events": load_event_data(events_path)
     }
 
     # Optional: Add checks here to ensure critical data loaded successfully
-    # Using .get() is safer in case a load function returned None or empty
     if not all_data.get("locations"):
         logging.critical("Failed to load any location data! Check path and files.")
-        # Consider returning None or raising an exception if essential data fails
     if not all_data.get("items"):
         logging.critical("Failed to load any item data! Check path and files.")
     if not all_data.get("npcs"):
         logging.warning("No NPC data loaded. Check path or this might be expected.")
+    if not all_data.get("events"):
+        logging.warning("No event data loaded. Check path or this might be expected.")
 
     logging.info("--- Full Data Load Finished ---")
-    # Return the single dictionary containing all loaded data
     return all_data
 

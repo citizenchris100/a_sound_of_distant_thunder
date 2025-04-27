@@ -19,14 +19,14 @@ def _get_flag(flag_name, default=False):
     """Gets a flag value from the temporary game state."""
     val = DIALOG_GAME_STATE["flags"].get(flag_name)
     result = default if val is None else val
-    # <<< Added Debug Print >>>
-    print(f"DEBUG [Flag Get]: Getting flag '{flag_name}'. Value found: {val}. Returning: {result}")
+    
+    
     return result
 
 def _set_flag(flag_name, value):
     """Sets a flag value in the temporary game state."""
     # <<< Added Debug Print >>>
-    print(f"DEBUG [Flag Set]: Setting flag '{flag_name}' to '{value}'")
+    
     logger.debug(f"Setting flag: {flag_name} = {value}")
     DIALOG_GAME_STATE["flags"][flag_name] = value
 

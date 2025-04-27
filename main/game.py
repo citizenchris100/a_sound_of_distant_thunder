@@ -15,11 +15,13 @@ from . import data_loader
 from . import mechanics
 from .NPC import Enemy, Human # Import NPC classes
 from .ItemUtil import get_item_attribute, is_item_broken # Example - Keep other needed imports
+from . import event_system
 
 # --- Global Data Variables ---
 game_locations_data = {}
 game_items_data = {}
 game_npc_data = {}
+event_manager = None
 
 # --- Utility Function ---
 def use_textwrap(text):
@@ -39,71 +41,43 @@ def help_menu():
 # --- Event Handler Function ---
 def handle_game_event(event_string, character, location_data, target_data=None):
     """Handles specific game events/actions triggered by action strings."""
-    global game_items_data, game_locations_data
+    global event_manager
+    
+    if not event_manager:
+        logging.error("Event manager not initialized")
+        print("Error: Event system not available.")
+        return {"status": "error", "message": "Event system not initialized"}
+    
     target_name = target_data.get('name', 'N/A') if isinstance(target_data, dict) else 'Location Event'
     logging.info(f"Handling event: {event_string} for target: {target_name}")
     print("-" * 30)
-    action_type = event_string; action_payload = None
-    if ":" in event_string: parts = event_string.split(":", 1); action_type = parts[0]; action_payload = parts[1] if len(parts) > 1 else None
-
-    if action_type == "loot_container":
-        target_id = target_data.get('id'); target_name = target_data.get('name', 'container')
-        live_target_data = None; interactable_index = -1; interactable_list = location_data.get('interactables', [])
-        if isinstance(interactable_list, list):
-            for index, data in enumerate(interactable_list):
-                if isinstance(data, dict) and data.get('id') == target_id: live_target_data = data; interactable_index = index; break
-        else: logging.warning(f"Loc '{location_data.get('location_id', 'Unknown')}' malformed 'interactables': {interactable_list}")
-        if live_target_data is None: print(f"Error: Cannot find live data for '{target_id}'."); logging.error("Cannot find live data for '%s'", target_id); print("-" * 30); return
-        current_state = live_target_data.get('state', 'closed')
-        if current_state != 'empty':
-            print(f"You open the {target_name}.")
-            item_ids_in_container = live_target_data.get('contains_items', [])
-            if not item_ids_in_container or not isinstance(item_ids_in_container, list):
-                print("...but it's empty."); location_data['interactables'][interactable_index]['state'] = 'empty'; location_data['interactables'][interactable_index]['description'] = f"An empty {target_name}."
-                verb_that_triggered = next((v for v, a in target_data.get('actions',{}).items() if a == event_string), None)
-                if verb_that_triggered and 'actions' in location_data['interactables'][interactable_index] and verb_that_triggered in location_data['interactables'][interactable_index].get('actions',{}):
-                     if 'actions' in location_data['interactables'][interactable_index]: location_data['interactables'][interactable_index]['actions'].pop(verb_that_triggered, None)
-            else:
-                items_found_data = []; items_found_names = []
-                for item_id in item_ids_in_container:
-                    if not isinstance(item_id, str): logging.warning(f"Non-string ID in container '{target_id}': {item_id}"); continue
-                    item_data = game_items_data.get(item_id)
-                    if item_data and isinstance(item_data, dict): items_found_data.append(item_data); items_found_names.append(item_data.get('name', item_id))
-                    else: logging.warning("Item def missing/malformed '%s' in container '%s'.", item_id, target_id)
-                if items_found_names:
-                    print("Inside you find:"); [print(f"- {name}") for name in items_found_names]
-                    while True:
-                        choice = input("Take these items? (yes/no) > ").lower().strip()
-                        if choice in ['yes', 'y']:
-                            print("\nYou added:"); items_added_count = 0
-                            for item_data_to_add in items_found_data:
-                                if character.add_inventory(copy.deepcopy(item_data_to_add)): print(f"- {item_data_to_add.get('name', 'item')}"); items_added_count += 1
-                                else: print(f"Inventory full. Could not take {item_data_to_add.get('name', 'item')}.")
-                            location_data['interactables'][interactable_index]['state'] = 'empty'; location_data['interactables'][interactable_index]['description'] = f"An empty {target_name}."
-                            location_data['interactables'][interactable_index]['contains_items'] = []
-                            verb_that_triggered = next((v for v, a in target_data.get('actions',{}).items() if a == event_string), None)
-                            if verb_that_triggered and 'actions' in location_data['interactables'][interactable_index] and verb_that_triggered in location_data['interactables'][interactable_index]['actions']: location_data['interactables'][interactable_index]['actions'].pop(verb_that_triggered, None)
-                            break
-                        elif choice in ['no', 'n']: print("You close it back up."); break
-                        else: print("Please answer yes or no.")
-                else:
-                    print("It seems to be empty."); location_data['interactables'][interactable_index]['state'] = 'empty'; location_data['interactables'][interactable_index]['description'] = f"An empty {target_name}."
-                    verb_that_triggered = next((v for v, a in target_data.get('actions',{}).items() if a == event_string), None)
-                    if verb_that_triggered and 'actions' in location_data['interactables'][interactable_index] and verb_that_triggered in location_data['interactables'][interactable_index]['actions']: location_data['interactables'][interactable_index]['actions'].pop(verb_that_triggered, None)
-        elif current_state == 'empty': print(f"You check the {target_name} again, but it's empty.")
-        else: print(f"The {target_name} state ('{current_state}') prevents interaction.")
-    elif action_type == "display_text":
-        if action_payload: use_textwrap(action_payload)
-        else: logging.warning("display_text missing payload."); use_textwrap("You learn nothing new.")
-    elif action_type == "event" and action_payload == "display_dossier_text":
-        use_textwrap("Mission details: Secure island facility. High risk/reward. Comms down. Investigate."); logging.info("Displayed dossier.")
-    elif action_type == "event" and action_payload == "display_chapter_1_intro":
-        print("-" * 30); print('-         Chapter 1          -'); print("-" * 30)
-        intro_text = """That sound of distant thunder was low and ominous. Like some kind of a warning...""" # Consider loading from data
-        use_textwrap(intro_text)
-        logging.info("Displayed Chapter 1 intro text.")
-    else: print(f"Action '{event_string}' does nothing yet."); logging.warning("Unhandled action type: %s", event_string)
+    
+    # Check if this is a registered event
+    if event_string in event_manager.event_registry:
+        result = event_manager.trigger_event(event_string, character, location_data, target_data)
+        print("-" * 30)
+        return result
+    
+    # Handle "type:payload" format by creating temporary events
+    if ":" in event_string:
+        event_type, event_payload = event_string.split(":", 1)
+        
+        # Create temporary event for backward compatibility with location action strings
+        temp_event = event_system.Event(
+            event_id=f"temp_{event_type}_{hash(event_payload)}",
+            event_type=event_type,
+            payload={"text": event_payload} if event_type == "display_text" else {}
+        )
+        
+        result = event_manager.process_event(temp_event, character, location_data, target_data)
+        print("-" * 30)
+        return result
+    
+    # If not in registry and not "type:payload" format, it's an unknown event
+    print(f"Unknown event: '{event_string}'")
+    logging.warning(f"Unhandled event: {event_string}")
     print("-" * 30)
+    return {"status": "error", "message": f"Unknown event: {event_string}"}
 
 
 # --- NPC Instantiation Helper Function ---
@@ -176,25 +150,33 @@ def find_allies(target_npc_data, location_npcs, all_npc_data):
 
 
 # --- Main Game Loop ---
+# --- Main Game Loop ---
 def main_game_loop(character):
     """Main game loop."""
-    global game_locations_data, game_items_data, game_npc_data
+    global game_locations_data, game_items_data, game_npc_data, event_manager
     logging.debug(f"NPC Data Keys: {list(game_npc_data.keys())}")
     game_is_running = True; first_look = True; examined_this_visit = set(); previous_location_id = None
 
     while game_is_running:
         current_location_id = character.get_location()
-        if not current_location_id or current_location_id not in game_locations_data: print(f"ERROR: Invalid location ID '{current_location_id}'."); logging.critical("Invalid location '%s'.", current_location_id); break
+        if not current_location_id or current_location_id not in game_locations_data: 
+            print(f"ERROR: Invalid location ID '{current_location_id}'."); 
+            logging.critical("Invalid location '%s'.", current_location_id); 
+            break
         current_location = game_locations_data[current_location_id]
 
-        if current_location_id != previous_location_id: logging.debug(f"Loc changed: {previous_location_id} -> {current_location_id}."); examined_this_visit.clear(); previous_location_id = current_location_id; first_look = True
+        if current_location_id != previous_location_id: 
+            logging.debug(f"Loc changed: {previous_location_id} -> {current_location_id}."); 
+            examined_this_visit.clear(); 
+            previous_location_id = current_location_id; 
+            first_look = True
 
         # --- Check for Hostile NPCs on Entry ---
         combat_started_on_entry = False
         entry_npcs = current_location.get('npcs', [])
-        battle_result_entry = None # Store battle result from entry combat
+        battle_result_entry = None
         if first_look and isinstance(entry_npcs, list):
-            for npc_id in list(entry_npcs): # Iterate copy
+            for npc_id in list(entry_npcs):
                 if not isinstance(npc_id, str): continue
                 npc_data = game_npc_data.get(npc_id)
                 is_defeated = dialog_system._get_flag(f"npc_defeated_{npc_id}", default=False)
@@ -220,7 +202,8 @@ def main_game_loop(character):
                             for defeated_obj in defeated_enemies_list:
                                 defeated_npc_id_entry = getattr(defeated_obj, 'original_id', None)
                                 if defeated_npc_id_entry:
-                                    logging.info(f"Setting defeat flag for NPC {defeated_npc_id_entry}"); dialog_system._set_flag(f"npc_defeated_{defeated_npc_id_entry}", True)
+                                    logging.info(f"Setting defeat flag for NPC {defeated_npc_id_entry}"); 
+                                    dialog_system._set_flag(f"npc_defeated_{defeated_npc_id_entry}", True)
                                 else: logging.error("Could not get original_id from defeated NPC object on entry.")
                         combat_started_on_entry = True; break
                     else: logging.error(f"Failed instantiate hostile NPC {npc_id}")
@@ -238,7 +221,10 @@ def main_game_loop(character):
                  for event_str in entry_events:
                      event_flag_name = f"event_done_{current_location_id}_{event_str}"
                      if not dialog_system._get_flag(event_flag_name, default=False):
-                          print("-" * 10); handle_game_event(event_str, character, current_location, None); dialog_system._set_flag(event_flag_name, True); print("-" * 10)
+                          print("-" * 10); 
+                          handle_game_event(event_str, character, current_location, None); 
+                          dialog_system._set_flag(event_flag_name, True); 
+                          print("-" * 10)
                      else: logging.debug(f"Skipping event: {event_str}")
             elif entry_events: logging.warning(f"Malformed 'events_on_entry': {entry_events}")
         else: use_textwrap(current_location.get('visited_description', current_location.get('description', 'No description.')))
@@ -301,18 +287,16 @@ def main_game_loop(character):
         logging.debug(f"Parsed: V='{verb}', N='{noun}'")
 
         # --- Execute Actions ---
-        battle_result = battle_result_entry # Carry over result from entry combat if it happened
-        battle_result_entry = None # Clear entry result after checking it once
+        battle_result = battle_result_entry
+        battle_result_entry = None
 
-
-        if verb == "quit": print("DEBUG: Matched 'quit'"); print("Quitting."); game_is_running = False; action_executed = True
-        elif verb == "help": print("DEBUG: Matched 'help'"); help_menu(); action_executed = True
+        if verb == "quit": game_is_running = False; action_executed = True
+        elif verb == "help": help_menu(); action_executed = True
         elif verb == "inventory":
-            print("DEBUG: Matched 'inventory'")
             try: inventory.inventory(character)
             except Exception as e: logging.exception("Inv error:"); print("Inv error.")
             action_executed = True
-        elif verb == "look" and not noun: print("DEBUG: Matched 'look'"); first_look = True; print("\nLooking..."); action_executed = True
+        elif verb == "look" and not noun: first_look = True; print("\nLooking..."); action_executed = True
         elif verb == "go":
              available_exits = current_location.get('exits', {});
              if isinstance(available_exits, dict) and noun in available_exits:
@@ -323,7 +307,7 @@ def main_game_loop(character):
              else: print(f"Can't go '{noun}'.")
              action_executed = True
         elif verb == "talk" or verb == "speak":
-            print(f"DEBUG: Entered 'talk' handler with noun: '{noun}'")
+            
             if not noun: print("Talk who?")
             else:
                 target_npc_data = None; npc_list_ids = current_location.get('npcs', [])
@@ -355,16 +339,14 @@ def main_game_loop(character):
                                 if enemy_object:
                                      allies_joining = find_allies(enemy_data, current_location.get('npcs', []), game_npc_data)
                                      combatants = [enemy_object] + allies_joining
-                                     try: battle_result = battle_system.battle_state(character, combatants) # Store result
+                                     try: battle_result = battle_system.battle_state(character, combatants)
                                      except Exception as e: logging.exception("Battle error:"); print("Combat error.")
                                      if character.get_health_points() <= 0: logging.info("Player defeated."); game_is_running = False
-                                     # <<< Process result immediately >>>
                                      if battle_result and battle_result.get("status") == "enemies_defeated":
                                          defeated_enemies_list = battle_result.get("defeated_enemies", [])
                                          for defeated_obj in defeated_enemies_list:
                                              defeated_npc_id = getattr(defeated_obj, 'original_id', None)
                                              if defeated_npc_id:
-                                                 
                                                  logging.info(f"Setting defeat flag for NPC {defeated_npc_id}")
                                                  dialog_system._set_flag(f"npc_defeated_{defeated_npc_id}", True)
                                              else: logging.error("Could not get original_id from defeated obj.")
@@ -375,7 +357,6 @@ def main_game_loop(character):
                 elif not action_executed: print(f"See no '{noun}' here.")
             action_executed = True
         elif verb == "attack":
-            
             if not noun: print("Attack who?")
             else:
                 target_npc_data = None; npc_list_ids = current_location.get('npcs', [])
@@ -390,9 +371,9 @@ def main_game_loop(character):
                         
                         if noun == npc_name_lower or noun in npc_aliases_lower:
                             is_defeated = dialog_system._get_flag(f"npc_defeated_{npc_id}", default=False)
-                            print(f"DEBUG [Attack Check]: Checking defeat flag for {npc_id}. Result: {is_defeated}") # DEBUG
+                            
                             if is_defeated: print(f"No point attacking the body of {npc_data.get('name', 'the figure')}."); target_npc_data = None; action_executed = True; break
-                            else: target_npc_data = npc_data; logging.info(f"Player targets attack: {npc_id}"); print(f"DEBUG [Attack]: Match found for {npc_id}"); break
+                            else: target_npc_data = npc_data; logging.info(f"Player targets attack: {npc_id}"); break
                 if target_npc_data:
                     npc_id_attacked = target_npc_data.get('id'); npc_name_attacked = target_npc_data.get('name', 'them')
                     print(f"\nYou move to attack {npc_name_attacked}!")
@@ -405,16 +386,14 @@ def main_game_loop(character):
                     if enemy_object:
                          allies_joining = find_allies(target_npc_data, current_location.get('npcs', []), game_npc_data)
                          combatants = [enemy_object] + allies_joining
-                         try: battle_result = battle_system.battle_state(character, combatants, surprise=False) # Store result
+                         try: battle_result = battle_system.battle_state(character, combatants, surprise=False)
                          except Exception as e: logging.exception("Battle error:"); print("Combat error.")
                          if character.get_health_points() <= 0: logging.info("Player defeated."); game_is_running = False
-                         # <<< Process battle result immediately >>>
                          if battle_result and battle_result.get("status") == "enemies_defeated":
                              defeated_enemies_list = battle_result.get("defeated_enemies", [])
                              for defeated_obj in defeated_enemies_list:
                                  defeated_npc_id = getattr(defeated_obj, 'original_id', None)
                                  if defeated_npc_id:
-                                     
                                      logging.info(f"Setting defeat flag for NPC {defeated_npc_id}")
                                      dialog_system._set_flag(f"npc_defeated_{defeated_npc_id}", True)
                                  else: logging.error("Could not get original_id from defeated obj.")
@@ -422,7 +401,6 @@ def main_game_loop(character):
                 elif not action_executed: print(f"See no '{noun}' here to attack.")
             action_executed = True
         elif verb == "take":
-            
             if not noun: print("Take what?")
             else:
                 item_taken = False; items_in_location = list(current_location.get('items', [])); item_index_to_remove = -1
@@ -461,7 +439,7 @@ def main_game_loop(character):
                     
                     for npc_id in npc_list_ids:
                          if not isinstance(npc_id, str): continue;
-                         npc_data = game_npc_data.get(npc_id) # Fetch data for CURRENT npc_id
+                         npc_data = game_npc_data.get(npc_id)
                          
                          if npc_data and isinstance(npc_data, dict):
                               npc_name_lower = npc_data.get('name','').lower()
@@ -470,9 +448,9 @@ def main_game_loop(character):
                               body_name = f"body of {npc_name_lower}"
                               
                               if noun == npc_name_lower or noun in npc_aliases_lower or noun == body_name:
-                                  matched_npc_data = npc_data; print(f"DEBUG [Examine]: Match found for {npc_id}"); break
+                                  matched_npc_data = npc_data; break
                 if matched_npc_data:
-                    npc_id = matched_npc_data.get('id') # Get ID from matched data
+                    npc_id = matched_npc_data.get('id')
                     is_defeated = dialog_system._get_flag(f"npc_defeated_{npc_id}", default=False)
                     
                     print("-" * 30)
@@ -483,34 +461,27 @@ def main_game_loop(character):
                         remaining_inventory = dialog_system._get_flag(remaining_inventory_flag, default=None)
                         
                         if remaining_inventory and len(remaining_inventory) == 0:
-                            # Inventory is empty, NPC is fully looted
                             print(f"You search the body of {matched_npc_data.get('name')} again, but find nothing more.")
                         else:
                             print(f"You search the body of {matched_npc_data.get('name')}...")
                             enemy_object = create_npc_instance(matched_npc_data)
                             if enemy_object:
                                 if remaining_inventory is None:
-                                    # First time looting - use original inventory and store it
                                     initial_inventory = copy.deepcopy(enemy_object.get_inventory())
                                     equipped_weapon = enemy_object.get_equipped_melee()
                                     if equipped_weapon and not is_item_broken(equipped_weapon):
                                         initial_inventory.append(copy.deepcopy(equipped_weapon))
                                     dialog_system._set_flag(remaining_inventory_flag, initial_inventory)
                                 else:
-                                    # Use stored inventory state
                                     enemy_object.set_inventory(copy.deepcopy(remaining_inventory))
-                                    # Clear equipped weapon since it's already in the inventory if available
                                     enemy_object.set_equipped_melee(None)
                                 
-                                # Run the looting process
                                 try:
                                     inventory.loot_add(character, enemy_object)
                                     
-                                    # After looting, save the updated inventory state
                                     updated_inventory = copy.deepcopy(enemy_object.get_inventory())
                                     dialog_system._set_flag(remaining_inventory_flag, updated_inventory)
                                     
-                                    # If nothing remains after looting, mark as fully looted
                                     if not updated_inventory:
                                         dialog_system._set_flag(f"npc_looted_{npc_id}", True)
                                         
@@ -520,25 +491,25 @@ def main_game_loop(character):
                             else:
                                 logging.error(f"Could not instantiate NPC {npc_id} to loot body.")
                                 print("Could not examine body.")
-                    else: # Original examine logic for live NPCs
+                    else:
                         
                         examine_desc = matched_npc_data.get("examined_description", matched_npc_data.get("description")); use_textwrap(examine_desc if examine_desc else f"Look closely at {matched_npc_data.get('name','them')}.")
                         if matched_npc_data.get("dialog_ref"): print(f"\nCould try: \n- talk {matched_npc_data.get('name').lower()}")
                     target_found_and_action_valid = True; action_executed = True
 
-            if not action_executed: # Check objects/items only if NPC examine didn't handle it
+            if not action_executed:
                 potential_targets = (current_location.get('interactables', []) if isinstance(current_location.get('interactables'), list) else []) + (current_location.get('items', []) if isinstance(current_location.get('items'), list) else [])
                 matched_target_data = None
                 
                 for target_data in potential_targets:
                      if isinstance(target_data, dict):
                           object_name_lower = target_data.get('name', '').lower()
-                          if noun == object_name_lower: matched_target_data = target_data; print(f"DEBUG [Examine]: Matched object/item: {object_name_lower}"); break
+                          if noun == object_name_lower: matched_target_data = target_data;  break
                 if matched_target_data:
                     object_id = matched_target_data.get('id', matched_target_data.get('name')); available_object_actions = matched_target_data.get('actions', {});
                     if not isinstance(available_object_actions, dict): available_object_actions = {}
                     if verb == "examine":
-                        print("-" * 30); print(f"DEBUG [Examine]: Examining object/item '{noun}'")
+                        print("-" * 30);
                         if object_id in examined_this_visit: use_textwrap(matched_target_data.get("examined_description", f"Nothing new about {noun}."))
                         else:
                             action_string = available_object_actions.get(verb)
@@ -558,7 +529,7 @@ def main_game_loop(character):
                     else: print(f"Can't '{verb}' the {noun}."); target_found_and_action_valid = True
                 elif not target_found_and_action_valid:
                     print(f"You don't see '{noun}' here to examine.")
-                    target_found_and_action_valid = True # Mark as handled (by failing)
+                    target_found_and_action_valid = True
 
             if target_found_and_action_valid: action_executed = True
         # --- Handle Unknown ---
@@ -574,11 +545,14 @@ def main_game_loop(character):
                  for defeated_obj in defeated_enemies_list:
                     defeated_npc_id = getattr(defeated_obj, 'original_id', None)
                     if defeated_npc_id:
-                        print(f"DEBUG: Setting defeat flag for {defeated_npc_id} (End of Loop)") # DEBUG
                         logging.info(f"Setting defeat flag for NPC {defeated_npc_id}")
                         dialog_system._set_flag(f"npc_defeated_{defeated_npc_id}", True)
                     else: logging.error("Could not get original_id from defeated NPC object.")
             battle_result = None
+
+        # --- Advance the turn for the event system ---
+        if event_manager:
+            event_manager.advance_turn(character, current_location)
 
         # --- Loop Continue ---
         if game_is_running:
@@ -588,41 +562,92 @@ def main_game_loop(character):
     print("\n--- Game Loop Ended ---")
 
 # --- Title Screen ---
+# Filename: main/game.py (partial update for title_screen function)
+
 def title_screen():
     """Handles title, data loading, char creation, starts game loop."""
-    global game_data, game_items_data, game_locations_data, game_npc_data
+    global game_data, game_items_data, game_locations_data, game_npc_data, event_manager
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------'); print('- A Sound of Distant Thunder -'); print('------------------------------')
     print('-          1. Play           -'); print('-          2. Help           -'); print('-          3. Quit           -'); print('------------------------------')
     logging.info("--- Loading All Game Data ---")
     try: game_data = data_loader.load_all_data()
     except Exception as e: logging.exception("CRITICAL ERROR during data loading!"); print("\nFATAL ERROR: Data loading failed."); sys.exit(1)
-    if game_data is None or not game_data.get("locations") or not game_data.get("items"): print("\nFATAL ERROR: Failed to load essential game data."); logging.critical("Essential data loading failed."); sys.exit(1)
-    game_locations_data = game_data.get("locations", {}); game_items_data = game_data.get("items", {}); game_npc_data = game_data.get("npcs", {})
-    logging.info("--- Data Load Complete ---"); logging.info("Items: %d, Locations: %d, NPCs: %d", len(game_items_data), len(game_locations_data), len(game_npc_data))
+    if game_data is None or not game_data.get("locations") or not game_data.get("items"): 
+        print("\nFATAL ERROR: Failed to load essential game data."); 
+        logging.critical("Essential data loading failed."); 
+        sys.exit(1)
+    
+    game_locations_data = game_data.get("locations", {}); 
+    game_items_data = game_data.get("items", {}); 
+    game_npc_data = game_data.get("npcs", {})
+    
+    # Initialize event system
+    event_manager = event_system.EventManager(game_data)
+    logging.info(f"Event system initialized with {len(event_manager.event_registry)} events")
+    
+    logging.info("--- Data Load Complete ---"); 
+    logging.info("Items: %d, Locations: %d, NPCs: %d, Events: %d", 
+                 len(game_items_data), len(game_locations_data), len(game_npc_data), len(event_manager.event_registry))
+    
+    # Menu input loop
     while True:
-        option = input("> ")
-        if option.lower() == "play" or option == "1":
-            try: character = hero.class_selection(game_items_data=game_items_data)
-            except Exception as e: logging.exception("Char selection error!"); print("Error during char selection."); character = None
-            if character is None: print("Char creation failed/cancelled."); continue
-            start_location_id = "boat_deck"
-            if start_location_id in game_locations_data: character.set_location(start_location_id); logging.info("Set start location: %s", start_location_id)
+        try:
+            choice = input("> ")
+            if choice == "1" or choice.lower() == "play":
+                logging.info("Player selected: Play")
+                # Character creation
+                character = hero.class_selection(game_items_data)
+                if character is None:
+                    logging.info("Player cancelled character creation")
+                    continue  # Return to title screen if character creation was cancelled
+                
+                # Set starting location
+                initial_location = "boat_deck"
+                if initial_location not in game_locations_data:
+                    logging.error("Starting location '%s' not found!", initial_location)
+                    print(f"Error: Starting location '{initial_location}' not found!")
+                    continue
+                
+                character.set_location(initial_location)
+                logging.info("Starting game at location: %s", initial_location)
+                
+                # Start game loop
+                main_game_loop(character)
+                
+                # If we return from game loop, show title screen again
+                os.system('cls' if os.name == 'nt' else 'clear')
+                print('------------------------------'); print('- A Sound of Distant Thunder -'); print('------------------------------')
+                print('-          1. Play           -'); print('-          2. Help           -'); print('-          3. Quit           -'); print('------------------------------')
+                
+            elif choice == "2" or choice.lower() == "help":
+                logging.info("Player selected: Help")
+                print("\n--- Game Help ---")
+                print("A Sound of Distant Thunder is a text-based adventure game.")
+                print("Navigate through locations, interact with NPCs, and complete quests.")
+                print("Common commands: look, go [direction], talk [person], inventory")
+                print("Press Enter to continue...")
+                input()
+                os.system('cls' if os.name == 'nt' else 'clear')
+                print('------------------------------'); print('- A Sound of Distant Thunder -'); print('------------------------------')
+                print('-          1. Play           -'); print('-          2. Help           -'); print('-          3. Quit           -'); print('------------------------------')
+                
+            elif choice == "3" or choice.lower() == "quit":
+                logging.info("Player selected: Quit")
+                print("Thanks for playing!")
+                sys.exit(0)
+                
             else:
-                fallback_location = next(iter(game_locations_data), None)
-                if fallback_location: print(f"Warning: Start loc '{start_location_id}' not found! Starting at '{fallback_location}'."); logging.warning("Start loc '%s' not found! Using fallback '%s'.", start_location_id, fallback_location); character.set_location(fallback_location)
-                else: print(f"CRITICAL: Start loc '{start_location_id}' not found & no fallback!"); logging.critical("No start/fallback location!"); sys.exit(1)
-            print("-" * 30); print('--Your Character\'s Stats-----')
-            print(f"- Health: {character.get_health_points()}/{character.get_hp_limit()}"); print(f"- Defence: {character.get_defence_points()}"); print(f"- Melee Attack: {character.get_strength_attribute()}"); print(f"- Gun Skill: {character.get_gun_skill()}"); print(f"- Luck: {character.get_luck()}"); print(f"- Charm: {character.get_charm_attribute()}"); print(f"- Stealth: {character.get_stealth_attribute()}")
-            print("-" * 30); print('-         Chapter 1          -'); print("-" * 30)
-            intro_text = """That sound of distant thunder was low and ominous. Like some kind of a warning..."""
-            use_textwrap(intro_text); print("-" * 30)
-            try: main_game_loop(character)
-            except Exception as e: logging.exception("CRITICAL ERROR in main_game_loop!"); print("\n\nFATAL ERROR: Gameplay error. Check logs."); sys.exit(1)
-            print("\nReturning to Title Screen."); break
-        elif option.lower() == "help" or option == "2": help_menu()
-        elif option.lower() == "quit" or option == "3": print("Exiting game. Goodbye!"); sys.exit()
-        else: print("Invalid option.")
+                print("Invalid choice. Please enter 1, 2, or 3.")
+                
+        except EOFError:
+            logging.warning("EOF received in title screen")
+            print("\nGame ended.")
+            sys.exit(0)
+        except KeyboardInterrupt:
+            logging.warning("Keyboard interrupt received in title screen")
+            print("\nGame ended.")
+            sys.exit(0)
 
 # --- Main Execution Guard ---
 if __name__ == "__main__":
