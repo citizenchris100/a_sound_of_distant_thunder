@@ -1,0 +1,20 @@
+{
+    "id": "basic_goblin_01",
+    "name": "Goblin",
+    "description": "A twisted humanoid creature with mottled green skin and sharp, yellowed teeth. Its eyes are bloodshot and wild.",
+    "examined_description": "Upon closer inspection, this creature was clearly once human. The transformation has left it grotesque and violent, barely recognizable as what it once was.",
+    "state": "hostile",
+    "hostile": true,
+    "faction": "mutants",
+    "aliases": ["monster", "creature"],
+    "stats": {
+      "max_health": 20,
+      "current_health": 20,
+      "defense": 2,
+      "strength": 6,
+      "awareness": 3,
+      "luck": 1
+    },
+    "inventory": ["small_ns_pack"],
+    "equipped_items": {}
+  }

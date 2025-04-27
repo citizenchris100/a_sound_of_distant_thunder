@@ -37,6 +37,8 @@ class EventManager:
         self.event_handlers["teleport"] = self._handle_teleport
         self.event_handlers["display_chapter"] = self._handle_display_chapter
         self.event_handlers["modify_location"] = self._handle_modify_location
+        self.event_handlers["custom"] = self._handle_custom
+        self.event_handlers["trigger_combat"] = self._handle_trigger_combat
     
     def _load_events_from_data(self):
         """Load events from the game data structure."""
@@ -130,7 +132,7 @@ class EventManager:
         for event in events_to_trigger:
             self.process_event(event, character, location_data)
     
-    # Default Event Handlers - THESE MUST BE INDENTED AS PART OF THE CLASS
+    # Default Event Handlers
     def _handle_display_text(self, event: 'Event', character: Any, location_data: Dict,
                            target_data: Optional[Dict] = None, **kwargs) -> Dict[str, Any]:
         """Display text to the player."""
@@ -330,6 +332,128 @@ class EventManager:
                 location_data[key] = value
         
         return {"status": "success"}
+    
+    def _handle_custom(self, event: 'Event', character: Any, location_data: Dict,
+                      target_data: Optional[Dict] = None, **kwargs) -> Dict[str, Any]:
+        """Handle custom events that require specific logic."""
+        handler_type = event.payload.get("handler_type")
+        
+        # Map of handler types to methods
+        custom_handlers = {
+            "npc_dialog": self._custom_npc_dialog,
+            "check_and_trigger": self._custom_check_and_trigger,
+            "conditional_unlock": self._custom_conditional_unlock
+        }
+        
+        handler_method = custom_handlers.get(handler_type)
+        if handler_method:
+            return handler_method(event, character, location_data, target_data, **kwargs)
+        
+        logger.warning(f"Unknown custom handler type: {handler_type}")
+        return {"status": "error", "message": f"Unknown custom handler type: {handler_type}"}
+    
+    def _custom_npc_dialog(self, event: 'Event', character: Any, location_data: Dict,
+                          target_data: Optional[Dict] = None, **kwargs) -> Dict[str, Any]:
+        """Handle NPC dialog events."""
+        npc_id = event.payload.get("npc_id")
+        dialog_ref = event.payload.get("dialog_ref")
+        
+        if not npc_id or not dialog_ref:
+            return {"status": "error", "message": "Missing npc_id or dialog_ref"}
+        
+        npc_data = self.game_data['npcs'].get(npc_id)
+        if not npc_data:
+            return {"status": "error", "message": f"NPC {npc_id} not found"}
+        
+        dialog_result = dialog_system.run_conversation(
+            character, npc_data, override_dialog_ref=dialog_ref
+        )
+        
+        # Handle post-dialog events
+        post_dialog_events = event.payload.get("post_dialog_events", [])
+        for event_id in post_dialog_events:
+            self.trigger_event(event_id, character, location_data)
+        
+        return {"status": "success", "dialog_result": dialog_result}
+    
+    def _custom_check_and_trigger(self, event: 'Event', character: Any, location_data: Dict,
+                                 target_data: Optional[Dict] = None, **kwargs) -> Dict[str, Any]:
+        """Check conditions and trigger different events based on result."""
+        conditions = event.payload.get("condition_checks", [])
+        true_events = event.payload.get("on_true", [])
+        false_events = event.payload.get("on_false", [])
+        
+        all_conditions_met = True
+        for condition in conditions:
+            if condition["type"] == "check_flag":
+                if dialog_system._get_flag(condition["flag_name"]) != condition.get("expected_value", True):
+                    all_conditions_met = False
+                    break
+        
+        events_to_trigger = true_events if all_conditions_met else false_events
+        
+        for event_id in events_to_trigger:
+            self.trigger_event(event_id, character, location_data)
+        
+        return {"status": "success", "conditions_met": all_conditions_met}
+    
+    def _custom_conditional_unlock(self, event: 'Event', character: Any, location_data: Dict,
+                                  target_data: Optional[Dict] = None, **kwargs) -> Dict[str, Any]:
+        """Check condition and unlock something if true."""
+        # Placeholder for future implementation
+        return {"status": "success"}
+    
+    def _handle_trigger_combat(self, event: 'Event', character: Any, location_data: Dict,
+                              target_data: Optional[Dict] = None, **kwargs) -> Dict[str, Any]:
+        """Trigger combat with specified NPCs."""
+        import copy
+        from .battle_system import battle_state
+        from .dialog_system import _set_flag
+        
+        # Get combat parameters
+        spawn_npcs = event.payload.get("spawn_npcs", [])
+        surprise = event.payload.get("surprise", False)
+        text = event.payload.get("text")
+        location_npc_list_key = event.payload.get("location_npc_list", "npcs")
+        
+        if text:
+            print(text)
+        
+        # Spawn NPCs into location if needed
+        location_npcs = location_data.get(location_npc_list_key, [])
+        for npc_id in spawn_npcs:
+            if npc_id not in location_npcs:
+                location_npcs.append(npc_id)
+        location_data[location_npc_list_key] = location_npcs
+        
+        # Create NPC instances for combat
+        combatants = []
+        for npc_id in spawn_npcs:
+            npc_data = self.game_data['npcs'].get(npc_id)
+            if npc_data:
+                # Import create_npc_instance from game.py
+                try:
+                    from .game import create_npc_instance
+                    npc_instance = create_npc_instance(npc_data)
+                    if npc_instance:
+                        combatants.append(npc_instance)
+                except ImportError:
+                    logger.error("Could not import create_npc_instance from game.py")
+                    return {"status": "error", "message": "NPC instantiation failed"}
+        
+        if not combatants:
+            return {"status": "error", "message": "No valid combatants found"}
+        
+        # Start combat
+        battle_result = battle_state(character, combatants, surprise=surprise)
+        
+        # Handle battle results
+        if battle_result.get("status") == "all_enemies_defeated":
+            # Mark NPCs as defeated
+            for npc_id in spawn_npcs:
+                _set_flag(f"npc_defeated_{npc_id}", True)
+        
+        return {"status": "success", "battle_result": battle_result}
 
 
 class Event:
