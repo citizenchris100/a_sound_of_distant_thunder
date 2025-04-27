@@ -14,7 +14,7 @@ from . import dialog_system
 from . import data_loader
 from . import mechanics
 from .NPC import Enemy, Human # Import NPC classes
-from .ItemUtil import get_item_attribute # Example - Keep other needed imports
+from .ItemUtil import get_item_attribute, is_item_broken # Example - Keep other needed imports
 
 # --- Global Data Variables ---
 game_locations_data = {}
@@ -37,7 +37,6 @@ def help_menu():
     print("-----------------\n")
 
 # --- Event Handler Function ---
-# (handle_game_event function remains the same as previous version)
 def handle_game_event(event_string, character, location_data, target_data=None):
     """Handles specific game events/actions triggered by action strings."""
     global game_items_data, game_locations_data
@@ -108,7 +107,6 @@ def handle_game_event(event_string, character, location_data, target_data=None):
 
 
 # --- NPC Instantiation Helper Function ---
-# (create_npc_instance function remains the same)
 def create_npc_instance(npc_data):
     """Creates an instance of an Enemy or Human class from NPC data dictionary."""
     global game_items_data
@@ -160,7 +158,6 @@ def create_npc_instance(npc_data):
 
 
 # --- Ally Finding Helper Function ---
-# (find_allies function remains the same)
 def find_allies(target_npc_data, location_npcs, all_npc_data):
     """Finds active allies of the target NPC in the current location."""
     allies = []; target_faction = target_npc_data.get("faction"); target_id = target_npc_data.get("id")
@@ -181,9 +178,7 @@ def find_allies(target_npc_data, location_npcs, all_npc_data):
 # --- Main Game Loop ---
 def main_game_loop(character):
     """Main game loop."""
-    print("DEBUG: >>> ENTERING main_game_loop <<<")
     global game_locations_data, game_items_data, game_npc_data
-    print(f"DEBUG: game_npc_data at loop start: {list(game_npc_data.keys())}")
     logging.debug(f"NPC Data Keys: {list(game_npc_data.keys())}")
     game_is_running = True; first_look = True; examined_this_visit = set(); previous_location_id = None
 
@@ -219,19 +214,17 @@ def main_game_loop(character):
                         try: battle_result_entry = battle_system.battle_state(character, combatants, surprise=True)
                         except Exception as e: logging.exception("Battle error on entry:"); print("Combat error!")
                         if character.get_health_points() <= 0: logging.info("Player defeated on entry."); game_is_running = False; break
-                        # <<< Process result immediately >>>
+                        # Process result immediately after battle call
                         if battle_result_entry and battle_result_entry.get("status") == "enemies_defeated":
                             defeated_enemies_list = battle_result_entry.get("defeated_enemies", [])
                             for defeated_obj in defeated_enemies_list:
                                 defeated_npc_id_entry = getattr(defeated_obj, 'original_id', None)
                                 if defeated_npc_id_entry:
                                     logging.info(f"Setting defeat flag for NPC {defeated_npc_id_entry}"); dialog_system._set_flag(f"npc_defeated_{defeated_npc_id_entry}", True)
-                                    # dialog_system._set_flag(f"npc_looted_{defeated_npc_id_entry}", True) # Loot only on examine
                                 else: logging.error("Could not get original_id from defeated NPC object on entry.")
                         combat_started_on_entry = True; break
                     else: logging.error(f"Failed instantiate hostile NPC {npc_id}")
         if not game_is_running: break
-        # if combat_started_on_entry: continue # Allow loop to continue
 
         # --- Display Location ---
         print("-" * 30); print(f"Location: {current_location.get('name', '?Area?')}"); print("-" * 30)
@@ -251,7 +244,6 @@ def main_game_loop(character):
         else: use_textwrap(current_location.get('visited_description', current_location.get('description', 'No description.')))
 
         # --- Display Context ---
-        # (Context display logic remains the same)
         print("-" * 30); npcs_here = current_location.get('npcs', [])
         if isinstance(npcs_here, list) and npcs_here:
             print("You see:")
@@ -312,7 +304,6 @@ def main_game_loop(character):
         battle_result = battle_result_entry # Carry over result from entry combat if it happened
         battle_result_entry = None # Clear entry result after checking it once
 
-        print(f"DEBUG: Processing verb: '{verb}' (Type: {type(verb)}), noun: '{noun}' (Type: {type(noun)})")
 
         if verb == "quit": print("DEBUG: Matched 'quit'"); print("Quitting."); game_is_running = False; action_executed = True
         elif verb == "help": print("DEBUG: Matched 'help'"); help_menu(); action_executed = True
@@ -323,7 +314,6 @@ def main_game_loop(character):
             action_executed = True
         elif verb == "look" and not noun: print("DEBUG: Matched 'look'"); first_look = True; print("\nLooking..."); action_executed = True
         elif verb == "go":
-             print("DEBUG: Matched 'go'")
              available_exits = current_location.get('exits', {});
              if isinstance(available_exits, dict) and noun in available_exits:
                  dest_id = available_exits[noun]
@@ -337,19 +327,20 @@ def main_game_loop(character):
             if not noun: print("Talk who?")
             else:
                 target_npc_data = None; npc_list_ids = current_location.get('npcs', [])
-                print(f"DEBUG: NPC list for talk check: {npc_list_ids}")
+        
                 if isinstance(npc_list_ids, list):
                     for npc_id in npc_list_ids:
                         if not isinstance(npc_id, str): continue
                         npc_data = game_npc_data.get(npc_id)
-                        print(f"DEBUG [Talk]: Checking ID '{npc_id}'. Data fetched: {'Yes' if npc_data else 'No'}")
+                        
                         if not npc_data or not isinstance(npc_data, dict): continue
                         npc_name_lower = npc_data.get('name', '').lower(); aliases = npc_data.get('aliases', []); npc_aliases_lower = [a.lower() for a in aliases if isinstance(a, str)] if isinstance(aliases, list) else []
-                        print(f"DEBUG [Talk]: Comparing '{noun}' to '{npc_name_lower}' and {npc_aliases_lower}")
+                        
                         if noun == npc_name_lower or noun in npc_aliases_lower:
                             is_defeated = dialog_system._get_flag(f"npc_defeated_{npc_id}", default=False)
+                            
                             if is_defeated: print(f"No response from the body of {npc_data.get('name', 'the figure')}."); target_npc_data = None; action_executed = True; break
-                            else: target_npc_data = npc_data; logging.info(f"Match talk: {npc_id}"); print(f"DEBUG [Talk]: Match found for {npc_id}"); break
+                            else: target_npc_data = npc_data; logging.info(f"Match talk: {npc_id}"); break
                 if target_npc_data:
                     dialog_result = None
                     try: dialog_result = dialog_system.run_conversation(character, target_npc_data)
@@ -373,9 +364,9 @@ def main_game_loop(character):
                                          for defeated_obj in defeated_enemies_list:
                                              defeated_npc_id = getattr(defeated_obj, 'original_id', None)
                                              if defeated_npc_id:
+                                                 
                                                  logging.info(f"Setting defeat flag for NPC {defeated_npc_id}")
                                                  dialog_system._set_flag(f"npc_defeated_{defeated_npc_id}", True)
-                                                 # dialog_system._set_flag(f"npc_looted_{defeated_npc_id}", True) # Loot only on examine
                                              else: logging.error("Could not get original_id from defeated obj.")
                                 else: logging.error(f"Failed instantiate {combat_target_id}")
                             else: logging.error(f"Dialog combat invalid target: {combat_target_id}")
@@ -384,21 +375,22 @@ def main_game_loop(character):
                 elif not action_executed: print(f"See no '{noun}' here.")
             action_executed = True
         elif verb == "attack":
-            print(f"DEBUG: Entered 'attack' handler with noun: '{noun}'")
+            
             if not noun: print("Attack who?")
             else:
                 target_npc_data = None; npc_list_ids = current_location.get('npcs', [])
-                print(f"DEBUG: NPC list for attack check: {npc_list_ids}")
+                
                 if isinstance(npc_list_ids, list):
                     for npc_id in npc_list_ids:
                         if not isinstance(npc_id, str): continue
                         npc_data = game_npc_data.get(npc_id)
-                        print(f"DEBUG [Attack]: Checking ID '{npc_id}'. Data fetched: {'Yes' if npc_data else 'No'}")
+                        
                         if not npc_data or not isinstance(npc_data, dict): continue
                         npc_name_lower = npc_data.get('name', '').lower(); aliases = npc_data.get('aliases', []); npc_aliases_lower = [a.lower() for a in aliases if isinstance(a, str)] if isinstance(aliases, list) else []
-                        print(f"DEBUG [Attack]: Comparing '{noun}' to '{npc_name_lower}' and {npc_aliases_lower}")
+                        
                         if noun == npc_name_lower or noun in npc_aliases_lower:
                             is_defeated = dialog_system._get_flag(f"npc_defeated_{npc_id}", default=False)
+                            print(f"DEBUG [Attack Check]: Checking defeat flag for {npc_id}. Result: {is_defeated}") # DEBUG
                             if is_defeated: print(f"No point attacking the body of {npc_data.get('name', 'the figure')}."); target_npc_data = None; action_executed = True; break
                             else: target_npc_data = npc_data; logging.info(f"Player targets attack: {npc_id}"); print(f"DEBUG [Attack]: Match found for {npc_id}"); break
                 if target_npc_data:
@@ -422,15 +414,15 @@ def main_game_loop(character):
                              for defeated_obj in defeated_enemies_list:
                                  defeated_npc_id = getattr(defeated_obj, 'original_id', None)
                                  if defeated_npc_id:
+                                     
                                      logging.info(f"Setting defeat flag for NPC {defeated_npc_id}")
                                      dialog_system._set_flag(f"npc_defeated_{defeated_npc_id}", True)
-                                     # dialog_system._set_flag(f"npc_looted_{defeated_npc_id}", True) # Loot only on examine
                                  else: logging.error("Could not get original_id from defeated obj.")
                     else: logging.error(f"Failed instantiate NPC {npc_id_attacked}"); print("Combat prep error.")
                 elif not action_executed: print(f"See no '{noun}' here to attack.")
             action_executed = True
         elif verb == "take":
-            print(f"DEBUG: Entered 'take' handler with noun: '{noun}'")
+            
             if not noun: print("Take what?")
             else:
                 item_taken = False; items_in_location = list(current_location.get('items', [])); item_index_to_remove = -1
@@ -462,42 +454,74 @@ def main_game_loop(character):
             action_executed = True
         elif noun: # Other Noun Actions
             target_found_and_action_valid = False
-            print(f"DEBUG: Entered noun-action handler. Verb='{verb}', Noun='{noun}'")
+            
             if verb == "examine": # Check NPCs first
                 matched_npc_data = None; npc_list_ids = current_location.get('npcs', [])
                 if isinstance(npc_list_ids, list):
-                    print(f"DEBUG: Checking examine target '{noun}' against NPCs: {npc_list_ids}")
+                    
                     for npc_id in npc_list_ids:
-                         if not isinstance(npc_id, str): continue; npc_data = game_npc_data.get(npc_id)
-                         print(f"DEBUG [Examine]: Checking ID '{npc_id}'. Data fetched: {'Yes' if npc_data else 'No'}")
+                         if not isinstance(npc_id, str): continue;
+                         npc_data = game_npc_data.get(npc_id) # Fetch data for CURRENT npc_id
+                         
                          if npc_data and isinstance(npc_data, dict):
-                              npc_name_lower = npc_data.get('name','').lower(); aliases = npc_data.get('aliases', []); npc_aliases_lower = [a.lower() for a in aliases if isinstance(a, str)] if isinstance(aliases, list) else []
+                              npc_name_lower = npc_data.get('name','').lower()
+                              aliases = npc_data.get('aliases', [])
+                              npc_aliases_lower = [a.lower() for a in aliases if isinstance(a, str)] if isinstance(aliases, list) else []
                               body_name = f"body of {npc_name_lower}"
-                              print(f"DEBUG [Examine]: Comparing '{noun}' to name='{npc_name_lower}', aliases={npc_aliases_lower}, body='{body_name}'")
+                              
                               if noun == npc_name_lower or noun in npc_aliases_lower or noun == body_name:
                                   matched_npc_data = npc_data; print(f"DEBUG [Examine]: Match found for {npc_id}"); break
                 if matched_npc_data:
-                    npc_id = matched_npc_data.get('id'); is_defeated = dialog_system._get_flag(f"npc_defeated_{npc_id}", default=False)
+                    npc_id = matched_npc_data.get('id') # Get ID from matched data
+                    is_defeated = dialog_system._get_flag(f"npc_defeated_{npc_id}", default=False)
+                    
                     print("-" * 30)
-                    print(f"DEBUG [Examine]: Matched NPC {npc_id}. Defeated: {is_defeated}")
+                    
                     if is_defeated:
-                        is_looted = dialog_system._get_flag(f"npc_looted_{npc_id}", default=False)
-                        print(f"DEBUG [Examine]: Body is defeated. Looted: {is_looted}")
-                        if is_looted: print(f"You search the body of {matched_npc_data.get('name')} again, but find nothing more.")
+                        # Get or initialize the remaining inventory from flags
+                        remaining_inventory_flag = f"npc_remaining_inventory_{npc_id}"
+                        remaining_inventory = dialog_system._get_flag(remaining_inventory_flag, default=None)
+                        
+                        if remaining_inventory and len(remaining_inventory) == 0:
+                            # Inventory is empty, NPC is fully looted
+                            print(f"You search the body of {matched_npc_data.get('name')} again, but find nothing more.")
                         else:
                             print(f"You search the body of {matched_npc_data.get('name')}...")
                             enemy_object = create_npc_instance(matched_npc_data)
                             if enemy_object:
+                                if remaining_inventory is None:
+                                    # First time looting - use original inventory and store it
+                                    initial_inventory = copy.deepcopy(enemy_object.get_inventory())
+                                    equipped_weapon = enemy_object.get_equipped_melee()
+                                    if equipped_weapon and not is_item_broken(equipped_weapon):
+                                        initial_inventory.append(copy.deepcopy(equipped_weapon))
+                                    dialog_system._set_flag(remaining_inventory_flag, initial_inventory)
+                                else:
+                                    # Use stored inventory state
+                                    enemy_object.set_inventory(copy.deepcopy(remaining_inventory))
+                                    # Clear equipped weapon since it's already in the inventory if available
+                                    enemy_object.set_equipped_melee(None)
+                                
+                                # Run the looting process
                                 try:
-                                     print(f"DEBUG [Examine]: Calling inventory.loot_add for {npc_id}")
-                                     inventory.loot_add(character, enemy_object)
-                                except AttributeError: logging.error("inventory.loot_add missing/incompatible."); print("Error looting.")
-                                except Exception as e: logging.exception("Error during body loot:"); print("Error looting.")
-                                print(f"DEBUG [Examine]: Setting looted flag for {npc_id}")
-                                dialog_system._set_flag(f"npc_looted_{npc_id}", True)
-                            else: logging.error(f"Could not instantiate NPC {npc_id} to loot body."); print("Could not examine body.")
+                                    inventory.loot_add(character, enemy_object)
+                                    
+                                    # After looting, save the updated inventory state
+                                    updated_inventory = copy.deepcopy(enemy_object.get_inventory())
+                                    dialog_system._set_flag(remaining_inventory_flag, updated_inventory)
+                                    
+                                    # If nothing remains after looting, mark as fully looted
+                                    if not updated_inventory:
+                                        dialog_system._set_flag(f"npc_looted_{npc_id}", True)
+                                        
+                                except Exception as e:
+                                    logging.exception("Error during body loot:")
+                                    print("Error looting.")
+                            else:
+                                logging.error(f"Could not instantiate NPC {npc_id} to loot body.")
+                                print("Could not examine body.")
                     else: # Original examine logic for live NPCs
-                        print(f"DEBUG [Examine]: NPC {npc_id} is alive. Showing description.")
+                        
                         examine_desc = matched_npc_data.get("examined_description", matched_npc_data.get("description")); use_textwrap(examine_desc if examine_desc else f"Look closely at {matched_npc_data.get('name','them')}.")
                         if matched_npc_data.get("dialog_ref"): print(f"\nCould try: \n- talk {matched_npc_data.get('name').lower()}")
                     target_found_and_action_valid = True; action_executed = True
@@ -505,7 +529,7 @@ def main_game_loop(character):
             if not action_executed: # Check objects/items only if NPC examine didn't handle it
                 potential_targets = (current_location.get('interactables', []) if isinstance(current_location.get('interactables'), list) else []) + (current_location.get('items', []) if isinstance(current_location.get('items'), list) else [])
                 matched_target_data = None
-                print(f"DEBUG [Examine]: Checking objects/items for '{noun}'")
+                
                 for target_data in potential_targets:
                      if isinstance(target_data, dict):
                           object_name_lower = target_data.get('name', '').lower()
@@ -543,22 +567,18 @@ def main_game_loop(character):
             elif verb: print(f"Can't just '{verb}'.")
             else: print(f"Unknown command: '{command}'")
 
-        # --- <<< Process Battle Result (Moved back to end of loop) >>> ---
+        # --- Process Battle Result (Moved to end of loop) ---
         if battle_result and isinstance(battle_result, dict):
             if battle_result.get("status") == "enemies_defeated":
                  defeated_enemies_list = battle_result.get("defeated_enemies", [])
                  for defeated_obj in defeated_enemies_list:
                     defeated_npc_id = getattr(defeated_obj, 'original_id', None)
                     if defeated_npc_id:
-                        logging.info(f"Setting defeat flag for NPC {defeated_npc_id} (End of Loop)")
+                        print(f"DEBUG: Setting defeat flag for {defeated_npc_id} (End of Loop)") # DEBUG
+                        logging.info(f"Setting defeat flag for NPC {defeated_npc_id}")
                         dialog_system._set_flag(f"npc_defeated_{defeated_npc_id}", True)
-                        # Set looted flag *only* when examining body now
-                        # dialog_system._set_flag(f"npc_looted_{defeated_npc_id}", True)
-                        # logging.info(f"Setting looted flag for NPC {defeated_npc_id} after battle.")
                     else: logging.error("Could not get original_id from defeated NPC object.")
-            # Reset battle_result for next turn
             battle_result = None
-        # --- <<< End Process Battle Result >>> ---
 
         # --- Loop Continue ---
         if game_is_running:
@@ -570,7 +590,6 @@ def main_game_loop(character):
 # --- Title Screen ---
 def title_screen():
     """Handles title, data loading, char creation, starts game loop."""
-    # (Function remains the same as previous version)
     global game_data, game_items_data, game_locations_data, game_npc_data
     os.system('cls' if os.name == 'nt' else 'clear')
     print('------------------------------'); print('- A Sound of Distant Thunder -'); print('------------------------------')

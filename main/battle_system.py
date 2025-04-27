@@ -231,7 +231,7 @@ def battle_state(character_var, initial_combatants, surprise=False):
         return {"status": "error"}
 
     active_combatants = list(initial_combatants)
-    # <<< Removed defeated_this_fight list, flags are set in enemy_defeat >>>
+    # <<< Removed defeated_this_fight list >>>
     enemy_names = ", ".join([getattr(e, 'get_name', lambda: 'Unknown')() for e in active_combatants])
 
     print("\n===== BATTLE START =====")
@@ -256,7 +256,7 @@ def battle_state(character_var, initial_combatants, surprise=False):
     while active_combatants and character_var.get_health_points() > 0:
         print('------------------------------')
         print("Choose your action:")
-        general_options = ["Inventory", "Flee"]
+        general_options = ["Inventory", "Flee"] # General actions
 
         # --- Display Targets ---
         print("Targets:")
@@ -265,8 +265,10 @@ def battle_state(character_var, initial_combatants, surprise=False):
             enemy_hp = getattr(enemy, 'get_health', lambda: '?')()
             print(f"  {i+1}. Attack {enemy_name} (HP: {enemy_hp})")
         print("-" * 10)
+        # Display general actions after targets
         num_targets = len(active_combatants)
-        for i, opt in enumerate(general_options): print(f"{i+1+num_targets}. {opt}")
+        for i, opt in enumerate(general_options):
+            print(f"{i+1+num_targets}. {opt}")
 
         action_taken = False
         target_enemy = None
@@ -353,8 +355,8 @@ def battle_state(character_var, initial_combatants, surprise=False):
         # --- Check if Targeted Enemy Defeated ---
         if target_enemy and getattr(target_enemy, 'get_health', lambda: 0)() <= 0:
             if target_enemy in active_combatants:
-                 enemy_defeat(character_var, target_enemy) # This now sets the flag
-                 # defeated_this_fight.append(target_enemy) # No longer needed to return list
+                 enemy_defeat(character_var, target_enemy) # Sets flag internally
+                 # defeated_this_fight.append(target_enemy) # No longer needed
                  active_combatants.remove(target_enemy)
 
         # --- Check if ALL Enemies Defeated ---

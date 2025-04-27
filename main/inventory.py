@@ -240,18 +240,21 @@ def inventory(character_var):
 def loot_add(character_var, enemy_var):
     """Handles looting items (dictionaries) from a defeated enemy, including their equipped weapon."""
 
-    enemy_inv = enemy_var.get_inventory() 
+    enemy_inv = enemy_var.get_inventory()
+    
+    
     equipped_weapon = enemy_var.get_equipped_melee()
     eligible_weapon = None
 
     if equipped_weapon and not is_item_broken(equipped_weapon):
-        eligible_weapon = equipped_weapon 
+        eligible_weapon = equipped_weapon
 
-    combined_loot = list(enemy_inv) 
+    combined_loot = list(enemy_inv)
     if eligible_weapon:
-        combined_loot.append(eligible_weapon) 
+        combined_loot.append(eligible_weapon)
+    
 
-    if not combined_loot: 
+    if not combined_loot:
         print(f"{enemy_var.get_name()} had no loot.")
         return
 
@@ -303,5 +306,11 @@ def loot_add(character_var, enemy_var):
                 print("Invalid input.")
         else:
             print("Invalid input. Enter a number, 'All', 'Inv', or 'Exit'.")
+    
+    # Add this critical part to update the enemy's actual inventory
+    enemy_var.set_inventory(combined_loot)  # Update enemy's inventory to match what's left
+    enemy_var.set_equipped_melee(None)  # Clear equipped weapon since it's been included
+    
     if not combined_loot:
         print("Looted all items.")
+    
