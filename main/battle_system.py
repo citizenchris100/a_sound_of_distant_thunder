@@ -13,6 +13,10 @@ from .ItemUtil import (
     decrease_item_durability, is_item_broken,
     get_gun_ammo, set_gun_ammo
 )
+# <<< Import flag functions from dialog_system >>>
+# Note: This creates a dependency. Ideally, flag/state management
+# would be in a separate, shared module later.
+from .dialog_system import _set_flag, _get_flag
 import logging
 
 # Get logger instance
@@ -203,7 +207,18 @@ def enemy_defeat(character_var, enemy_var):
     print(f"You gained {exp_gained} experience points.")
     character_var.set_exp(character_var.get_exp() + exp_gained)
     lvl_system.level_up(character_var)
-    inventory.loot_add(character_var, enemy_var)
+
+    # <<< Set defeated flag here >>>
+    defeated_npc_id = getattr(enemy_var, 'original_id', None)
+    if defeated_npc_id:
+        logging.info(f"Setting defeat flag for NPC {defeated_npc_id} inside enemy_defeat")
+        _set_flag(f"npc_defeated_{defeated_npc_id}", True)
+        # Do NOT set looted flag here, only upon examine
+    else:
+        logger.error("Could not get original_id from defeated enemy object in enemy_defeat.")
+    # <<< End flag setting >>>
+
+    inventory.loot_add(character_var, enemy_var) # Present loot immediately
 
 
 # <<< Updated battle_state function >>>
@@ -216,7 +231,7 @@ def battle_state(character_var, initial_combatants, surprise=False):
         return {"status": "error"}
 
     active_combatants = list(initial_combatants)
-    defeated_this_fight = []
+    # <<< Removed defeated_this_fight list, flags are set in enemy_defeat >>>
     enemy_names = ", ".join([getattr(e, 'get_name', lambda: 'Unknown')() for e in active_combatants])
 
     print("\n===== BATTLE START =====")
@@ -241,7 +256,7 @@ def battle_state(character_var, initial_combatants, surprise=False):
     while active_combatants and character_var.get_health_points() > 0:
         print('------------------------------')
         print("Choose your action:")
-        general_options = ["Inventory", "Flee"] # General actions
+        general_options = ["Inventory", "Flee"]
 
         # --- Display Targets ---
         print("Targets:")
@@ -250,10 +265,8 @@ def battle_state(character_var, initial_combatants, surprise=False):
             enemy_hp = getattr(enemy, 'get_health', lambda: '?')()
             print(f"  {i+1}. Attack {enemy_name} (HP: {enemy_hp})")
         print("-" * 10)
-        # Display general actions after targets
         num_targets = len(active_combatants)
-        for i, opt in enumerate(general_options):
-            print(f"{i+1+num_targets}. {opt}")
+        for i, opt in enumerate(general_options): print(f"{i+1+num_targets}. {opt}")
 
         action_taken = False
         target_enemy = None
@@ -264,7 +277,7 @@ def battle_state(character_var, initial_combatants, surprise=False):
             action_choice_input = input("> ")
             try:
                 action_choice_num = int(action_choice_input)
-                num_targets = len(active_combatants) # Recalculate in case it changed
+                num_targets = len(active_combatants) # Recalculate
 
                 if 1 <= action_choice_num <= num_targets:
                     target_index = action_choice_num - 1
@@ -284,7 +297,7 @@ def battle_state(character_var, initial_combatants, surprise=False):
                             else: print("Invalid action number (1-3).")
                         except ValueError: print("Please enter a number (1-3).")
                         except EOFError: logging.warning("EOF during sub-action."); return {"status": "error"}
-                    if player_action: break # Break main input loop if valid attack chosen
+                    if player_action: break
 
                 elif num_targets < action_choice_num <= num_targets + len(general_options):
                     action_index = action_choice_num - num_targets - 1
@@ -340,14 +353,15 @@ def battle_state(character_var, initial_combatants, surprise=False):
         # --- Check if Targeted Enemy Defeated ---
         if target_enemy and getattr(target_enemy, 'get_health', lambda: 0)() <= 0:
             if target_enemy in active_combatants:
-                 enemy_defeat(character_var, target_enemy)
-                 defeated_this_fight.append(target_enemy)
+                 enemy_defeat(character_var, target_enemy) # This now sets the flag
+                 # defeated_this_fight.append(target_enemy) # No longer needed to return list
                  active_combatants.remove(target_enemy)
 
         # --- Check if ALL Enemies Defeated ---
         if not active_combatants:
             print("===== BATTLE END =====")
-            battle_outcome = {"status": "all_enemies_defeated", "defeated_enemies": defeated_this_fight}
+            # <<< Simplified return status >>>
+            battle_outcome = {"status": "all_enemies_defeated"}
             return battle_outcome
 
         # --- Enemy Turn(s) ---
