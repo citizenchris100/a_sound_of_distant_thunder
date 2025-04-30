@@ -1,412 +1,252 @@
 import random
-import names 
-import copy
-import logging
-logger = logging.getLogger(__name__)
+from enum import Enum
 
-class Enemy:
-    def __init__(self, en_name, health, defence, strength, luck, awareness):
-        self.name = en_name
-        self.description = None
-        self.hp = health
-        self.hp_limit = health
-        self.dp = defence
-        self.strength_attribute = strength
-        self.luck_attribute = luck
-        self.inventory = [] 
-        self.awareness_attribute = awareness
-        self.equipped_melee = None
+class BehaviorType(Enum):
+    """Types of NPC behavior"""
+    NEUTRAL = "neutral"
+    FRIENDLY = "friendly"
+    WARY = "wary"
+    HOSTILE = "hostile"
+    ASSIMILATED = "assimilated"
+    
 
-    def get_name(self):
-        return self.name
-    def set_name(self, new_name):
-        self.name = new_name
-    def get_description(self):
-        return self.description
-    def set_description(self, new_description):
-        self.description = new_description
-    def set_awareness(self, new_awareness):
-        self.awareness_attribute = new_awareness
-    def get_awareness(self):
-        return self.awareness_attribute
-    def get_health(self):
-        return self.hp
-    def set_health(self, new_hp):
-        self.hp = new_hp
-    def get_hp_limit(self):
-        return self.hp_limit
-    def set_hp_limit(self, new_limit):
-        self.hp_limit = new_limit
-    def get_defence(self):
-        return self.dp
-    def set_defence(self, new_dp):
-        self.dp = new_dp
-    def get_strength(self):
-        return self.strength_attribute
-    def set_strength(self, update_strength):
-        self.strength_attribute = update_strength
-    def get_luck(self):
-        return self.luck_attribute
-    def set_luck(self, update_luck):
-        self.luck_attribute = update_luck
-    def get_inventory(self):
-        return self.inventory
-    def set_inventory(self, new_inventory):
-        self.inventory = new_inventory
-    def add_inventory(self, item_dict):
-         if isinstance(item_dict, dict):
-            self.inventory.append(item_dict)
-         else:
-            print(f"Warning: Tried to add non-dictionary item to {self.name}'s inventory.")
-    def del_inventory(self, item_dict): 
-        try:
-            self.inventory.remove(item_dict)
-        except ValueError:
-            print(f"Warning: Item not found in {self.name}'s inventory for removal.")
+class NPC:
+    """
+    Represents a non-player character with behavior, assimilation status, and relationships.
+    """
+    def __init__(self, npc_id, data):
+        self.id = npc_id
+        self.name = data["name"]
+        self.description = data["description"]
+        self.persistent = data.get("persistent", False)
+        
+        # Dialog references
+        self.dialog_trees = data.get("dialog_trees", [])
+        
+        # Game mechanics attributes
+        self.health = data.get("health", 100)
+        self.max_health = data.get("health", 100)
+        self.defense = data.get("defense", 0)
+        self.strength = data.get("strength", 5)
+        self.gun_skill = data.get("gun_skill", 0)
+        self.luck = data.get("luck", 0)
+        self.awareness = data.get("awareness", 0)
+        
+        # Inventory
+        self.inventory = []
+        for item_id in data.get("inventory", []):
+            item_data = {"id": item_id}
+            self.inventory.append(item_data)
             
-    def get_equipped_melee(self):
-        """Returns the dictionary representing the equipped melee weapon, or None."""
-        return self.equipped_melee
-
-    def set_equipped_melee(self, melee_dict):
-         """Equips a melee weapon represented by a dictionary."""
-         if melee_dict is None or isinstance(melee_dict, dict):
-            self.equipped_melee = melee_dict
-         else:
-            logger.error("Tried to equip non-dictionary item %s as melee for %s.",
-                         melee_dict, self.name)
-
-
-class Human(Enemy):
-    def __init__(self, en_name, health, defence, strength, luck, awareness, gun_skill):
-        super().__init__(en_name, health, defence, strength, luck, awareness)
-        self.gun_skill_attribute = gun_skill
-        self.equipped_gun = None 
-        self.equipped_melee = None 
-        self.equipped_armour = None 
-        self.happy = 0
-        self.dialog = None
-
-    def get_gun_skill(self):
-        return self.gun_skill_attribute
-    def set_gun_attribute(self, gun_skill):
-        self.gun_skill_attribute = gun_skill
-    def get_equipped_gun(self):
-        return self.equipped_gun
-    def set_equipped_gun(self, gun_dict):
-        if gun_dict is None or isinstance(gun_dict, dict):
-            self.equipped_gun = gun_dict
+        # Equipment
+        self.equipped = {
+            "weapon": data.get("equipped_weapon"),
+            "armor": data.get("equipped_armor"),
+            "melee": data.get("equipped_melee")
+        }
+        
+        # Suspicion/trust system (0-100 scales)
+        self.suspicion = 0
+        self.trust_level = data.get("initial_trust", 0)
+        
+        # Behavior
+        self.behavior_type = BehaviorType(data.get("behavior_pattern", "neutral"))
+        
+        # Assimilation
+        self.is_assimilated = data.get("is_assimilated", False)
+        self.assimilation_knowledge = data.get("assimilation_knowledge", {})
+        
+        # Schedule
+        self.schedule = data.get("schedule", {})
+        
+        # Observation data - what player has observed
+        self.observed_behaviors = []
+        self.unusual_behaviors = 0
+        
+    def update_suspicion(self, amount):
+        """
+        Update suspicion level and return behavior change if threshold crossed.
+        
+        Args:
+            amount (int): Amount to change suspicion by
+            
+        Returns:
+            str or None: Behavior change if threshold crossed, None otherwise
+        """
+        old_suspicion = self.suspicion
+        self.suspicion = max(0, min(100, self.suspicion + amount))
+        
+        # Determine behavior change based on suspicion thresholds
+        if self.suspicion >= 80 and old_suspicion < 80:
+            self.behavior_type = BehaviorType.HOSTILE
+            return "became_hostile"
+        elif self.suspicion >= 50 and old_suspicion < 50:
+            self.behavior_type = BehaviorType.WARY
+            return "became_wary"
+        elif self.suspicion < 50 and old_suspicion >= 50:
+            self.behavior_type = BehaviorType.NEUTRAL
+            return "became_neutral"
+        
+        return None
+        
+    def update_trust(self, amount):
+        """
+        Update trust level and return relationship change if threshold crossed.
+        
+        Args:
+            amount (int): Amount to change trust by
+            
+        Returns:
+            str or None: Relationship change if threshold crossed, None otherwise
+        """
+        old_trust = self.trust_level
+        self.trust_level = max(0, min(100, self.trust_level + amount))
+        
+        # Determine relationship change based on trust thresholds
+        if self.trust_level >= 80 and old_trust < 80:
+            return "became_ally"
+        elif self.trust_level >= 50 and old_trust < 50:
+            return "became_friendly"
+        elif self.trust_level < 30 and old_trust >= 30:
+            return "became_unfriendly"
+        
+        return None
+        
+    def would_join_coalition(self):
+        """
+        Check if NPC would join player's coalition.
+        
+        Returns:
+            bool: True if NPC would join, False otherwise
+        """
+        # Assimilated NPCs might pretend to join (deception)
+        if self.is_assimilated:
+            # Higher suspicion reduces chance of successful deception
+            deception_chance = 0.9 - (self.suspicion / 200)
+            return random.random() < deception_chance
         else:
-            print("Error: Tried to equip non-dictionary as gun.")
-    def get_equipped_melee(self):
-        return self.equipped_melee
-    def set_equipped_melee(self, melee_dict):
-         if melee_dict is None or isinstance(melee_dict, dict):
-            self.equipped_melee = melee_dict
-         else:
-            print("Error: Tried to equip non-dictionary as melee.")
-    def get_equipped_armour(self):
-        return self.equipped_armour
-    def set_equipped_armour(self, armour_dict):
-         if armour_dict is None or isinstance(armour_dict, dict):
-            self.equipped_armour = armour_dict
-         else:
-            print("Error: Tried to equip non-dictionary as armour.")
-    def get_happy(self):
-        return self.happy
-    def set_happy(self, add, value):
-        if add: self.happy += value
-        else: self.happy -= value
-    def get_dialog(self):
-        return self.dialog
-    def set_dialog(self, new_dialog):
-        self.dialog = new_dialog
-
-
-class BossHuman(Human): 
-    def __init__(self, en_name, health, defence, strength, luck, awareness, gun_skill, move):
-        super().__init__(en_name, health, defence, strength, luck, awareness, gun_skill)
-        self.super_move = move
-    def get_super_move(self): return self.super_move
-    def set_super_move(self, new_move): self.super_move = new_move
-
-class BossEnemy(Enemy): 
-    def __init__(self, en_name, health, defence, strength, luck, awareness, move):
-        super().__init__(en_name, health, defence, strength, luck, awareness)
-        self.super_move = move
-    def get_super_move(self): return self.super_move
-    def set_super_move(self, new_move): self.super_move = new_move
-
-def get_random_loot_id(loot_type):
-    """Helper to get a random item ID for loot based on type."""
-    if loot_type == "med_pack":
-        ids = ["medium_med_pack", "basic_med_pack", "advanced_med_pack"]
-        return random.choice(ids)
-    elif loot_type == "night_shadow":
-        ids = ["small_ns_pack", "medium_ns_pack", "large_ns_pack"]
-        return random.choice(ids)
-    elif loot_type == "misc_item":
-        ids = ["charm1", "charm2", "cologne1", "cologne2", "charm3", "cologne3"]
-        return random.choice(ids)
-    return None
-
-def add_loot(enemy, game_items_data):
-    """Adds loot (item dictionaries) to an enemy's inventory."""
-
-    med_pack_chance = 0.0 
-    enemy_name = enemy.get_name() 
-    enemy_luck = enemy.get_luck()
-
-    if "Alpha Goblin" in enemy_name:
-        med_pack_chance = 0.50 + (enemy_luck * 0.05) 
-    elif "Beta Goblin" in enemy_name:
-        med_pack_chance = 0.30 + (enemy_luck * 0.05)
-    elif "Goblin" in enemy_name: 
-        med_pack_chance = 0.15 + (enemy_luck * 0.05) 
-    else:
-        med_pack_chance = 0.20 + (enemy_luck * 0.05)
-    
-    med_pack_chance = max(0.0, min(med_pack_chance, 1.0))
-    
-    if random.random() < med_pack_chance:
-        item_id = get_random_loot_id("med_pack")
-        if "Goblin" in enemy_name and "Alpha" not in enemy_name and "Beta" not in enemy_name:
-             if random.random() < 0.7: # 70% chance for basic from basic goblin
-                 item_id = "basic_med_pack"
-
-        if item_id:
-            item_data = game_items_data.get(item_id)
-            if item_data:
-                enemy.add_inventory(copy.deepcopy(item_data))
-                logger.debug("%s got loot: %s (Chance: %.2f)", enemy.get_name(), item_id, med_pack_chance)
-            else:
-                logger.warning("Med pack item data missing for id: %s", item_id)
+            # Non-assimilated join based on trust
+            return self.trust_level >= 60
+            
+    def add_observed_behavior(self, behavior):
+        """
+        Add an observed behavior to NPC's history.
+        
+        Args:
+            behavior (str): Description of observed behavior
+            
+        Returns:
+            bool: True if behavior is unusual, False otherwise
+        """
+        timestamp = {"day": 1, "hour": 12, "minute": 0}  # TODO: Use actual game time
+        
+        observation = {
+            "behavior": behavior,
+            "timestamp": timestamp
+        }
+        
+        self.observed_behaviors.append(observation)
+        
+        # Check if behavior is unusual based on NPC type
+        is_unusual = self._is_behavior_unusual(behavior)
+        if is_unusual:
+            self.unusual_behaviors += 1
+            
+        return is_unusual
+        
+    def _is_behavior_unusual(self, behavior):
+        """
+        Check if a behavior is unusual for this NPC.
+        
+        Args:
+            behavior (str): Behavior to check
+            
+        Returns:
+            bool: True if behavior is unusual, False otherwise
+        """
+        # Assimilated NPCs sometimes show unusual behaviors
+        if self.is_assimilated:
+            # Base chance for assimilated NPCs to show unusual behavior
+            if random.random() < 0.2:
+                return True
+                
+        # Specific unusual behaviors
+        unusual_behaviors = [
+            "avoided_questions_about_past",
+            "spoke_with_unusual_cadence",
+            "showed_no_emotion",
+            "stared_blankly",
+            "met_secretly_with_others",
+            "accessed_restricted_area",
+            "collected_unusual_materials"
+        ]
+        
+        return behavior in unusual_behaviors
+        
+    def get_assimilation_evidence(self):
+        """
+        Get evidence level for NPC being assimilated based on observations.
+        
+        Returns:
+            float: Evidence level from 0.0 to 1.0
+        """
+        if len(self.observed_behaviors) == 0:
+            return 0.0
+            
+        # Calculate evidence level based on unusual behaviors
+        evidence = self.unusual_behaviors / max(5, len(self.observed_behaviors))
+        return min(1.0, evidence)
+        
+    def get_current_location(self, game_time):
+        """
+        Get NPC's location based on schedule and time.
+        
+        Args:
+            game_time (dict): Current game time
+            
+        Returns:
+            str or None: Location ID, or None if no scheduled location
+        """
+        # Get time of day key
+        hour = game_time["hour"]
+        if 5 <= hour < 12:
+            time_key = "morning"
+        elif 12 <= hour < 18:
+            time_key = "afternoon"
         else:
-             logger.warning("get_random_loot_id failed for med_pack type.")
-             
-    if random.randint(0, 6) < enemy.get_luck():
-        item_id = get_random_loot_id("night_shadow")
-        if item_id:
-            item_data = game_items_data.get(item_id)
-            if item_data:
-                enemy.add_inventory(copy.deepcopy(item_data))
-                logger.debug("%s got loot: %s", enemy.get_name(), item_id)
-            else: 
-                logger.warning("Night shadow item data missing for id: %s", item_id)
-        else:
-             logger.warning("get_random_loot_id failed for night_shadow type.")
-   
-    if random.randint(0, 24) < enemy.get_luck():
-        item_id = get_random_loot_id("misc_item")
-        if item_id:
-            item_data = game_items_data.get(item_id)
-            if item_data:
-                enemy.add_inventory(copy.deepcopy(item_data))
-                logger.debug("%s got loot: %s", enemy.get_name(), item_id)
-            else:
-                logger.warning("Misc item data missing for id: %s", item_id)
-        else:
-             logger.warning("get_random_loot_id failed for misc_item type.")
-
-def basic_goblin(game_items_data):
-    goblin = Enemy("Goblin", random.randint(15, 30), random.randint(1, 3), random.randint(5, 10),
-                   random.randint(0, 5), random.randint(1, 5))
-    add_loot(goblin, game_items_data)
-    
-    probability_of_weapon = 0.4 
-    possible_weapons = ["rusty_pipe", "naily_board"] 
-
-    if random.random() < probability_of_weapon:
-        chosen_weapon_id = random.choice(possible_weapons)
-        weapon_data = game_items_data.get(chosen_weapon_id)
-        if weapon_data:
-            weapon_instance = copy.deepcopy(weapon_data)
-            goblin.set_equipped_melee(weapon_instance)
-            logger.debug("Basic Goblin spawned with %s", weapon_instance.get('name'))
-        else:
-            logger.warning("Weapon data for '%s' not found for Basic Goblin.", chosen_weapon_id)
-    
-    return goblin
-
-def beta_goblin(game_items_data):
-    goblin = Enemy("Beta Goblin", random.randint(35, 65), random.randint(4, 6), random.randint(10, 17),
-                   random.randint(2, 7), random.randint(3, 5))
-    add_loot(goblin, game_items_data) 
-    possible_weapons = ["rusty_pipe", "naily_board", "heavy_wrench"] 
-    chosen_weapon_id = random.choice(possible_weapons)
-    weapon_data = game_items_data.get(chosen_weapon_id)
-    if weapon_data:
-        weapon_instance = copy.deepcopy(weapon_data)
-        goblin.set_equipped_melee(weapon_instance)
-        logger.debug("Beta Goblin spawned with %s", weapon_instance.get('name'))
-    else:
-        logger.error("CRITICAL: Weapon data for '%s' not found for Beta Goblin. Should not happen!", chosen_weapon_id)
-    return goblin
-
-def alpha_goblin(game_items_data):
-    goblin = Enemy("Alpha Goblin", random.randint(75, 100), random.randint(6, 8), random.randint(17, 25),
-                   random.randint(4, 7), random.randint(5, 7))
-    add_loot(goblin, game_items_data) 
-    add_loot(goblin, game_items_data) 
-    possible_weapons = ["naily_board", "heavy_wrench", "basic_knife"]
-
-    chosen_weapon_id = random.choice(possible_weapons)
-    weapon_data = game_items_data.get(chosen_weapon_id)
-    if weapon_data:
-        weapon_instance = copy.deepcopy(weapon_data)
-        goblin.set_equipped_melee(weapon_instance)
-        logger.debug("Alpha Goblin spawned with %s", weapon_instance.get('name'))
-    else:
-        logger.error("CRITICAL: Weapon data for '%s' not found for Alpha Goblin. Should not happen!", chosen_weapon_id)
-    return goblin
-
-
-def npc(gender): 
-    
-    try:
-        import names
-    except ImportError:
-        print("Error: 'names' library not found. Cannot generate NPC names.")
-        return None # 
-
-    if gender:
-        npc_name = names.get_full_name(gender='male')
-        npc_health = random.randint(50, 100)
-        npc_defence = random.randint(5, 8)
-        npc_strength = random.randint(5, 25)
-        npc_gun_skill = random.randint(0, 7) if npc_strength > 16 else random.randint(4, 18)
-        npc_luck = random.randint(1, 7)
-        npc_awareness = random.randint(1, 7) 
-        return Human(npc_name, npc_health, npc_defence, npc_strength, npc_luck, npc_awareness, npc_gun_skill)
-    else:
-        npc_name = names.get_full_name(gender='female')
-        npc_health = random.randint(40, 80)
-        npc_defence = random.randint(3, 6)
-        npc_strength = random.randint(2, 17)
-        npc_gun_skill = random.randint(0, 7) if npc_strength > 13 else random.randint(4, 18)
-        npc_luck = random.randint(1, 7)
-        npc_awareness = random.randint(1, 7) 
-        return Human(npc_name, npc_health, npc_defence, npc_strength, npc_luck, npc_awareness, npc_gun_skill)
-
-
-def boat_captain(game_items_data):
-    captain = npc(True)
-    if captain is None: return None # Handle case where npc() failed
-
-    captain.set_description("""A gruff older man in his mid 50\'s or there about. A no nonsense looking guy.""")
-    captain.set_dialog({
-        "Disembark": """Captain: You're ready? Ok. So we're going to get you onto one of our small inflatable crafts.
-Don't worry it has a motor. I'd suggest you take care of it. We will be back to the precise coordinates we drop
-you off at to pick you back up in aproximately 12 hours. We can wait for you, but not forever. You need to be
-back here in 12 hours or find another ride home.""",
-        "Storm": """Captain: This system has been heading our way from the east. It's looking to be a bad one.
-Whatever you have to do on that Island. I'd suggest doing it fast. You won't want to be out here once this
-torm hits.""",
-        "Island": """Captain: Don't know much about it. A buddy of mine was making pretty good money ferrying people
-to and from the island.\nHe mentioned that he stopped getting ferry jobs about a month ago."""
-    })
-
-    large_revolver_data = game_items_data.get("large_revolver")
-    if large_revolver_data:
-        captain.set_equipped_gun(large_revolver_data) 
-    else:
-        print("Warning: 'large_revolver' data not found.")
-
-    medium_body_armour_data = game_items_data.get("medium_body_armour")
-    if medium_body_armour_data:
-        captain.set_equipped_armour(medium_body_armour_data) 
-    else:
-        print("Warning: 'medium_body_armour' data not found.")
-
-    captain_inventory_items = []
-    item_ids_to_add = ["medium_med_pack", "cologne1", "med_9mm_ammo_box"] 
-    for item_id in item_ids_to_add:
-        item_data = game_items_data.get(item_id)
-        if item_data:
-            captain_inventory_items.append(copy.deepcopy(item_data)) 
-        else:
-            print(f"Warning: Item data for '{item_id}' not found.")
-
-    captain.set_inventory(captain_inventory_items)
-    captain.set_name("Boat Captain")
-    captain.set_strength(15) 
-    captain.set_gun_attribute(18) 
-    captain.set_health(100) 
-    captain.set_defence(6) 
-    return captain
-
-
-def deck_hand01(game_items_data):
-    deck_hand = npc(True)
-    if deck_hand is None: return None
-
-    basic_knife_data = game_items_data.get("basic_knife")
-    if basic_knife_data:
-        deck_hand.set_equipped_melee(basic_knife_data) # Assign dictionary
-    else:
-        print("Warning: 'basic_knife' data not found.")
-
-    add_loot(deck_hand, game_items_data) # Pass game_items_data
-    deck_hand.set_name("Deck Hand 1")
-    return deck_hand
-
-
-def deck_hand02(game_items_data):
-    deck_hand = npc(True)
-    if deck_hand is None: return None
-
-    basic_knife_data = game_items_data.get("basic_knife")
-    if basic_knife_data:
-        deck_hand.set_equipped_melee(basic_knife_data) # Assign dictionary
-    else:
-        print("Warning: 'basic_knife' data not found.")
-
-    add_loot(deck_hand, game_items_data) # Pass game_items_data
-    deck_hand.set_name("Deck Hand 2")
-    return deck_hand
-
-
-def light_house_keeper(game_items_data):
-    light_hk = npc(True)
-    if light_hk is None: return None
-
-    large_revolver_data = game_items_data.get("large_revolver")
-    if large_revolver_data:
-        light_hk.set_equipped_gun(large_revolver_data) 
-    else:
-        print("Warning: 'large_revolver' data not found.")
-
-    epic_body_armour_data = game_items_data.get("epic_body_armour")
-    if epic_body_armour_data:
-        light_hk.set_equipped_armour(epic_body_armour_data) 
-    else:
-        print("Warning: 'epic_body_armour' data not found.")
-
-    light_hk_inventory_items = []
-    inventory_setup = {
-        "basic_med_pack": 3,
-        "medium_med_pack": 3,
-        "advanced_med_pack": 3,
-        "medium_pistol": 1,
-        "advanced_pistol": 1,
-        "medium_knife": 1,
-        "large_knife": 1,
-        "basic_body_armour": 1,
-        "medium_body_armour": 1,
-        "advanced_body_armour": 1,
-        "cologne1": 1,
-        "charm1": 1,
-        "large_9mm_ammo_box": 1 
-    }
-
-    for item_id, quantity in inventory_setup.items():
-        item_data = game_items_data.get(item_id)
-        if item_data:
-            for _ in range(quantity):
-                light_hk_inventory_items.append(copy.deepcopy(item_data))
-        else:
-            print(f"Warning: Item data for '{item_id}' not found for Lighthouse Keeper inventory.")
-
-    light_hk.set_inventory(light_hk_inventory_items)
-    light_hk.set_name("Lighthouse Keeper")
-    return light_hk
+            time_key = "evening"
+            
+        # Return scheduled location for this time if available
+        return self.schedule.get(time_key)
+        
+    def get_current_behavior(self, game_time):
+        """
+        Get NPC's current behavior action based on time and state.
+        
+        Args:
+            game_time (dict): Current game time
+            
+        Returns:
+            str or None: Behavior action, or None if no specific behavior
+        """
+        # Behavior depends on NPC type and suspicion level
+        if self.behavior_type == BehaviorType.HOSTILE:
+            return "avoid_player"
+            
+        if self.behavior_type == BehaviorType.WARY:
+            if random.random() < 0.3:
+                return "observe_player"
+            return None
+            
+        if self.is_assimilated:
+            # Assimilated NPCs sometimes meet with other assimilated
+            hour = game_time["hour"]
+            if hour >= 22 or hour <= 4:  # Late night
+                if random.random() < 0.4:
+                    return "secret_meeting"
+            
+            # Try to assimilate others if undetected
+            if self.suspicion < 30 and random.random() < 0.1:
+                return "attempt_assimilation"
+                
+        return None

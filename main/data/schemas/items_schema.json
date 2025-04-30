@@ -1,68 +1,49 @@
 {
-  "type": "array",  
-  "items": {       
-    "type": "object",
-    "properties": {
-      "item_id": {
-        "type": "string",
-        "description": "Unique identifier for the item"
-      },
-      "name": {
-        "type": "string",
-        "description": "Display name of the item"
-      },
-      "description": {
-        "type": "string",
-        "description": "In-game description"
-      },
-      "item_type": {
-        "type": "string",
-        "enum": ["weapon", "armor", "consumable", "ammo", "misc"],
-        "description": "Category of the item"
-      },
-      "attributes": {
-        "type": "object",
-        "description": "Type-specific attributes",
-        "properties": {},
-        "additionalProperties": true
-      },
-      "value": {
-        "type": "integer",
-        "description": "Base value of the item"
-      },
-      "icon": {
-        "type": "string",
-        "description": "Icon image path (optional)",
-        "default": null
-      },
-      "max_durability": {
-        "type": "integer",
-        "description": "Max durability"
-      },
-      "current_durability": {
-        "type": "integer",
-        "description": "Current durability"
-      },
-      "durability_loss_per_use": {
-        "type": "integer",
-        "description": "Durability loss per use"
-      },
-      "is_repairable": {
-        "type": "boolean",
-        "description": "Is repairable"
-      }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Item Schema",
+  "type": "object",
+  "required": ["id", "name", "description", "type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the item"
     },
-    "required": [
-      "item_id",
-      "name",
-      "description",
-      "item_type",
-      "attributes",
-      "value",
-      "max_durability",
-      "current_durability",
-      "durability_loss_per_use",
-      "is_repairable"
-    ]
+    "name": {
+      "type": "string",
+      "description": "Display name of the item"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the item"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["weapon", "melee", "armor", "consumable", "key", "quest", "goo"],
+      "description": "Type of item"
+    },
+    "value": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Base value/effectiveness of the item"
+    },
+    "uses": {
+      "type": "integer",
+      "minimum": -1,
+      "description": "Number of uses (-1 for infinite)"
+    },
+    "ammo": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Ammunition for weapons"
+    },
+    "ammo_capacity": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Maximum ammunition capacity"
+    },
+    "effects": {
+      "type": "object",
+      "description": "Effects when using this item"
+    }
   }
 }

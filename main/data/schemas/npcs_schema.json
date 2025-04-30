@@ -1,104 +1,112 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "NPC Definition",
-  "description": "Schema for defining Non-Player Characters in the game.",
+  "title": "NPC Schema",
   "type": "object",
+  "required": ["id", "name", "description"],
   "properties": {
     "id": {
-      "description": "Unique identifier string for the NPC (e.g., 'npc_boat_captain'). Should match the filename.",
       "type": "string",
-      "pattern": "^[a-z0-9_]+$"
+      "description": "Unique identifier for the NPC"
     },
     "name": {
-      "description": "The display name shown to the player (e.g., 'Boat Captain').",
       "type": "string",
-      "minLength": 1
+      "description": "Display name of the NPC"
     },
     "description": {
-      "description": "Text displayed when the NPC is first seen or examined initially.",
       "type": "string",
-      "minLength": 1
+      "description": "Physical description and background of the NPC"
     },
-    "examined_description": {
-      "description": "Optional text displayed when the NPC is examined closely or repeatedly.",
-      "type": "string"
+    "health": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 100,
+      "description": "Current health points"
     },
-    "dialog_ref": {
-      "description": "Optional reference key/ID for the starting node/file of this NPC's primary dialog tree.",
-      "type": "string"
+    "defense": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Defense points that reduce damage"
     },
-    "on_attack_dialog_ref": {
-      "description": "Optional reference to a dialog sequence triggered when player attacks this NPC while not hostile.",
-      "type": "string"
+    "strength": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 5,
+      "description": "Physical strength attribute"
     },
-    "state": {
-        "description": "Initial state of the NPC (e.g., 'neutral', 'hostile', 'dead', 'quest_stage_1'). Default: 'neutral'.",
-        "type": "string",
-        "default": "neutral"
+    "gun_skill": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Ranged combat skill"
     },
-    "hostile": {
-        "description": "Whether the NPC starts as hostile to the player. Default: false.",
-        "type": "boolean",
-        "default": false
+    "luck": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 7,
+      "default": 0,
+      "description": "Luck attribute affecting random outcomes"
     },
-    "faction": {
-        "description": "Optional faction affiliation (e.g., 'boat_crew', 'island_guard', 'mutant'). Used for ally checks.",
-        "type": "string"
+    "awareness": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 7,
+      "default": 0,
+      "description": "Awareness attribute affecting detection abilities"
     },
-    "aliases": {
-        "description": "Optional list of alternative lowercase names the player can use to refer to the NPC.",
-        "type": "array",
-        "items": {
-            "type": "string",
-            "pattern": "^[a-z0-9_ ]+$"
-        },
-        "uniqueItems": true
+    "initial_trust": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "default": 0,
+      "description": "Initial trust level toward the player"
     },
-    "stats": {
-        "description": "Optional object containing NPC statistics relevant for combat or checks.",
-        "type": "object",
-        "properties": {
-          "max_health": { "type": "integer", "minimum": 1 },
-          "current_health": { "type": "integer" },
-          "defense": { "type": "integer", "minimum": 0 },
-          "strength": { "type": "integer", "minimum": 0 },
-          "accuracy": { "type": "integer", "minimum": 0 },
-          "charm": { "type": "integer", "minimum": 0 },
-          "awareness": { "type": "integer", "minimum": 0 },
-          "gun_skill": { "type": "integer", "minimum": 0 }
-        },
-        "additionalProperties": true 
+    "is_assimilated": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the NPC has been assimilated by the alien goo"
+    },
+    "behavior_pattern": {
+      "type": "string",
+      "enum": ["neutral", "friendly", "wary", "hostile", "assimilated"],
+      "default": "neutral",
+      "description": "Base behavior pattern of the NPC"
+    },
+    "persistent": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the NPC persists across location changes"
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "morning": { "type": "string" },
+        "afternoon": { "type": "string" },
+        "evening": { "type": "string" }
+      },
+      "description": "NPC's location schedule throughout the day"
     },
     "inventory": {
-        "description": "Optional list of item IDs the NPC starts with.",
-        "type": "array",
-        "items": {
-            "type": "string",
-            "pattern": "^[a-z0-9_]+$"
-        },
-         "uniqueItems": true
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Item IDs in the NPC's inventory"
     },
-    "equipped_items": {
-        "description": "Optional mapping of equipment slots to item IDs.",
-        "type": "object",
-        "properties": {
-            "gun": { "type": "string" },
-            "melee": { "type": "string" },
-            "armor_body": { "type": "string" },
-            "armor_head": { "type": "string" }
-        },
-        "additionalProperties": true 
+    "dialog_trees": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Dialog tree IDs available for this NPC"
     },
-    "initial_fondness": {
-        "description": "The starting disposition value of the NPC towards the player (e.g., 0=neutral).",
-        "type": "integer",
-        "default": 0
+    "equipped_weapon": {
+      "type": ["string", "null"],
+      "description": "ID of equipped ranged weapon"
+    },
+    "equipped_melee": {
+      "type": ["string", "null"],
+      "description": "ID of equipped melee weapon"
+    },
+    "equipped_armor": {
+      "type": ["string", "null"],
+      "description": "ID of equipped armor"
     }
-  },
-  "required": [
-    "id",
-    "name",
-    "description"
-  ],
-  "additionalProperties": true
+  }
 }

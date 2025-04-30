@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Quest Schema",
+    "type": "object",
+    "required": ["id", "name", "description", "stages"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique identifier for the quest"
+      },
+      "name": {
+        "type": "string",
+        "description": "Display name of the quest"
+      },
+      "description": {
+        "type": "string",
+        "description": "Description of the quest"
+      },
+      "hidden": {
+        "type": "boolean",
+        "default": false,
+        "description": "Whether this quest is hidden from the player"
+      },
+      "stages": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "description"],
+          "properties": {
+            "id": { "type": "string" },
+            "description": { "type": "string" },
+            "complete_condition": {
+              "oneOf": [
+                { "type": "string" },
+                {
+                  "type": "object",
+                  "required": ["type"],
+                  "properties": {
+                    "type": { "type": "string" },
+                    "params": { "type": "object" }
+                  }
+                }
+              ]
+            },
+            "complete_events": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "next_stage": { "type": "string" }
+          }
+        }
+      },
+      "rewards": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "coalition_members": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "custom": {
+            "type": "string",
+            "description": "Custom reward handler"
+          }
+        }
+      }
+    }
+  }
