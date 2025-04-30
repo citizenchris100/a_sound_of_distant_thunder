@@ -1,0 +1,16 @@
+{
+    "item_id": "charm2",
+    "name": "Four-Leaf Clover",
+    "description": "An exceptionally lucky four-leaf clover.",
+    "item_type": "misc",
+    "attributes": {
+      "luck_boost": 2,
+      "effect_type": "luck_boost"
+    },
+    "value": 60,
+    "icon": "",
+    "max_durability": 100,
+    "current_durability": 100,
+    "durability_loss_per_use": 0,
+    "is_repairable": true
+  }

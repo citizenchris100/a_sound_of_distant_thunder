@@ -1,0 +1,16 @@
+{
+    "item_id": "charm1",
+    "name": "Rabbit's Foot",
+    "description": "A lucky rabbit's foot charm.",
+    "item_type": "misc",
+    "attributes": {
+      "luck_boost": 1,
+      "effect_type": "luck_boost"
+    },
+    "value": 30,
+    "icon": "",
+    "max_durability": 100, 
+    "current_durability": 100,
+    "durability_loss_per_use": 0, 
+    "is_repairable": true 
+  }

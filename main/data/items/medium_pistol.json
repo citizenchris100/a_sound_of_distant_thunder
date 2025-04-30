@@ -1,0 +1,18 @@
+{
+    "item_id": "medium_pistol",
+    "name": "Medium Pistol",
+    "description": "A step up from the basic pistol, offering slightly more power and reliability.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 17,
+      "weapon_type": "gun",
+      "ammo_type": "9mm",
+      "clip_size": 6
+    },
+    "value": 170,
+    "icon": "",
+    "max_durability": 120,
+    "current_durability": 120,
+    "durability_loss_per_use": 1,
+    "is_repairable": true
+  }

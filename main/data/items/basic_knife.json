@@ -1,0 +1,17 @@
+{
+    "item_id": "basic_knife",
+    "name": "Basic Knife",
+    "description": "A simple, functional knife for close-quarters combat.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 10,
+      "weapon_type": "melee",
+      "melee_type": "blade" 
+    },
+    "value": 100,
+    "icon": "",
+    "max_durability": 80,
+    "current_durability": 80,
+    "durability_loss_per_use": 1,
+    "is_repairable": true
+  }

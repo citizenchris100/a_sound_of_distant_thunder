@@ -1,0 +1,18 @@
+{
+    "item_id": "advanced_pistol",
+    "name": "Advanced Pistol",
+    "description": "A high-quality pistol with improved damage and a larger magazine.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 20,
+      "weapon_type": "gun",
+      "ammo_type": "9mm",
+      "clip_size": 16
+    },
+    "value": 200,
+    "icon": "",
+    "max_durability": 150,
+    "current_durability": 150,
+    "durability_loss_per_use": 1,
+    "is_repairable": true
+  }

@@ -1,0 +1,68 @@
+{
+  "type": "array",  
+  "items": {       
+    "type": "object",
+    "properties": {
+      "item_id": {
+        "type": "string",
+        "description": "Unique identifier for the item"
+      },
+      "name": {
+        "type": "string",
+        "description": "Display name of the item"
+      },
+      "description": {
+        "type": "string",
+        "description": "In-game description"
+      },
+      "item_type": {
+        "type": "string",
+        "enum": ["weapon", "armor", "consumable", "ammo", "misc"],
+        "description": "Category of the item"
+      },
+      "attributes": {
+        "type": "object",
+        "description": "Type-specific attributes",
+        "properties": {},
+        "additionalProperties": true
+      },
+      "value": {
+        "type": "integer",
+        "description": "Base value of the item"
+      },
+      "icon": {
+        "type": "string",
+        "description": "Icon image path (optional)",
+        "default": null
+      },
+      "max_durability": {
+        "type": "integer",
+        "description": "Max durability"
+      },
+      "current_durability": {
+        "type": "integer",
+        "description": "Current durability"
+      },
+      "durability_loss_per_use": {
+        "type": "integer",
+        "description": "Durability loss per use"
+      },
+      "is_repairable": {
+        "type": "boolean",
+        "description": "Is repairable"
+      }
+    },
+    "required": [
+      "item_id",
+      "name",
+      "description",
+      "item_type",
+      "attributes",
+      "value",
+      "max_durability",
+      "current_durability",
+      "durability_loss_per_use",
+      "is_repairable"
+    ]
+  }
+}

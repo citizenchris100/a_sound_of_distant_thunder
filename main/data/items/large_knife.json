@@ -1,0 +1,17 @@
+{
+    "item_id": "large_knife",
+    "name": "Large Knife",
+    "description": "A large combat knife, effective for inflicting serious damage.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 20,
+      "weapon_type": "melee",
+      "melee_type": "blade"
+    },
+    "value": 200,
+    "icon": "",
+    "max_durability": 120,
+    "current_durability": 120,
+    "durability_loss_per_use": 1,
+    "is_repairable": true
+  }

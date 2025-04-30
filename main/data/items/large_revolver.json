@@ -1,0 +1,18 @@
+{
+    "item_id": "large_revolver",
+    "name": "Large Revolver",
+    "description": "A powerful revolver, slower to reload but packs a punch.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 25,
+      "weapon_type": "gun",
+      "ammo_type": ".44 Magnum", 
+      "clip_size": 6 
+    },
+    "value": 250,
+    "icon": "",
+    "max_durability": 130,
+    "current_durability": 130,
+    "durability_loss_per_use": 2, 
+    "is_repairable": true
+  }

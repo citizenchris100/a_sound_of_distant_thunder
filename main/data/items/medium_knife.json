@@ -1,0 +1,17 @@
+{
+    "item_id": "medium_knife",
+    "name": "Medium Knife",
+    "description": "A more robust knife, better for combat.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 14,
+      "weapon_type": "melee",
+      "melee_type": "blade"
+    },
+    "value": 140,
+    "icon": "",
+    "max_durability": 100,
+    "current_durability": 100,
+    "durability_loss_per_use": 1,
+    "is_repairable": true
+  }

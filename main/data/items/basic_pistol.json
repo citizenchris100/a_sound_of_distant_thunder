@@ -1,0 +1,18 @@
+{
+    "item_id": "basic_pistol",
+    "name": "Basic Pistol",
+    "description": "A standard-issue 9mm pistol. Reliable and easy to use, but not very powerful.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 15,
+      "weapon_type": "gun",
+      "ammo_type": "9mm",
+      "clip_size": 6
+    },
+    "value": 150,
+    "icon": "",
+    "max_durability": 100,
+    "current_durability": 100,
+    "durability_loss_per_use": 1,
+    "is_repairable": true
+  }

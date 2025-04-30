@@ -1,0 +1,16 @@
+{
+    "item_id": "cologne1",
+    "name": "Cologne",
+    "description": "A basic cologne to improve your charm.",
+    "item_type": "misc",
+    "attributes": {
+      "charm_boost": 1,
+      "effect_type": "charm_boost"
+    },
+    "value": 20,
+    "icon": "",
+    "max_durability": 1, 
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

@@ -1,0 +1,16 @@
+{
+    "item_id": "large_22cal_ammo_box",
+    "name": "Large .22 Caliber Ammo Box",
+    "description": "A large box of .22 caliber ammunition.",
+    "item_type": "ammo",
+    "attributes": {
+      "ammo_type": ".22 Caliber",
+      "quantity": 24
+    },
+    "value": 80, 
+    "icon": "",
+    "max_durability": 1,
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

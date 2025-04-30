@@ -1,0 +1,16 @@
+{
+    "item_id": "advanced_med_pack",
+    "name": "Advanced Med Pack",
+    "description": "A high-end medical kit, providing significant health restoration.",
+    "item_type": "consumable",
+    "attributes": {
+      "heal_amount": 80,
+      "effect_type": "heal"
+    },
+    "value": 150,
+    "icon": "",
+    "max_durability": 1,
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

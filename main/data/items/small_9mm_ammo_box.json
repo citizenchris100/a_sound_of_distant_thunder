@@ -1,0 +1,16 @@
+{
+    "item_id": "small_9mm_ammo_box",
+    "name": "Small 9mm Ammo Box",
+    "description": "A small box containing 9mm ammunition.",
+    "item_type": "ammo",
+    "attributes": {
+      "ammo_type": "9mm",
+      "quantity": 6
+    },
+    "value": 30,
+    "icon": "",
+    "max_durability": 1, 
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

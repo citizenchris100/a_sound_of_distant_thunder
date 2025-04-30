@@ -1,0 +1,16 @@
+{
+    "item_id": "charm3",
+    "name": "Horseshoe",
+    "description": "A classic horseshoe charm for good luck.",
+    "item_type": "misc",
+    "attributes": {
+      "luck_boost": 3,
+      "effect_type": "luck_boost"
+    },
+    "value": 90,
+    "icon": "",
+    "max_durability": 100,
+    "current_durability": 100,
+    "durability_loss_per_use": 0,
+    "is_repairable": true
+  }

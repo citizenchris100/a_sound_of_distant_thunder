@@ -1,0 +1,103 @@
+{
+  "goblin_ambush": {
+    "event_id": "goblin_ambush",
+    "event_type": "trigger_combat",
+    "description": "Goblin attack upon first arrival at lighthouse",
+    "payload": {
+      "text": "As you approach the lighthouse, a grotesque creature emerges from the shadows!\n\nIt's humanoid but twisted, with mottled green skin and sharp, yellowed teeth. A goblin—your first encounter with the effects of Night Shadow.",
+      "spawn_npcs": ["basic_goblin_01"],
+      "surprise": false,
+      "location_npc_list": "npcs"
+    },
+    "conditions": [
+      {
+        "type": "check_flag",
+        "flag_name": "lighthouse_goblin_encounter_complete",
+        "expected_value": false
+      }
+    ],
+    "chain_events": ["set_goblin_encounter_flag"]
+  },
+  "set_goblin_encounter_flag": {
+    "event_id": "set_goblin_encounter_flag",
+    "event_type": "set_flag",
+    "description": "Mark that the goblin encounter has happened",
+    "payload": {
+      "flag_name": "lighthouse_goblin_encounter_complete",
+      "flag_value": true
+    }
+  },
+  "initiate_keeper_dialog": {
+    "event_id": "initiate_keeper_dialog",
+    "event_type": "custom",
+    "description": "Start conversation with lighthouse keeper through intercom",
+    "payload": {
+      "handler_type": "npc_dialog",
+      "npc_id": "npc_lighthouse_keeper",
+      "dialog_ref": "keeper_intercom_initial",
+      "post_dialog_events": ["check_lighthouse_access"]
+    }
+  },
+  "check_lighthouse_access": {
+    "event_id": "check_lighthouse_access",
+    "event_type": "custom",
+    "description": "Check if player was granted access and unlock door if true",
+    "payload": {
+      "handler_type": "check_and_trigger",
+      "condition_checks": [
+        {
+          "type": "check_flag",
+          "flag_name": "lighthouse_access_granted",
+          "expected_value": true
+        }
+      ],
+      "on_true": ["unlock_lighthouse_door"],
+      "on_false": []
+    }
+  },
+  "unlock_lighthouse_door": {
+    "event_id": "unlock_lighthouse_door",
+    "event_type": "modify_location",
+    "description": "Unlock the lighthouse door and add exit",
+    "payload": {
+      "modifications": {
+        "exits": {
+          "east": "dock_road",
+          "road": "dock_road",
+          "inside": "lighthouse_den",
+          "door": "lighthouse_den"
+        }
+      }
+    },
+    "chain_events": ["door_unlock_sound", "update_door_state"]
+  },
+  "door_unlock_sound": {
+    "event_id": "door_unlock_sound",
+    "event_type": "display_text",
+    "payload": {
+      "text": "*CLICK*\n\nYou hear the heavy mechanism of the door unlock. The lighthouse is now accessible."
+    }
+  },
+  "update_door_state": {
+    "event_id": "update_door_state",
+    "event_type": "modify_location",
+    "description": "Update door interactable to unlocked state",
+    "payload": {
+      "modifications": {
+        "interactables": [
+          {
+            "id": "lighthouse_door",
+            "name": "door",
+            "description": "A heavy metal door. It's now unlocked.",
+            "state": "unlocked",
+            "actions": {
+              "examine": "display_text:The door is now unlocked. You could enter the lighthouse.",
+              "open": "display_text:You pull the heavy door open. The way inside is clear.",
+              "enter": "go inside"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

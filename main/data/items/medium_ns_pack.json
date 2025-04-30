@@ -1,0 +1,17 @@
+{
+    "item_id": "medium_ns_pack",
+    "name": "Medium Pack of Night Shadow",
+    "description": "A moderate dose of Night Shadow.",
+    "item_type": "consumable",
+    "attributes": {
+      "mutate_level": 3, 
+      "intoxicate_level": 2, 
+      "effect_type": "multi"
+    },
+    "value": 150,
+    "icon": "",
+    "max_durability": 1,
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

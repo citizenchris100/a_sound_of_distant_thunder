@@ -1,0 +1,16 @@
+{
+    "item_id": "small_44mag_ammo_box",
+    "name": "Small 44 magnum Ammo Box",
+    "description": "A small box containing 44 magnum ammunition.",
+    "item_type": "ammo",
+    "attributes": {
+      "ammo_type": "9mm",
+      "quantity": 6
+    },
+    "value": 30,
+    "icon": "",
+    "max_durability": 1, 
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

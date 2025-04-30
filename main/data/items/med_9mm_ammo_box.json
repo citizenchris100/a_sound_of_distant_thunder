@@ -1,0 +1,16 @@
+{
+    "item_id": "med_9mm_ammo_box",
+    "name": "Medium 9mm Ammo Box",
+    "description": "A medium-sized box containing 9mm ammunition.",
+    "item_type": "ammo",
+    "attributes": {
+      "ammo_type": "9mm",
+      "quantity": 12
+    },
+    "value": 60,
+    "icon": "",
+    "max_durability": 1,
+    "current_durability": 1,
+    "durability_loss_per_use": 1,
+    "is_repairable": false
+  }

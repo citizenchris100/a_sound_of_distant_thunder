@@ -1,0 +1,17 @@
+{
+    "item_id": "naily_board",
+    "name": "Naily Board",
+    "description": "A piece of wood with nails sticking out the end.",
+    "item_type": "weapon",
+    "attributes": {
+      "damage": 5,
+      "weapon_type": "melee",
+      "melee_type": "blunt" 
+    },
+    "value": 15,
+    "icon": "",
+    "max_durability": 75,
+    "current_durability": 75,
+    "durability_loss_per_use": 10,
+    "is_repairable": false
+  }
