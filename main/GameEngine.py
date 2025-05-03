@@ -126,9 +126,28 @@ class GameEngine:
         self._register_event_handlers()
         
         logger.info("Game initialization complete")
+        
+        """Initialize the game, loading necessary resources"""
+        # Initialize UI
+        self.ui_manager.initialize()
+    
+        # Initialize other systems as needed
+        self.asset_manager.load_common_assets()
+    
+        # Register event handlers
+        self._register_event_handlers()
+    
+        logger.info("Game initialization complete")
+    
         # Initialize Phase 2 components
-        from Phase2Integration import initialize_phase2
-        self.phase2_integration = initialize_phase2(self)
+        try:
+            # Import dynamically to avoid circular dependencies
+            from Phase2Integration import initialize_phase2
+            self.phase2_integration = initialize_phase2(self)
+            logger.info("Phase 2 integration complete")
+        except ImportError as e:
+            logger.warning(f"Phase 2 integration failed: {e}")
+            self.phase2_integration = None
     
     def _register_event_handlers(self):
         """Register handlers for game events"""
@@ -461,6 +480,30 @@ class GameEngine:
         # Recreate assimilation system
         from assimilation_system import AssimilationSystem
         self.assimilation_system = AssimilationSystem(self.game_state, self.event_system)
+        
+    def _render_debug_info(self, surface):
+        """
+        Render debug information on the given surface.
+    
+        Args:
+        surface (pygame.Surface): Surface to render on
+        """
+        # Check if Phase2 is available for rendering debug info
+        phase2 = getattr(self, "phase2_integration", None)
+        if phase2 and hasattr(phase2, "render_debug_overlay"):
+            # Use Phase2's debug renderer
+            phase2.render_debug_overlay(surface)
+            return
+    
+        # Fallback to a simple debug implementation
+        font = pygame.font.Font(None, 20)
+        fps_text = font.render(f"FPS: {int(self.ui_manager.clock.get_fps())}", True, (255, 255, 255))
+        surface.blit(fps_text, (5, 5))
+    
+        # Current location
+        location_id = self.game_state.current_location
+        loc_text = font.render(f"Location: {location_id}", True, (255, 255, 255))
+        surface.blit(loc_text, (5, 25))
     
     def get_save_games(self):
         """

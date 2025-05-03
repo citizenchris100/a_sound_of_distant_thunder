@@ -5,6 +5,7 @@ Provides the main UI infrastructure for the SCUMM-like point-and-click adventure
 import pygame
 import logging
 import os
+import random
 
 # Configure logging
 logger = logging.getLogger("UIFramework")
@@ -37,6 +38,9 @@ class UIManager:
         self.mouse_position = (0, 0)
         self.hover_object = None
         self.is_dialog_active = False
+        
+        # Theme system - will be set by Phase2Integration
+        self.theme = None
         
         # Asset management
         self.asset_manager = AssetManager("./assets/")
@@ -119,20 +123,51 @@ class UIManager:
         running = True
         
         while running:
-            # Handle events
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                elif event.type == pygame.MOUSEMOTION:
-                    self.mouse_position = event.pos
-                    self._handle_mouse_movement(event)
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    self._handle_mouse_click(event)
-                elif event.type == pygame.KEYDOWN:
-                    self._handle_key_press(event)
+            # Check for input manager
+            input_manager = None
+            phase2 = getattr(self.game_engine, "phase2_integration", None)
+            if phase2 and hasattr(phase2, "input_manager"):
+                input_manager = phase2.input_manager
             
-            # Update game state
-            self._update()
+            # Handle events
+            if input_manager:
+                # Use advanced input handling
+                input_manager.update()
+                
+                # Get current mouse position for consistency
+                self.mouse_position = input_manager.mouse_position
+                
+                # Check for exit event
+                if not pygame.get_init():
+                    running = False
+            else:
+                # Fallback to original event handling
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    elif event.type == pygame.MOUSEMOTION:
+                        self.mouse_position = event.pos
+                        self._handle_mouse_movement(event)
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        self._handle_mouse_click(event)
+                    elif event.type == pygame.KEYDOWN:
+                        self._handle_key_press(event)
+            
+            # Update game state with delta time
+            dt = self.clock.get_time() / 1000.0  # Convert milliseconds to seconds
+            
+            # Update Phase2 integration if available
+            if phase2 and hasattr(phase2, "update"):
+                phase2.update(dt)
+            
+            # Update active scene
+            if self.active_scene:
+                self.active_scene.update(dt)
+            
+            # Update UI components
+            for component in self.ui_components.values():
+                if hasattr(component, "update") and component.visible:
+                    component.update(dt)
             
             # Render frame
             self._render()
@@ -142,20 +177,6 @@ class UIManager:
         
         # Clean up
         pygame.quit()
-    
-    def _update(self):
-        """Update game state and UI components"""
-        # Calculate delta time for animations
-        dt = self.clock.get_time() / 1000.0  # Convert milliseconds to seconds
-        
-        # Update active scene
-        if self.active_scene:
-            self.active_scene.update(dt)
-        
-        # Update UI components
-        for component in self.ui_components.values():
-            if hasattr(component, "update") and component.visible:
-                component.update(dt)
     
     def _render(self):
         """Render the current frame"""
@@ -178,12 +199,15 @@ class UIManager:
         
         # Debug info (optional)
         if self.game_engine.debug_mode:
-            self._render_debug_info()
+            # Use the game engine's debug info renderer
+            if hasattr(self.game_engine, "_render_debug_info"):
+                self.game_engine._render_debug_info(self.screen)
+            else:
+                # Fallback to simple debug info
+                self._render_debug_info()
         
         # Update display
         pygame.display.flip()
-        
-        self.theme = None  # Will be set by Phase2Integration
     
     def _render_debug_info(self):
         """Render debug information (if debug mode is enabled)"""
@@ -199,6 +223,24 @@ class UIManager:
         if self.hover_object:
             hover_text = font.render(f"Hover: {self.hover_object}", True, (255, 255, 255))
             self.screen.blit(hover_text, (5, 45))
+    
+    def apply_theme(self, theme):
+        """
+        Apply a theme to all UI components that support it.
+        
+        Args:
+            theme: UITheme instance
+        """
+        if not theme:
+            return
+            
+        self.theme = theme
+        
+        # Apply theme to components that support it
+        for name, component in self.ui_components.items():
+            if hasattr(component, "set_theme"):
+                component.set_theme(theme)
+                logger.debug(f"Applied theme to {name}")
     
     def _handle_mouse_movement(self, event):
         """Handle mouse movement events"""
@@ -334,18 +376,20 @@ class AssetManager:
         # Load background
         self._load_image(f"bg_{location_id}", os.path.join("locations", location_id, "background.png"))
         
-        # Load objects
-        location_data = self.game_engine.data_manager.get_data("locations", location_id)
-        if location_data:
-            # Load object images
-            for obj in location_data.get("objects", []):
-                obj_id = obj["id"]
-                self._load_image(f"obj_{obj_id}", os.path.join("locations", location_id, "objects", f"{obj_id}.png"))
-            
-            # Load NPC images
-            for npc_id in location_data.get("npcs", []):
-                self._load_image(f"npc_{npc_id}", os.path.join("npcs", f"{npc_id}.png"))
-                self._load_image(f"portrait_{npc_id}", os.path.join("npcs", f"{npc_id}_portrait.png"))
+        # Load objects and NPCs based on location data
+        if hasattr(self, "game_engine") and self.game_engine:
+            # Load location data
+            location_data = self.game_engine.data_manager.get_data("locations", location_id)
+            if location_data:
+                # Load object images
+                for obj in location_data.get("objects", []):
+                    obj_id = obj["id"]
+                    self._load_image(f"obj_{obj_id}", os.path.join("locations", location_id, "objects", f"{obj_id}.png"))
+                
+                # Load NPC images
+                for npc_id in location_data.get("npcs", []):
+                    self._load_image(f"npc_{npc_id}", os.path.join("npcs", f"{npc_id}.png"))
+                    self._load_image(f"portrait_{npc_id}", os.path.join("npcs", f"{npc_id}_portrait.png"))
         
         # Load location music if available
         music_file = os.path.join("locations", location_id, "music.mp3")
@@ -545,6 +589,7 @@ class UIComponent:
         self.asset_manager = asset_manager
         self.rect = rect
         self.visible = True
+        self.theme = None
     
     def update(self, dt):
         """Update component state"""
@@ -580,6 +625,15 @@ class UIComponent:
             bool: True if event was handled, False otherwise
         """
         return False
+    
+    def set_theme(self, theme):
+        """
+        Set component theme.
+        
+        Args:
+            theme: UITheme instance
+        """
+        self.theme = theme
 
 
 class Scene:
@@ -717,6 +771,7 @@ class LocationScene(Scene):
         else:
             # For named exits, create a custom area
             # This would be defined in the location data
+            # For now, just return a default rect
             return pygame.Rect(0, 0, 50, 50)
     
     def update(self, dt):
@@ -730,6 +785,9 @@ class LocationScene(Scene):
         # Render background
         if self.background:
             surface.blit(self.background, (0, 0))
+        else:
+            # Fallback to black background
+            surface.fill((0, 0, 0))
         
         # Render objects
         for game_object in self.objects.values():
@@ -996,29 +1054,48 @@ class VerbBarUI(UIComponent):
         if not self.visible:
             return
         
-        # Draw background
-        if self.background:
+        # Draw background using theme if available
+        if self.theme:
+            self.theme.draw_panel(surface, self.rect)
+        elif self.background:
             surface.blit(self.background, self.rect)
         else:
             pygame.draw.rect(surface, (50, 50, 80), self.rect, 0)
         
         # Draw verbs
         for verb, verb_rect in self.verb_rects.items():
-            # Draw verb background
-            bg_color = (100, 100, 255) if verb == self.selected_verb else (50, 50, 80)
-            pygame.draw.rect(surface, bg_color, verb_rect, 0)
-            
-            # Draw verb image if available
-            if verb in self.verb_images and self.verb_images[verb]:
-                image = self.verb_images[verb]
-                image_rect = image.get_rect(center=verb_rect.center)
-                surface.blit(image, image_rect)
+            # Determine colors based on theme or defaults
+            if self.theme:
+                bg_color = self.theme.highlight_color if verb == self.selected_verb else self.theme.button_color
+                text_color = self.theme.text_color
             else:
-                # Fallback to text
-                font = self.asset_manager.get_font("ui")
-                text = font.render(verb.capitalize(), True, (255, 255, 255))
-                text_rect = text.get_rect(center=verb_rect.center)
-                surface.blit(text, text_rect)
+                bg_color = (100, 100, 255) if verb == self.selected_verb else (50, 50, 80)
+                text_color = (255, 255, 255)
+            
+            # Draw verb background
+            if self.theme:
+                self.theme.draw_button(
+                    surface, 
+                    verb_rect, 
+                    verb.capitalize(), 
+                    self.asset_manager.get_font("ui"),
+                    is_selected=(verb == self.selected_verb)
+                )
+            else:
+                # Fallback to original implementation
+                pygame.draw.rect(surface, bg_color, verb_rect, 0)
+                
+                # Draw verb image if available
+                if verb in self.verb_images and self.verb_images[verb]:
+                    image = self.verb_images[verb]
+                    image_rect = image.get_rect(center=verb_rect.center)
+                    surface.blit(image, image_rect)
+                else:
+                    # Fallback to text
+                    font = self.asset_manager.get_font("ui")
+                    text = font.render(verb.capitalize(), True, text_color)
+                    text_rect = text.get_rect(center=verb_rect.center)
+                    surface.blit(text, text_rect)
     
     def handle_mouse_movement(self, event):
         """Handle mouse movement over verbs"""
@@ -1096,8 +1173,10 @@ class InventoryUI(UIComponent):
         if not self.visible:
             return
         
-        # Draw background
-        if self.background:
+        # Draw background using theme if available
+        if self.theme:
+            self.theme.draw_panel(surface, self.rect)
+        elif self.background:
             surface.blit(self.background, self.rect)
         else:
             pygame.draw.rect(surface, (30, 30, 50), self.rect, 0)
@@ -1135,7 +1214,10 @@ class InventoryUI(UIComponent):
             
             # Draw selection highlight
             if self.selected_item == i:
-                pygame.draw.rect(surface, (255, 255, 0), item_rect, 2)
+                if self.theme:
+                    pygame.draw.rect(surface, self.theme.highlight_color, item_rect, 2)
+                else:
+                    pygame.draw.rect(surface, (255, 255, 0), item_rect, 2)
     
     def handle_mouse_click(self, event):
         """Handle mouse click on inventory items"""
@@ -1255,8 +1337,10 @@ class DialogUI(UIComponent):
         if not self.visible:
             return
         
-        # Draw background
-        if self.background:
+        # Draw background using theme if available
+        if self.theme:
+            self.theme.draw_panel(surface, self.rect)
+        elif self.background:
             surface.blit(self.background, self.rect)
         else:
             pygame.draw.rect(surface, (30, 30, 50), self.rect, 0)
@@ -1268,12 +1352,23 @@ class DialogUI(UIComponent):
         
         # Draw text
         revealed_text = self.current_text[:self.text_reveal_index]
-        self._render_text(surface, revealed_text, pygame.Rect(
+        text_rect = pygame.Rect(
             self.rect.left + 100,
             self.rect.top + 10,
             self.rect.width - 110,
             80
-        ))
+        )
+        
+        if self.theme:
+            self.theme.draw_text(
+                surface, 
+                revealed_text, 
+                self.asset_manager.get_font("dialog"),
+                (text_rect.left, text_rect.top),
+                max_width=text_rect.width
+            )
+        else:
+            self._render_text(surface, revealed_text, text_rect)
         
         # Draw options if text is fully revealed
         if self.text_reveal_index >= len(self.current_text):
@@ -1327,18 +1422,31 @@ class DialogUI(UIComponent):
                 option_height
             )
             
-            # Draw highlight for selected option
-            if i == self.selected_option:
-                pygame.draw.rect(surface, (100, 100, 255), option_rect, 0)
-                text_color = (255, 255, 255)
-            else:
-                pygame.draw.rect(surface, (50, 50, 80), option_rect, 0)
-                text_color = (200, 200, 200)
+            # Draw option using theme if available
+            option_text = option["text"]
             
-            # Draw option text
-            option_text = option_font.render(option["text"], True, text_color)
-            text_rect = option_text.get_rect(midleft=(option_rect.left + 10, option_rect.centery))
-            surface.blit(option_text, text_rect)
+            if self.theme:
+                self.theme.draw_button(
+                    surface,
+                    option_rect,
+                    option_text,
+                    option_font,
+                    is_hover=(i == self.selected_option),
+                    is_selected=(i == self.selected_option)
+                )
+            else:
+                # Fallback to original implementation
+                if i == self.selected_option:
+                    pygame.draw.rect(surface, (100, 100, 255), option_rect, 0)
+                    text_color = (255, 255, 255)
+                else:
+                    pygame.draw.rect(surface, (50, 50, 80), option_rect, 0)
+                    text_color = (200, 200, 200)
+                
+                # Draw option text
+                option_text_surf = option_font.render(option_text, True, text_color)
+                text_rect = option_text_surf.get_rect(midleft=(option_rect.left + 10, option_rect.centery))
+                surface.blit(option_text_surf, text_rect)
     
     def handle_mouse_movement(self, event):
         """Handle mouse movement over dialog options"""
@@ -1433,8 +1541,11 @@ class StatusBarUI(UIComponent):
         if not self.visible:
             return
         
-        # Draw background
-        pygame.draw.rect(surface, (30, 30, 50), self.rect, 0)
+        # Draw background using theme if available
+        if self.theme:
+            self.theme.draw_panel(surface, self.rect)
+        else:
+            pygame.draw.rect(surface, (30, 30, 50), self.rect, 0)
         
         # Get current location name
         location_id = self.game_engine.game_state.current_location
@@ -1449,9 +1560,10 @@ class StatusBarUI(UIComponent):
         coalition_size = len(self.game_engine.game_state.coalition_members)
         
         # Render text
-        location_text = self.font.render(location_name, True, (255, 255, 255))
-        time_text = self.font.render(time_str, True, (255, 255, 255))
-        coalition_text = self.font.render(f"Coalition: {coalition_size}", True, (255, 255, 255))
+        text_color = self.theme.text_color if self.theme else (255, 255, 255)
+        location_text = self.font.render(location_name, True, text_color)
+        time_text = self.font.render(time_str, True, text_color)
+        coalition_text = self.font.render(f"Coalition: {coalition_size}", True, text_color)
         
         # Position text
         surface.blit(location_text, (self.rect.left + 10, self.rect.centery - 8))

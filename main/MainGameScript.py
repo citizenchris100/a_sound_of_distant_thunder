@@ -68,6 +68,7 @@ def ensure_directories(data_path, asset_path):
     for subdir in ["ui", "locations", "npcs", "items", "fonts", "sounds", "music"]:
         os.makedirs(os.path.join(asset_path, subdir), exist_ok=True)
 
+# Modify the main() function in MainGameScript.py
 def main():
     """Main function that starts the game"""
     # Parse command line arguments
@@ -112,12 +113,24 @@ def main():
         # Initialize game
         game_engine.initialize()
         
+        # Run tests if in debug mode
+        if args.debug:
+            logger.info("Debug mode enabled, running integration tests")
+            phase2 = getattr(game_engine, "phase2_integration", None)
+            if phase2 and hasattr(phase2, "tester"):
+                phase2.tester.run_tests()
+                logger.info("Integration tests completed")
+            else:
+                logger.warning("Phase2Integration or tester not available, skipping tests")
+        
         # Load saved game if specified
         if args.load:
             game_engine.load_game(args.load)
+            logger.info(f"Loaded saved game: {args.load}")
         else:
             # Start new game
             game_engine.handle_event("game_start")
+            logger.info("Started new game")
         
         # Run game
         game_engine.run()
