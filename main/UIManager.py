@@ -182,6 +182,8 @@ class UIManager:
         
         # Update display
         pygame.display.flip()
+        
+        self.theme = None  # Will be set by Phase2Integration
     
     def _render_debug_info(self):
         """Render debug information (if debug mode is enabled)"""
@@ -351,6 +353,43 @@ class AssetManager:
             self._load_music(f"music_{location_id}", music_file)
         
         logger.info(f"Location assets loaded: {location_id}")
+    
+    def create_placeholder_asset(self, key, width, height, label=None, color=(200, 200, 200)):
+        """
+        Create a placeholder asset with optional text label.
+        
+        Args:
+            key (str): Asset key
+            width (int): Width of placeholder
+            height (int): Height of placeholder
+            label (str, optional): Text to display on placeholder
+            color (tuple, optional): Background color (r, g, b)
+            
+        Returns:
+            pygame.Surface: Created placeholder surface
+        """
+        # Create surface with transparency
+        placeholder = pygame.Surface((width, height), pygame.SRCALPHA)
+        placeholder.fill((*color, 220))  # Semi-transparent
+        
+        # Draw border
+        pygame.draw.rect(placeholder, (100, 100, 100), placeholder.get_rect(), 2)
+        
+        # Add label if provided
+        if label:
+            try:
+                font = pygame.font.Font(None, min(height // 3, 24))  # Scale font to fit
+                text = font.render(label, True, (50, 50, 50))
+                text_rect = text.get_rect(center=(width // 2, height // 2))
+                placeholder.blit(text, text_rect)
+            except Exception:
+                # Ignore text rendering errors
+                pass
+        
+        # Add to images collection
+        self.images[key] = placeholder
+        
+        return placeholder
     
     def _load_image(self, key, file_path):
         """

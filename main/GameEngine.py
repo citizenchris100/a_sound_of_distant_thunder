@@ -126,6 +126,9 @@ class GameEngine:
         self._register_event_handlers()
         
         logger.info("Game initialization complete")
+        # Initialize Phase 2 components
+        from Phase2Integration import initialize_phase2
+        self.phase2_integration = initialize_phase2(self)
     
     def _register_event_handlers(self):
         """Register handlers for game events"""
