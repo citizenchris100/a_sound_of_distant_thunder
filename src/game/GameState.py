@@ -1,3 +1,7 @@
+"""
+Game State for A Sound of Distant Thunder
+Manages the current state of the game, including player, NPCs, locations, etc.
+"""
 import os
 import json
 import logging
@@ -37,6 +41,11 @@ class GameState:
         
         # Quest status
         self.quest_status = {}
+        
+        # Use VariableManager for global variables
+        from src.core.VariableManager import VariableManager
+        self.variable_manager = VariableManager(event_system)
+        # For backward compatibility, keep global_variables as empty dict
         self.global_variables = {}
         
     def initialize_new_game(self, character_class=None):
@@ -58,6 +67,9 @@ class GameState:
         self.known_assimilated = []
         self.inventory = []
         self.quest_status = {}
+        
+        # Reset variables
+        self.variable_manager.clear()
         self.global_variables = {}
         
         # Emit game started event
@@ -88,7 +100,8 @@ class GameState:
                     gun_skill=class_data["stats"]["gun_skill"],
                     luck=class_data["stats"]["luck"],
                     charm=class_data["stats"]["charm"],
-                    stealth=class_data["stats"]["stealth"]
+                    stealth=class_data["stats"]["stealth"],
+                    game_items_data=self.data_manager.get_data("items")
                 )
                 
                 # Add starting inventory items
@@ -117,7 +130,7 @@ class GameState:
                 return player
         
         # If no class specified or class data not found, use class selection
-        return hero.class_selection()
+        return hero.class_selection(self.data_manager.get_data("items"))
     
     def load_location(self, location_id):
         """
@@ -174,7 +187,7 @@ class GameState:
         Args:
             location_data (dict): Location data with NPCs
         """
-        from npc import NPC
+        from src.game.NPC import NPC
         
         # Clear NPCs that shouldn't persist
         self.npcs = {npc_id: npc for npc_id, npc in self.npcs.items() 
@@ -213,6 +226,11 @@ class GameState:
         # Load new objects
         for obj_data in location_data.get("objects", []):
             obj_id = obj_data["id"]
+            
+            # Check if object should be hidden
+            if self.get_variable(f"object_hidden_{obj_id}", False):
+                continue
+                
             self.objects[obj_id] = obj_data
             self.logger.debug(f"Loaded object: {obj_id}")
     
@@ -235,7 +253,7 @@ class GameState:
             for npc_id in event_data.get("npcs", []):
                 npc_data = self.data_manager.get_data("npcs", npc_id)
                 if npc_data:
-                    from npc import NPC
+                    from src.game.NPC import NPC
                     self.npcs[npc_id] = NPC(npc_id, npc_data)
                     self.logger.debug(f"Spawned NPC: {npc_id}")
         
@@ -429,52 +447,19 @@ class GameState:
             self.logger.debug(f"Cannot add item: Inventory full")
             return False
             
-        # Create item object from data
-        import items
+        # Add item to inventory
+        success = self.player.add_inventory(item_data)
         
-        # Determine which item factory function to use
-        item_type = item_data.get("type", "")
-        item_name = item_data.get("name", "").lower()
-        
-        # Try to find matching factory function
-        item_func = None
-        for attr_name in dir(items):
-            if attr_name.endswith("_" + item_type) or attr_name == item_name:
-                item_func = getattr(items, attr_name)
-                if callable(item_func):
-                    break
-        
-        if item_func:
-            item = item_func()
-            self.player.add_inventory(item)
-            
+        if success:
+            # Emit event
             self.event_system.emit("item_acquired", {
                 "item_id": item_id,
-                "item_name": item.get_item_name()
+                "item_name": item_data.get("name", item_id)
             })
             
             self.logger.info(f"Item added to inventory: {item_id}")
-            return True
-        else:
-            # Fallback to generic item
-            if hasattr(items, 'Item'):
-                item = items.Item(
-                    item_data.get("name", item_id),
-                    item_data.get("value", 1),
-                    item_data.get("type", "quest")
-                )
-                self.player.add_inventory(item)
-                
-                self.event_system.emit("item_acquired", {
-                    "item_id": item_id,
-                    "item_name": item.get_item_name()
-                })
-                
-                self.logger.info(f"Generic item added to inventory: {item_id}")
-                return True
-        
-        self.logger.error(f"Failed to create item: {item_id}")
-        return False
+            
+        return success
     
     def has_item(self, item_id):
         """
@@ -494,7 +479,8 @@ class GameState:
         
         # Check inventory for matching item
         for item in self.player.get_inventory():
-            if (item.get_item_name().lower() == item_id_lower or
+            item_name = item.get_item_name() if hasattr(item, 'get_item_name') else getattr(item, 'name', '')
+            if (item_name.lower() == item_id_lower or
                 (hasattr(item, 'id') and item.id == item_id)):
                 return True
         
@@ -518,13 +504,14 @@ class GameState:
         
         # Find matching item in inventory
         for i, item in enumerate(self.player.get_inventory()):
-            if (item.get_item_name().lower() == item_id_lower or
+            item_name = item.get_item_name() if hasattr(item, 'get_item_name') else getattr(item, 'name', '')
+            if (item_name.lower() == item_id_lower or
                 (hasattr(item, 'id') and item.id == item_id)):
                 self.player.del_inventory(i)
                 
                 self.event_system.emit("item_removed", {
                     "item_id": item_id,
-                    "item_name": item.get_item_name()
+                    "item_name": item_name
                 })
                 
                 self.logger.info(f"Item removed from inventory: {item_id}")
@@ -543,6 +530,10 @@ class GameState:
         Returns:
             Variable value or default
         """
+        # First try variable manager
+        if hasattr(self, 'variable_manager'):
+            return self.variable_manager.get(name, default)
+        # Fall back to global_variables for backward compatibility
         return self.global_variables.get(name, default)
     
     def set_variable(self, name, value):
@@ -553,6 +544,9 @@ class GameState:
             name (str): Variable name
             value: Variable value
         """
+        # Update both for backward compatibility
+        if hasattr(self, 'variable_manager'):
+            self.variable_manager.set(name, value)
         self.global_variables[name] = value
     
     def check_win_condition(self):

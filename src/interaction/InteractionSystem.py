@@ -86,54 +86,56 @@ class InteractionSystem:
         self.selected_item = None
         logger.debug("Item deselected")
     
+    # Updated InteractionSystem class (excerpt)
+
     def interact_with_object(self, object_id, verb=None):
         """
         Interact with a game object.
-        
+    
         Args:
-            object_id (str): ID of the object to interact with
-            verb (str, optional): Override the currently selected verb
-            
+        object_id (str): ID of the object to interact with
+        verb (str, optional): Override the currently selected verb
+        
         Returns:
-            InteractionResult: Result of the interaction
+        InteractionResult: Result of the interaction
         """
         # Get the object data
         current_location = self.game_engine.game_state.current_location
         if not current_location:
-            logger.error("No current location in game state")
-            return InteractionResult.NO_TARGET
-            
-        location_data = self.game_engine.data_manager.get_data("locations", current_location)
-        if not location_data:
-            logger.error(f"No location data for {current_location}")
+            self.game_engine.message_manager.show_error("No current location in game state")
             return InteractionResult.NO_TARGET
         
+        location_data = self.game_engine.data_manager.get_data("locations", current_location)
+        if not location_data:
+            self.game_engine.message_manager.show_error(f"No location data for {current_location}")
+            return InteractionResult.NO_TARGET
+    
         # Find the object in location data
         object_data = self._find_object_data(location_data, object_id)
         if not object_data:
-            logger.error(f"Object not found: {object_id}")
+            self.game_engine.message_manager.show_error(f"Object not found: {object_id}")
             return InteractionResult.NO_TARGET
-        
+    
         # Use provided verb or fall back to selected verb
         use_verb = verb or self.selected_verb or "look"
-        
+    
         # Check if the action is allowed
         actions = object_data.get("actions", {})
         if not actions or use_verb not in actions:
-            self._show_message(f"I can't {use_verb} that.")
+            self.game_engine.message_manager.show_message(f"I can't {use_verb} that.")
             return InteractionResult.NOT_SUPPORTED
-        
+    
         # Get action data
         action_data = actions[use_verb]
-        
+    
         # Process the action
         if action_data:
             result = self._execute_action(use_verb, action_data, object_data)
             logger.info(f"Object interaction: {use_verb} {object_id} ({result.value})")
             return result
         else:
-            self._show_message(f"Nothing happens.")
-            return InteractionResult.FAILED
+            self.game_engine.message_manager.show_message(f"Nothing happens.")
+        return InteractionResult.FAILED
     
     def _find_object_data(self, location_data, object_id):
         """

@@ -62,57 +62,80 @@ class GameEngine:
         
         logger.info("Game engine initialized")
     
-    def _init_systems(self):
-        """Initialize all game systems in the correct order"""
-        # Create event system first (no dependencies)
-        from event_system import EventSystem
-        self.event_system = EventSystem()
-        
-        # Create data manager (depends on nothing)
-        from data_manager import DataManager
-        self.data_manager = DataManager(self.data_path)
-        
-        # Create game state (depends on data manager and event system)
-        from game_state import GameState
-        self.game_state = GameState(self.data_manager, self.event_system)
-        
-        # Create asset manager (depends on nothing)
-        from ui_framework import AssetManager
-        self.asset_manager = AssetManager(self.asset_path)
-        
-        # Create dialog manager (depends on data manager, game state, and event system)
-        from dialog_manager import DialogManager
-        self.dialog_manager = DialogManager(self.data_manager, self.game_state, self.event_system)
-        
-        # Create assimilation system (depends on game state and event system)
-        from assimilation_system import AssimilationSystem
-        self.assimilation_system = AssimilationSystem(self.game_state, self.event_system)
-        
-        # Create navigation system (depends on game state, data manager, and event system)
-        from navigation_system import NavigationSystem
-        self.navigation_system = NavigationSystem(self)
-        
-        # Create interaction system (depends on many other systems)
-        from interaction_system import InteractionSystem
-        self.interaction_system = InteractionSystem(self)
-        
-        # Create scene manager (depends on game state, asset manager, and event system)
-        from scene_system import SceneManager
-        self.scene_manager = SceneManager(self, self.asset_manager)
-        
-        # Create message box (depends on asset manager and event system)
-        from message_box import MessageBox
-        self.message_box = MessageBox(self, self.asset_manager)
-        
-        # Create character selection screen (depends on asset manager and event system)
-        from character_questionnaire import CharacterSelectionScreen
-        self.character_selection = CharacterSelectionScreen(self, self.asset_manager)
-        
-        # Create UI manager (depends on all other systems)
-        from ui_framework import UIManager
-        self.ui_manager = UIManager(self, 800, 600)
-        
-        logger.info("All systems initialized")
+    # Updated GameEngine._init_systems method
+
+def _init_systems(self):
+    """Initialize all game systems in the correct order"""
+    # Create event system first (no dependencies)
+    from src.core.EventSystem import EventSystem
+    self.event_system = EventSystem()
+    
+    # Create data manager (depends on nothing)
+    from src.core.DataManager import DataManager
+    self.data_manager = DataManager(self.data_path)
+    
+    # Create core utilities (minimal dependencies)
+    from src.core.ErrorUtils import ErrorHandler
+    from src.core.MessageUtils import MessageManager
+    from src.core.VariableManager import VariableManager
+    
+    self.error_handler = ErrorHandler(self.event_system)
+    self.message_manager = MessageManager(self.event_system)
+    self.variable_manager = VariableManager(self.event_system)
+    
+    # Create game state (depends on data manager and event system)
+    from src.game.GameState import GameState
+    self.game_state = GameState(self.data_manager, self.event_system)
+    
+    # Create asset manager (depends on nothing)
+    from src.ui.UIManager import AssetManager
+    self.asset_manager = AssetManager(self.asset_path)
+    
+    # Create behavior system (depends on game state and event system)
+    from src.game.NPCBehaviorSystem import NPCBehaviorSystem
+    self.npc_behavior_system = NPCBehaviorSystem(self.game_state, self.event_system)
+    
+    # Create condition evaluator (depends on game state)
+    from src.core.ConditionUtils import ConditionEvaluator
+    self.condition_evaluator = ConditionEvaluator(self.game_state)
+    
+    # Create item manager (depends on game state and data manager)
+    from src.core.ItemUtils import ItemManager
+    self.item_manager = ItemManager(self.game_state, self.data_manager)
+    
+    # Create dialog manager (depends on data manager, game state, and event system)
+    from src.dialog.DialogManager import DialogManager
+    self.dialog_manager = DialogManager(self.data_manager, self.game_state, self.event_system)
+    
+    # Create assimilation system (depends on game state and event system)
+    from src.game.AssimilationSystem import AssimilationSystem
+    self.assimilation_system = AssimilationSystem(self.game_state, self.event_system)
+    
+    # Create navigation system (depends on game state, data manager, and event system)
+    from src.scene.NavigationSystem import NavigationSystem
+    self.navigation_system = NavigationSystem(self)
+    
+    # Create interaction system (depends on many other systems)
+    from src.interaction.InteractionSystem import InteractionSystem
+    self.interaction_system = InteractionSystem(self)
+    
+    # Create scene manager (depends on game state, asset manager, and event system)
+    from src.scene.SceneSystem import SceneManager
+    self.scene_manager = SceneManager(self, self.asset_manager)
+    
+    # Create message box (depends on asset manager and event system)
+    from src.ui.MessageBox import MessageBox
+    self.message_box = MessageBox(self, self.asset_manager)
+    
+    # Create character selection screen (depends on asset manager and event system)
+    from src.ui.CharacterQuestionnaireSystem import CharacterSelectionScreen
+    self.character_selection = CharacterSelectionScreen(self, self.asset_manager)
+    
+    # Create UI manager (depends on all other systems)
+    from src.ui.UIManager import UIManager
+    self.ui_manager = UIManager(self, 800, 600)
+    
+    logger.info("All systems initialized")
     
     def initialize(self):
         """Initialize the game, loading necessary resources"""

@@ -683,152 +683,28 @@ class DialogManager:
         # Default success
         return DialogResult.SUCCESS
     
+    # Updated DialogManager class (excerpt)
+
     def _evaluate_condition(self, condition):
         """
-        Evaluate a dialog condition.
+        Evaluate a dialog condition using the condition evaluator.
         
         Args:
-            condition (str or dict): Condition to evaluate
+            condition (dict or str): Condition to evaluate
             
         Returns:
             bool: True if condition is met, False otherwise
         """
-        if not condition:
-            return True
+        # Use the condition evaluator
+        condition_evaluator = self.game_engine.condition_evaluator
         
-        if isinstance(condition, str):
-            # Simple condition by name
-            if condition == "is_assimilated":
-                npc = self.game_state.get_npc(self.current_npc)
-                return npc and getattr(npc, "is_assimilated", False)
-            
-            elif condition == "has_joined_coalition":
-                return self.current_npc in self.game_state.coalition_members
-            
-            elif condition.startswith("has_item:"):
-                item_id = condition.split(":")[1]
-                return self.game_state.has_item(item_id)
-            
-            elif condition.startswith("has_flag:"):
-                flag_name = condition.split(":")[1]
-                return self.game_state.get_variable(flag_name, False)
-            
-            elif condition.startswith("visited_node:"):
-                node_id = condition.split(":")[1]
-                return node_id in self.visited_nodes
-                
-        elif isinstance(condition, dict):
-            # Complex condition with parameters
-            condition_type = condition.get("type")
-            params = condition.get("params", {})
-            
-            if not condition_type:
-                logger.error("Condition missing type")
-                return False
-            
-            if condition_type == "has_item":
-                item_id = params.get("item_id")
-                return item_id and self.game_state.has_item(item_id)
-            
-            elif condition_type == "variable_check":
-                # Check a game state variable
-                var_name = params.get("variable")
-                operation = params.get("operation", "equals")
-                value = params.get("value")
-                
-                if not var_name or value is None:
-                    return False
-                
-                current = self.game_state.get_variable(var_name)
-                
-                return self._compare_values(current, value, operation)
-            
-            elif condition_type == "dialog_variable":
-                # Check a dialog variable
-                var_name = params.get("variable")
-                operation = params.get("operation", "equals")
-                value = params.get("value")
-                
-                if not var_name or var_name not in self.dialog_variables or value is None:
-                    return False
-                
-                current = self.dialog_variables[var_name]
-                
-                return self._compare_values(current, value, operation)
-            
-            elif condition_type == "suspicion_level":
-                npc = self.game_state.get_npc(self.current_npc)
-                if not npc:
-                    return False
-                
-                suspicion = getattr(npc, "suspicion", 0)
-                threshold = params.get("threshold", 50)
-                operation = params.get("operation", "greater_equal")
-                
-                return self._compare_values(suspicion, threshold, operation)
-            
-            elif condition_type == "trust_level":
-                npc = self.game_state.get_npc(self.current_npc)
-                if not npc:
-                    return False
-                
-                trust = getattr(npc, "trust_level", 0)
-                threshold = params.get("threshold", 50)
-                operation = params.get("operation", "greater_equal")
-                
-                return self._compare_values(trust, threshold, operation)
-            
-            elif condition_type == "coalition_size":
-                size = len(self.game_state.coalition_members)
-                threshold = params.get("threshold", 1)
-                operation = params.get("operation", "greater_equal")
-                
-                return self._compare_values(size, threshold, operation)
-            
-            elif condition_type == "npc_in_coalition":
-                npc_id = params.get("npc_id", self.current_npc)
-                return npc_id in self.game_state.coalition_members
-            
-            elif condition_type == "npc_assimilated":
-                npc_id = params.get("npc_id", self.current_npc)
-                npc = self.game_state.get_npc(npc_id)
-                return npc and getattr(npc, "is_assimilated", False)
-            
-            elif condition_type == "visited_node":
-                node_id = params.get("node_id")
-                return node_id in self.visited_nodes
-            
-            elif condition_type == "first_time_talking":
-                dialog_id = self.current_dialog.get("id")
-                if not dialog_id:
-                    return False
-                
-                var_name = f"talked_to_{self.current_npc}_{dialog_id}"
-                first_time = not self.game_state.get_variable(var_name, False)
-                
-                # Set the variable to track this conversation
-                if first_time:
-                    self.game_state.set_variable(var_name, True)
-                
-                return first_time
-            
-            elif condition_type == "and":
-                subconditions = params.get("conditions", [])
-                return all(self._evaluate_condition(cond) for cond in subconditions)
-            
-            elif condition_type == "or":
-                subconditions = params.get("conditions", [])
-                return any(self._evaluate_condition(cond) for cond in subconditions)
-            
-            elif condition_type == "not":
-                subcondition = params.get("condition")
-                return not self._evaluate_condition(subcondition) if subcondition else True
-            
-            else:
-                logger.warning(f"Unknown condition type: {condition_type}")
+        # Set dialog-specific context
+        condition_evaluator.current_npc = self.current_npc
+        condition_evaluator.dialog_variables = self.dialog_variables
+        condition_evaluator.visited_nodes = self.visited_nodes
         
-        # Default to true for unknown conditions
-        return True
+        # Evaluate condition
+        return condition_evaluator.evaluate_condition(condition)
     
     def _compare_values(self, value1, value2, operation="equals"):
         """
