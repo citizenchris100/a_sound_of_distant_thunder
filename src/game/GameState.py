@@ -75,7 +75,7 @@ class GameState:
         Returns:
             Hero: New player object
         """
-        import hero  # Import existing Hero module
+        import src.game.hero as hero  # Import existing Hero module
         
         if character_class:
             # Load class data
@@ -186,7 +186,7 @@ class GameState:
                 npc_data = self.data_manager.get_data("npcs", npc_id)
                 if npc_data:
                     # Check if we have a factory function for this NPC in the old system
-                    import NPC as old_npc_module
+                    import src.game.NPC as old_npc_module
                     factory_func = None
                     
                     # Try to find direct factory function by name

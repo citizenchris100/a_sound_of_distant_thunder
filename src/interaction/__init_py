@@ -1,0 +1,9 @@
+from .InteractionSystem import (
+    InteractionSystem,
+    InteractionResult
+)
+
+__all__ = [
+    'InteractionSystem',
+    'InteractionResult'
+]

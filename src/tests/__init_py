@@ -1,0 +1,5 @@
+from .GameTester import GameTester
+
+__all__ = [
+    'GameTester'
+]

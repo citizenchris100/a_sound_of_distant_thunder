@@ -410,7 +410,7 @@ class GameEngine:
             player_data (dict): Serialized player state
         """
         # Create player
-        from hero import Hero
+        from src.game.hero import Hero
         
         # Get stats
         stats = player_data.get("stats", {})

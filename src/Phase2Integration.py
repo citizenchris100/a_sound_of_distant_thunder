@@ -33,8 +33,8 @@ class Phase2Integration:
         """Initialize all Phase 2 components"""
         # Import required modules
         from UITheme import UITheme
-        from InputManager import InputManager
-        from GameTester import GameTester
+        from src.input.InputManager import InputManager
+        from src.tests.GameTester import GameTester
         
         # Create theme first (no dependencies)
         self.theme = UITheme()

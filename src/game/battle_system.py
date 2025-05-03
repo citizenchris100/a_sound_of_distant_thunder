@@ -3,12 +3,12 @@ import math
 import sys
 import datetime
 # Use relative imports for modules within the 'main' package
-from . import inventory
-from . import lvl_system
-from . import hero # Assuming hero class is needed for type hints maybe?
+from .. import inventory
+from .. import lvl_system
+from .game import hero # Assuming hero class is needed for type hints maybe?
 import os
 from .NPC import Enemy # Assuming Enemy class is in NPC.py
-from .ItemUtil import (
+from ..ItemUtil import (
     get_item_attribute, get_item_property,
     decrease_item_durability, is_item_broken,
     get_gun_ammo, set_gun_ammo

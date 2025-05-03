@@ -1,7 +1,7 @@
 import random
 import logging
-from .hero import Hero
-from .NPC import Enemy
+from .game.hero import Hero
+from .game.NPC import Enemy
 
 
 logger = logging.getLogger(__name__)
