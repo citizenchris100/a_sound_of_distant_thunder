@@ -42,6 +42,7 @@ class DialogManager:
         self.data_manager = data_manager
         self.game_state = game_state
         self.event_system = event_system
+        self.game_engine = None  # Will be set by the game engine
         
         # Dialog state
         self.current_dialog = None
@@ -683,11 +684,9 @@ class DialogManager:
         # Default success
         return DialogResult.SUCCESS
     
-    # Updated DialogManager class (excerpt)
-
     def _evaluate_condition(self, condition):
         """
-        Evaluate a dialog condition using the condition evaluator.
+        Evaluate a dialog condition using the centralized ConditionEvaluator.
         
         Args:
             condition (dict or str): Condition to evaluate
@@ -695,48 +694,20 @@ class DialogManager:
         Returns:
             bool: True if condition is met, False otherwise
         """
-        # Use the condition evaluator
+        # Use the centralized condition evaluator
+        if not self.game_engine or not hasattr(self.game_engine, "condition_evaluator"):
+            logger.error("Condition evaluator not available")
+            return True
+            
         condition_evaluator = self.game_engine.condition_evaluator
         
-        # Set dialog-specific context
+        # Set dialog-specific context for the condition evaluator
         condition_evaluator.current_npc = self.current_npc
         condition_evaluator.dialog_variables = self.dialog_variables
         condition_evaluator.visited_nodes = self.visited_nodes
         
-        # Evaluate condition
+        # Evaluate and return the result
         return condition_evaluator.evaluate_condition(condition)
-    
-    def _compare_values(self, value1, value2, operation="equals"):
-        """
-        Compare two values using the specified operation.
-        
-        Args:
-            value1: First value
-            value2: Second value
-            operation (str): Comparison operation
-            
-        Returns:
-            bool: Result of the comparison
-        """
-        if operation == "equals":
-            return value1 == value2
-        elif operation == "not_equals":
-            return value1 != value2
-        elif operation == "greater_than":
-            return value1 > value2
-        elif operation == "less_than":
-            return value1 < value2
-        elif operation == "greater_equal":
-            return value1 >= value2
-        elif operation == "less_equal":
-            return value1 <= value2
-        elif operation == "contains":
-            if isinstance(value1, (list, str, dict)):
-                return value2 in value1
-            return False
-        else:
-            logger.warning(f"Unknown comparison operation: {operation}")
-            return value1 == value2
     
     def end_dialog(self):
         """End the current dialog"""

@@ -34,6 +34,9 @@ class InteractionSystem:
         self.selected_verb = None
         self.selected_item = None
         
+        # Get the condition evaluator
+        self.condition_evaluator = self.game_engine.condition_evaluator
+        
         # Register event listeners
         self.game_engine.event_system.subscribe("verb_selected", self._on_verb_selected)
         self.game_engine.event_system.subscribe("item_selected", self._on_item_selected)
@@ -86,8 +89,19 @@ class InteractionSystem:
         self.selected_item = None
         logger.debug("Item deselected")
     
-    # Updated InteractionSystem class (excerpt)
-
+    # Updated method to use the condition evaluator
+    def _evaluate_condition(self, condition):
+        """
+        Evaluate a condition using the central ConditionEvaluator.
+        
+        Args:
+            condition (dict or str): Condition to evaluate
+            
+        Returns:
+            bool: True if condition is met, False otherwise
+        """
+        return self.condition_evaluator.evaluate_condition(condition)
+    
     def interact_with_object(self, object_id, verb=None):
         """
         Interact with a game object.
@@ -308,7 +322,8 @@ class InteractionSystem:
             # Check if there's a dialog condition
             if "condition" in dialog_data:
                 condition = dialog_data["condition"]
-                if self._evaluate_dialog_condition(condition, npc_id):
+                # Use the condition evaluator for consistency
+                if self._evaluate_condition(condition):
                     return dialog_id
             else:
                 # No condition, assume it's a default dialog
@@ -321,92 +336,6 @@ class InteractionSystem:
         
         # No valid dialogs
         return dialog_refs[0]  # Fallback to first dialog
-    
-    def _evaluate_dialog_condition(self, condition, npc_id):
-        """
-        Evaluate a dialog condition.
-        
-        Args:
-            condition (dict): Condition to evaluate
-            npc_id (str): ID of the NPC
-            
-        Returns:
-            bool: True if condition is met, False otherwise
-        """
-        if not condition:
-            return True
-        
-        condition_type = condition.get("type")
-        
-        if condition_type == "has_item":
-            item_id = condition.get("item_id")
-            return item_id and self.game_engine.game_state.has_item(item_id)
-        
-        elif condition_type == "has_variable":
-            var_name = condition.get("name")
-            expected_value = condition.get("value", True)
-            actual_value = self.game_engine.game_state.get_variable(var_name, False)
-            return actual_value == expected_value
-        
-        elif condition_type == "npc_state":
-            state_type = condition.get("state_type")
-            
-            if state_type == "is_assimilated":
-                npc = self.game_engine.game_state.get_npc(npc_id)
-                return npc and getattr(npc, "is_assimilated", False)
-            elif state_type == "in_coalition":
-                return npc_id in self.game_engine.game_state.coalition_members
-            elif state_type == "suspicion_level":
-                npc = self.game_engine.game_state.get_npc(npc_id)
-                if not npc:
-                    return False
-                suspicion = getattr(npc, "suspicion", 0)
-                threshold = condition.get("threshold", 50)
-                operator = condition.get("operator", ">=")
-                
-                if operator == ">":
-                    return suspicion > threshold
-                elif operator == ">=":
-                    return suspicion >= threshold
-                elif operator == "<":
-                    return suspicion < threshold
-                elif operator == "<=":
-                    return suspicion <= threshold
-                else:
-                    return suspicion == threshold
-        
-        elif condition_type == "game_progress":
-            progress_var = condition.get("variable", "game_day")
-            threshold = condition.get("threshold", 1)
-            operator = condition.get("operator", ">=")
-            
-            current_value = self.game_engine.game_state.get_variable(progress_var, 0)
-            
-            if operator == ">":
-                return current_value > threshold
-            elif operator == ">=":
-                return current_value >= threshold
-            elif operator == "<":
-                return current_value < threshold
-            elif operator == "<=":
-                return current_value <= threshold
-            else:
-                return current_value == threshold
-        
-        elif condition_type == "and":
-            subconditions = condition.get("conditions", [])
-            return all(self._evaluate_dialog_condition(cond, npc_id) for cond in subconditions)
-        
-        elif condition_type == "or":
-            subconditions = condition.get("conditions", [])
-            return any(self._evaluate_dialog_condition(cond, npc_id) for cond in subconditions)
-        
-        elif condition_type == "not":
-            subcondition = condition.get("condition")
-            return not self._evaluate_dialog_condition(subcondition, npc_id) if subcondition else True
-        
-        # Unknown condition type
-        return True
     
     def _use_item_with_npc(self, npc_id, npc_data, npc):
         """
@@ -949,71 +878,6 @@ class InteractionSystem:
             logger.warning(f"Unknown complex action type: {action_type}")
             self._show_message("Nothing happens.")
             return InteractionResult.FAILED
-    
-    def _evaluate_condition(self, condition):
-        """
-        Evaluate a game condition.
-        
-        Args:
-            condition (dict): Condition to evaluate
-            
-        Returns:
-            bool: True if condition is met, False otherwise
-        """
-        if not condition:
-            return True
-            
-        condition_type = condition.get("type")
-        
-        if condition_type == "has_item":
-            item_id = condition.get("item_id")
-            return item_id and self.game_engine.game_state.has_item(item_id)
-            
-        elif condition_type == "has_variable":
-            var_name = condition.get("name")
-            expected_value = condition.get("value", True)
-            actual_value = self.game_engine.game_state.get_variable(var_name, False)
-            return actual_value == expected_value
-            
-        elif condition_type == "variable_compare":
-            var_name = condition.get("name")
-            operator = condition.get("operator", "==")
-            value = condition.get("value")
-            
-            if var_name is None or value is None:
-                return False
-                
-            actual_value = self.game_engine.game_state.get_variable(var_name, None)
-            
-            if operator == "==":
-                return actual_value == value
-            elif operator == "!=":
-                return actual_value != value
-            elif operator == ">":
-                return actual_value > value
-            elif operator == ">=":
-                return actual_value >= value
-            elif operator == "<":
-                return actual_value < value
-            elif operator == "<=":
-                return actual_value <= value
-                
-        elif condition_type == "and":
-            subconditions = condition.get("conditions", [])
-            return all(self._evaluate_condition(cond) for cond in subconditions)
-            
-        elif condition_type == "or":
-            subconditions = condition.get("conditions", [])
-            return any(self._evaluate_condition(cond) for cond in subconditions)
-            
-        elif condition_type == "not":
-            subcondition = condition.get("condition")
-            return not self._evaluate_condition(subcondition) if subcondition else True
-            
-        else:
-            # Unknown condition type
-            logger.warning(f"Unknown condition type: {condition_type}")
-            return True
     
     def _hide_object(self, object_id):
         """
